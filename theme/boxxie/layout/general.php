@@ -28,6 +28,21 @@ echo $OUTPUT->doctype() ?>
   <title><?php echo $PAGE->title; ?></title>
   <link rel="shortcut icon" href="<?php echo $OUTPUT->pix_url('favicon', 'theme')?>" />
   <?php echo $OUTPUT->standard_head_html() ?>
+
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			extensions: ["tex2jax.js"],
+			jax: ["input/TeX", "output/HTML-CSS"],
+			tex2jax: {
+				inlineMath: [ ['@i','@i'], ['@i','@i'] ],
+				displayMath: [ ['@d','@d'], ['@d','@d'] ],
+				processEscapes: true
+			},
+			"HTML-CSS": { availableFonts: ["TeX"] }
+		});
+	</script>
+	<script type="text/javascript" src="<?php echo $CFG->httpswwwroot ?>/lib/MathJax/MathJax.js"></script>
+
 </head>
 
 <body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
