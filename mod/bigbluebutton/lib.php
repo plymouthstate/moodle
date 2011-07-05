@@ -241,6 +241,9 @@ function bigbluebutton_scale_used($bigbluebuttonid, $scaleid) {
 function bigbluebutton_scale_used_anywhere($scaleid) {
     global $DB;
 
+	//Looking into this as well as the DB structure, it does not look like this is finished functionality yet...
+	return false;
+
     if ($scaleid and $DB->record_exists('bigbluebutton', 'grade', -$scaleid)) {
         return true;
     } else {
