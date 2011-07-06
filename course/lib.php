@@ -1637,6 +1637,16 @@ function print_section($course, $section, $mods, $modnamesused, $absolute=false,
             // Module can put text after the link (e.g. forum unread)
             echo $mod->get_after_link();
 
+            // If there is content but NO link (eg label), then display the
+            // content here (BEFORE any icons). In this case cons must be
+            // displayed after the content so that it makes more sense visually
+            // and for accessibility reasons, e.g. if you have a one-line label
+            // it should work similarly (at least in terms of ordering) to an
+            // activity.
+            if (empty($url)) {
+                echo $contentpart;
+            }
+
             if ($isediting) {
                 if ($groupbuttons and plugin_supports('mod', $mod->modname, FEATURE_GROUPS, 0)) {
                     if (! $mod->groupmodelink = $groupbuttonslink) {
@@ -1721,8 +1731,11 @@ function print_section($course, $section, $mods, $modnamesused, $absolute=false,
                 }
             }
 
-            // Display the content (if any) at this part of the html
-            echo $contentpart;
+            // If there is content AND a link, then display the content here
+            // (AFTER any icons). Otherwise it was displayed before
+            if (!empty($url)) {
+                echo $contentpart;
+            }
 
             // Show availability information (for someone who isn't allowed to
             // see the activity itself, or for staff)
@@ -3160,6 +3173,10 @@ function make_editing_buttons($mod, $absolute=false, $moveselect=true, $indent=-
            '&amp;sesskey='.$sesskey.$section.'"><img'.
            ' src="'.$OUTPUT->pix_url('t/edit') . '" class="iconsmall" '.
            ' alt="'.$str->update.'" /></a>'."\n".
+           '<a class="editing_duplicate" title="'.$str->duplicate.'" href="'.$path.'/mod.php?duplicate='.$mod->id.
+           '&amp;sesskey='.$sesskey.$section.'"><img'.
+           ' src="'.$OUTPUT->pix_url('t/copy') . '" class="iconsmall" '.
+           ' alt="'.$str->duplicate.'" /></a>'."\n".
            '<a class="editing_delete" title="'.$str->delete.'" href="'.$path.'/mod.php?delete='.$mod->id.
            '&amp;sesskey='.$sesskey.$section.'"><img'.
            ' src="'.$OUTPUT->pix_url('t/delete') . '" class="iconsmall" '.
@@ -4192,5 +4209,24 @@ class course_request {
         $eventdata->smallmessage      = '';
         $eventdata->notification      = 1;
         message_send($eventdata);
+    }
+}
+
+/**
+ * Return a list of page types
+ * @param string $pagetype current page type
+ * @param stdClass $parentcontext Block's parent context
+ * @param stdClass $currentcontext Current context of block
+ */
+function course_page_type_list($pagetype, $parentcontext, $currentcontext) {
+    // if above course context ,display all course fomats
+    list($currentcontext, $course, $cm) = get_context_info_array($currentcontext->id);
+    if ($course->id == SITEID) {
+        return array('*'=>get_string('page-x', 'pagetype'));
+    } else {
+        return array('*'=>get_string('page-x', 'pagetype'),
+            'course-*'=>get_string('page-course-x', 'pagetype'),
+            'course-view-*'=>get_string('page-course-view-x', 'pagetype')
+        );
     }
 }

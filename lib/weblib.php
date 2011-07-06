@@ -1509,20 +1509,21 @@ function clean_text($text, $format = FORMAT_HTML, $options = array()) {
 function purify_html($text, $options = array()) {
     global $CFG;
 
-    // this can not be done only once because we sometimes need to reset the cache
-    $cachedir = $CFG->dataroot.'/cache/htmlpurifier';
-    check_dir_exists($cachedir);
-
     $type = !empty($options['allowid']) ? 'allowid' : 'normal';
     static $purifiers = array();
     if (empty($purifiers[$type])) {
+
+        // make sure the serializer dir exists, it should be fine if it disappears later during cache reset
+        $cachedir = $CFG->dataroot.'/cache/htmlpurifier';
+        check_dir_exists($cachedir);
+
         require_once $CFG->libdir.'/htmlpurifier/HTMLPurifier.safe-includes.php';
         $config = HTMLPurifier_Config::createDefault();
 
         $config->set('HTML.DefinitionID', 'moodlehtml');
-        $config->set('HTML.DefinitionRev', 1);
+        $config->set('HTML.DefinitionRev', 2);
         $config->set('Cache.SerializerPath', $cachedir);
-        //$config->set('Cache.SerializerPermission', $CFG->directorypermissions); // it would be nice to get this upstream
+        $config->set('Cache.SerializerPermissions', $CFG->directorypermissions);
         $config->set('Core.NormalizeNewlines', false);
         $config->set('Core.ConvertDocumentToFragment', true);
         $config->set('Core.Encoding', 'UTF-8');
@@ -1540,12 +1541,13 @@ function purify_html($text, $options = array()) {
             $config->set('Attr.EnableID', true);
         }
 
-        $def = $config->getHTMLDefinition(true);
-        $def->addElement('nolink', 'Block', 'Flow', array());                       // skip our filters inside
-        $def->addElement('tex', 'Inline', 'Inline', array());                       // tex syntax, equivalent to $$xx$$
-        $def->addElement('algebra', 'Inline', 'Inline', array());                   // algebra syntax, equivalent to @@xx@@
-        $def->addElement('lang', 'Block', 'Flow', array(), array('lang'=>'CDATA')); // old anf future style multilang - only our hacked lang attribute
-        $def->addAttribute('span', 'xxxlang', 'CDATA');                             // current problematic multilang
+        if ($def = $config->maybeGetRawHTMLDefinition()) {
+            $def->addElement('nolink', 'Block', 'Flow', array());                       // skip our filters inside
+            $def->addElement('tex', 'Inline', 'Inline', array());                       // tex syntax, equivalent to $$xx$$
+            $def->addElement('algebra', 'Inline', 'Inline', array());                   // algebra syntax, equivalent to @@xx@@
+            $def->addElement('lang', 'Block', 'Flow', array(), array('lang'=>'CDATA')); // old and future style multilang - only our hacked lang attribute
+            $def->addAttribute('span', 'xxxlang', 'CDATA');                             // current problematic multilang
+        }
 
         $purifier = new HTMLPurifier($config);
         $purifiers[$type] = $purifier;
@@ -2806,23 +2808,6 @@ function convert_tabrows_to_tree($tabrows, $selected, $inactive, $activated) {
 }
 
 /**
- * Returns the Moodle Docs URL in the users language
- *
- * @global object
- * @param string $path the end of the URL.
- * @return string The MoodleDocs URL in the user's language. for example {@link http://docs.moodle.org/en/ http://docs.moodle.org/en/$path}
- */
-function get_docs_url($path) {
-    global $CFG;
-    if (!empty($CFG->docroot)) {
-        return $CFG->docroot . '/' . current_language() . '/' . $path;
-    } else {
-        return 'http://docs.moodle.org/en/'.$path;
-    }
-}
-
-
-/**
  * Standard Debugging Function
  *
  * Returns true if the current site debugging settings are equal or above specified level.
@@ -3039,8 +3024,9 @@ EOT;
      * @return void Echo's output
      */
     private function _update($percent, $msg) {
-        if (empty($this->time_start)){
-            $this->time_start = microtime(true);
+        if (empty($this->time_start)) {
+            throw new coding_exception('You must call create() (or use the $autostart ' .
+                    'argument to the constructor) before you try updating the progress bar.');
         }
 
         if (CLI_SCRIPT) {

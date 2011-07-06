@@ -136,6 +136,10 @@ class web_test extends UnitTestCase {
         $this->assertEqual("\n\nAll the WORLD’S a stage.", html_to_text('<p>All the <strong>world’s</strong> a stage.</p>'));
     }
 
+    public function test_html_to_text_trailing_whitespace() {
+        $this->assertEqual('With trailing whitespace and some more text', html_to_text("With trailing whitespace   \nand some   more text", 0));
+    }
+
     public function test_clean_text() {
         $text = "lala <applet>xx</applet>";
         $this->assertEqual($text, clean_text($text, FORMAT_PLAIN));
@@ -143,32 +147,4 @@ class web_test extends UnitTestCase {
         $this->assertEqual('lala xx', clean_text($text, FORMAT_MOODLE));
         $this->assertEqual('lala xx', clean_text($text, FORMAT_HTML));
     }
-
-    /**
-     * Tests the 'allowid' option for format_text.
-     */
-    public function test_format_text_allowid() {
-        global $CFG;
-
-        // This test relates only to html purifier, so switch to it if not in use
-        $oldcfg = $CFG->enablehtmlpurifier;
-        $CFG->enablehtmlpurifier = true;
-
-        // Start off by not allowing ids (default)
-        $options = array(
-            'nocache' => true
-        );
-        $result = format_text('<div id="example">Frog</div>', FORMAT_HTML, $options);
-        $this->assertEqual('<div>Frog</div>', $result);
-
-        // Now allow ids
-        $options['allowid'] = true;
-        $result = format_text('<div id="example">Frog</div>', FORMAT_HTML, $options);
-        $this->assertEqual('<div id="example">Frog</div>', $result);
-
-        // Switch config back
-        $CFG->enablehtmlpurifier = $oldcfg;
-    }
 }
-
-

@@ -1131,7 +1131,16 @@ function forum_user_outline($course, $user, $mod, $forum) {
     } else if ($grade) {
         $result = new stdClass();
         $result->info = get_string('grade') . ': ' . $grade->str_long_grade;
-        $result->time = $grade->dategraded;
+
+        //datesubmitted == time created. dategraded == time modified or time overridden
+        //if grade was last modified by the user themselves use date graded. Otherwise use date submitted
+        //TODO: move this copied & pasted code somewhere in the grades API. See MDL-26704
+        if ($grade->usermodified == $user->id || empty($grade->datesubmitted)) {
+            $result->time = $grade->dategraded;
+        } else {
+            $result->time = $grade->datesubmitted;
+        }
+
         return $result;
     }
     return NULL;
@@ -1436,25 +1445,25 @@ function forum_print_recent_activity($course, $viewfullnames, $timestart) {
  * @param int $userid optional user id, 0 means all users
  * @return array array of grades, false if none
  */
-function forum_get_user_grades($forum, $userid=0) {
+function forum_get_user_grades($forum, $userid = 0) {
     global $CFG;
 
     require_once($CFG->dirroot.'/rating/lib.php');
-    $rm = new rating_manager();
 
-    $ratingoptions = new stdclass();
+    $ratingoptions = new stdClass;
+    $ratingoptions->component = 'mod_forum';
+    $ratingoptions->ratingarea = 'post';
 
     //need these to work backwards to get a context id. Is there a better way to get contextid from a module instance?
     $ratingoptions->modulename = 'forum';
     $ratingoptions->moduleid   = $forum->id;
-    //$ratingoptions->cmidnumber = $forum->cmidnumber;
-
     $ratingoptions->userid = $userid;
     $ratingoptions->aggregationmethod = $forum->assessed;
     $ratingoptions->scaleid = $forum->scale;
     $ratingoptions->itemtable = 'forum_posts';
     $ratingoptions->itemtableusercolumn = 'userid';
 
+    $rm = new rating_manager();
     return $rm->get_user_grades($ratingoptions);
 }
 
@@ -1577,8 +1586,8 @@ function forum_grade_item_delete($forum) {
  * Returns the users with data in one forum
  * (users with records in forum_subscriptions, forum_posts, students)
  *
- * @global object
- * @global object
+ * @todo: deprecated - to be deleted in 2.2
+ *
  * @param int $forumid
  * @return mixed array or false if none
  */
@@ -1586,31 +1595,35 @@ function forum_get_participants($forumid) {
 
     global $CFG, $DB;
 
+    $params = array('forumid' => $forumid);
+
     //Get students from forum_subscriptions
-    $st_subscriptions = $DB->get_records_sql("SELECT DISTINCT u.id, u.id
-                                         FROM {user} u,
-                                              {forum_subscriptions} s
-                                         WHERE s.forum = ? AND
-                                               u.id = s.userid", array($forumid));
+    $sql = "SELECT DISTINCT u.id, u.id
+              FROM {user} u,
+                   {forum_subscriptions} s
+             WHERE s.forum = :forumid AND
+                   u.id = s.userid";
+    $st_subscriptions = $DB->get_records_sql($sql, $params);
+
     //Get students from forum_posts
-    $st_posts = $DB->get_records_sql("SELECT DISTINCT u.id, u.id
-                                 FROM {user} u,
-                                      {forum_discussions} d,
-                                      {forum_posts} p
-                                 WHERE d.forum = ? AND
-                                       p.discussion = d.id AND
-                                       u.id = p.userid", array($forumid));
+    $sql = "SELECT DISTINCT u.id, u.id
+              FROM {user} u,
+                   {forum_discussions} d,
+                   {forum_posts} p
+              WHERE d.forum = :forumid AND
+                    p.discussion = d.id AND
+                    u.id = p.userid";
+    $st_posts = $DB->get_records_sql($sql, $params);
 
     //Get students from the ratings table
-    $st_ratings = $DB->get_records_sql("SELECT DISTINCT u.id, u.id
-                                   FROM {user} u,
-                                        {forum_discussions} d,
-                                        {forum_posts} p,
-                                        {ratings} r
-                                   WHERE d.forum = ? AND
-                                         p.discussion = d.id AND
-                                         r.post = p.id AND
-                                         u.id = r.userid", array($forumid));
+    $sql = "SELECT DISTINCT r.userid, r.userid AS id
+              FROM {forum_discussions} d
+              JOIN {forum_posts} p ON p.discussion = d.id
+              JOIN {rating} r on r.itemid = p.id
+             WHERE d.forum = :forumid AND
+                   r.component = 'mod_forum' AND
+                   r.ratingarea = 'post'";
+    $st_ratings = $DB->get_records_sql($sql, $params);
 
     //Add st_posts to st_subscriptions
     if ($st_posts) {
@@ -1939,7 +1952,7 @@ function forum_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=5
         if ($forum->type == 'qanda'
             && !has_capability('mod/forum:viewqandawithoutposting', $context)) {
             if (!empty($forum->onlydiscussions)) {
-                list($discussionid_sql, $discussionid_params) = $DB->get_in_or_equal($forum->onlydiscussions, SQL_PARAMS_NAMED, 'qanda'.$forumid.'_0000');
+                list($discussionid_sql, $discussionid_params) = $DB->get_in_or_equal($forum->onlydiscussions, SQL_PARAMS_NAMED, 'qanda'.$forumid.'_');
                 $params = array_merge($params, $discussionid_params);
                 $select[] = "(d.id $discussionid_sql OR p.parent = 0)";
             } else {
@@ -1948,7 +1961,7 @@ function forum_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=5
         }
 
         if (!empty($forum->onlygroups)) {
-            list($groupid_sql, $groupid_params) = $DB->get_in_or_equal($forum->onlygroups, SQL_PARAMS_NAMED, 'grps'.$forumid.'_0000');
+            list($groupid_sql, $groupid_params) = $DB->get_in_or_equal($forum->onlygroups, SQL_PARAMS_NAMED, 'grps'.$forumid.'_');
             $params = array_merge($params, $groupid_params);
             $select[] = "d.groupid $groupid_sql";
         }
@@ -1963,7 +1976,7 @@ function forum_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=5
     }
 
     if ($fullaccess) {
-        list($fullid_sql, $fullid_params) = $DB->get_in_or_equal($fullaccess, SQL_PARAMS_NAMED, 'fula0');
+        list($fullid_sql, $fullid_params) = $DB->get_in_or_equal($fullaccess, SQL_PARAMS_NAMED, 'fula');
         $params = array_merge($params, $fullid_params);
         $where[] = "(d.forum $fullid_sql)";
     }
@@ -2041,29 +2054,29 @@ function forum_search_posts($searchterms, $courseid=0, $limitfrom=0, $limitnum=5
 /**
  * Returns a list of ratings for a particular post - sorted.
  *
- * @global object
- * @global object
+ * TODO: Check if this function is actually used anywhere.
+ * Up until the fix for MDL-27471 this function wasn't even returning.
+ *
+ * @param stdClass $context
  * @param int $postid
  * @param string $sort
  * @return array Array of ratings or false
  */
-function forum_get_ratings($context, $postid, $sort="u.firstname ASC") {
-    global $PAGE;
-
-    $options = new stdclass();
-    $options->context = $PAGE->context;
+function forum_get_ratings($context, $postid, $sort = "u.firstname ASC") {
+    $options = new stdClass;
+    $options->context = $context;
+    $options->component = 'mod_forum';
+    $options->ratingarea = 'post';
     $options->itemid = $postid;
     $options->sort = "ORDER BY $sort";
 
     $rm = new rating_manager();
-    $rm->get_all_ratings_for_item($options);
+    return $rm->get_all_ratings_for_item($options);
 }
 
 /**
  * Returns a list of all new posts that have not been mailed yet
  *
- * @global object
- * @global object
  * @param int $starttime posts created after this time
  * @param int $endtime posts created before this
  * @param int $now used for timed discussions only
@@ -2447,29 +2460,35 @@ function forum_count_discussions($forum, $cm, $course) {
 /**
  * How many posts by other users are unrated by a given user in the given discussion?
  *
- * @global object
- * @global object
+ * TODO: Is this function still used anywhere?
+ *
  * @param int $discussionid
  * @param int $userid
  * @return mixed
  */
 function forum_count_unrated_posts($discussionid, $userid) {
     global $CFG, $DB;
-    if ($posts = $DB->get_record_sql("SELECT count(*) as num
-                                   FROM {forum_posts}
-                                  WHERE parent > 0
-                                    AND discussion = ?
-                                    AND userid <> ? ", array($discussionid, $userid))) {
 
-        if ($rated = $DB->get_record_sql("SELECT count(*) as num
-                                       FROM {forum_posts} p,
-                                            {rating} r
-                                      WHERE p.discussion = ?
-                                        AND p.id = r.itemid
-                                        AND r.userid = ?", array($discussionid, $userid))) {
-            $difference = $posts->num - $rated->num;
-            if ($difference > 0) {
-                return $difference;
+    $sql = "SELECT COUNT(*) as num
+              FROM {forum_posts}
+             WHERE parent > 0
+               AND discussion = :discussionid
+               AND userid <> :userid";
+    $params = array('discussionid' => $discussionid, 'userid' => $userid);
+    $posts = $DB->get_record_sql($sql, $params);
+    if ($posts) {
+        $sql = "SELECT count(*) as num
+                  FROM {forum_posts} p,
+                       {rating} r
+                 WHERE p.discussion = :discussionid AND
+                       p.id = r.itemid AND
+                       r.userid = userid AND
+                       r.component = 'mod_forum' AND
+                       r.ratingarea = 'post'";
+        $rated = $DB->get_record_sql($sql, $params);
+        if ($rated) {
+            if ($posts->num > $rated->num) {
+                return $posts->num - $rated->num;
             } else {
                 return 0;    // Just in case there was a counting error
             }
@@ -3276,7 +3295,7 @@ function forum_print_post($post, $discussion, $forum, &$cm, $course, $ownpost=fa
         $commands[] = array('url'=>new moodle_url('/mod/forum/post.php', array('reply'=>$post->id)), 'text'=>$str->reply);
     }
 
-    if ($cm->cache->caps['mod/forum:exportpost'] || ($ownpost && $cm->cache->caps['mod/forum:exportownpost'])) {
+    if ($CFG->enableportfolios && ($cm->cache->caps['mod/forum:exportpost'] || ($ownpost && $cm->cache->caps['mod/forum:exportownpost']))) {
         $p = array('postid' => $post->id);
         require_once($CFG->libdir.'/portfoliolib.php');
         $button = new portfolio_add_button();
@@ -3442,26 +3461,123 @@ function forum_print_post($post, $discussion, $forum, &$cm, $course, $ownpost=fa
 
 /**
  * Return rating related permissions
+ *
  * @param string $options the context id
  * @return array an associative array of the user's rating permissions
  */
-function forum_rating_permissions($contextid) {
-    $context = get_context_instance_by_id($contextid);
-
-    if (!$context) {
-        print_error('invalidcontext');
+function forum_rating_permissions($contextid, $component, $ratingarea) {
+    $context = get_context_instance_by_id($contextid, MUST_EXIST);
+    if ($component != 'mod_forum' || $ratingarea != 'post') {
+        // We don't know about this component/ratingarea so just return null to get the
+        // default restrictive permissions.
         return null;
-    } else {
-        return array('view'=>has_capability('mod/forum:viewrating',$context), 'viewany'=>has_capability('mod/forum:viewanyrating',$context), 'viewall'=>has_capability('mod/forum:viewallratings',$context), 'rate'=>has_capability('mod/forum:rate',$context));
     }
+    return array(
+        'view'    => has_capability('mod/forum:viewrating', $context),
+        'viewany' => has_capability('mod/forum:viewanyrating', $context),
+        'viewall' => has_capability('mod/forum:viewallratings', $context),
+        'rate'    => has_capability('mod/forum:rate', $context)
+    );
 }
 
 /**
- * Returns the names of the table and columns necessary to check items for ratings
- * @return array an array containing the item table, item id and user id columns
+ * Validates a submitted rating
+ * @param array $params submitted data
+ *            context => object the context in which the rated items exists [required]
+ *            component => The component for this module - should always be mod_forum [required]
+ *            ratingarea => object the context in which the rated items exists [required]
+ *            itemid => int the ID of the object being rated [required]
+ *            scaleid => int the scale from which the user can select a rating. Used for bounds checking. [required]
+ *            rating => int the submitted rating [required]
+ *            rateduserid => int the id of the user whose items have been rated. NOT the user who submitted the ratings. 0 to update all. [required]
+ *            aggregation => int the aggregation method to apply when calculating grades ie RATING_AGGREGATE_AVERAGE [required]
+ * @return boolean true if the rating is valid. Will throw rating_exception if not
  */
-function forum_rating_item_check_info() {
-    return array('forum_posts','id','userid');
+function forum_rating_validate($params) {
+    global $DB, $USER;
+
+    // Check the component is mod_forum
+    if ($params['component'] != 'mod_forum') {
+        throw new rating_exception('invalidcomponent');
+    }
+
+    // Check the ratingarea is post (the only rating area in forum)
+    if ($params['ratingarea'] != 'post') {
+        throw new rating_exception('invalidratingarea');
+    }
+
+    // Check the rateduserid is not the current user .. you can't rate your own posts
+    if ($params['rateduserid'] == $USER->id) {
+        throw new rating_exception('nopermissiontorate');
+    }
+
+    // Fetch all the related records ... we need to do this anyway to call forum_user_can_see_post
+    $post = $DB->get_record('forum_posts', array('id' => $params['itemid'], 'userid' => $params['rateduserid']), '*', MUST_EXIST);
+    $discussion = $DB->get_record('forum_discussions', array('id' => $post->discussion), '*', MUST_EXIST);
+    $forum = $DB->get_record('forum', array('id' => $discussion->forum), '*', MUST_EXIST);
+    $course = $DB->get_record('course', array('id' => $forum->course), '*', MUST_EXIST);
+    $cm = get_coursemodule_from_instance('forum', $forum->id, $course->id , false, MUST_EXIST);
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+
+    // Make sure the context provided is the context of the forum
+    if ($context->id != $params['context']->id) {
+        throw new rating_exception('invalidcontext');
+    }
+
+    if ($forum->scale != $params['scaleid']) {
+        //the scale being submitted doesnt match the one in the database
+        throw new rating_exception('invalidscaleid');
+    }
+
+    // check the item we're rating was created in the assessable time window
+    if (!empty($forum->assesstimestart) && !empty($forum->assesstimefinish)) {
+        if ($post->created < $forum->assesstimestart || $post->created > $forum->assesstimefinish) {
+            throw new rating_exception('notavailable');
+        }
+    }
+
+    //check that the submitted rating is valid for the scale
+
+    // lower limit
+    if ($params['rating'] < 0  && $params['rating'] != RATING_UNSET_RATING) {
+        throw new rating_exception('invalidnum');
+    }
+
+    // upper limit
+    if ($forum->scale < 0) {
+        //its a custom scale
+        $scalerecord = $DB->get_record('scale', array('id' => -$forum->scale));
+        if ($scalerecord) {
+            $scalearray = explode(',', $scalerecord->scale);
+            if ($params['rating'] > count($scalearray)) {
+                throw new rating_exception('invalidnum');
+            }
+        } else {
+            throw new rating_exception('invalidscaleid');
+        }
+    } else if ($params['rating'] > $forum->scale) {
+        //if its numeric and submitted rating is above maximum
+        throw new rating_exception('invalidnum');
+    }
+
+    // Make sure groups allow this user to see the item they're rating
+    if ($discussion->groupid > 0 and $groupmode = groups_get_activity_groupmode($cm, $course)) {   // Groups are being used
+        if (!groups_group_exists($discussion->groupid)) { // Can't find group
+            throw new rating_exception('cannotfindgroup');//something is wrong
+        }
+
+        if (!groups_is_member($discussion->groupid) and !has_capability('moodle/site:accessallgroups', $context)) {
+            // do not allow rating of posts from other groups when in SEPARATEGROUPS or VISIBLEGROUPS
+            throw new rating_exception('notmemberofgroup');
+        }
+    }
+
+    // perform some final capability checks
+    if (!forum_user_can_see_post($forum, $discussion, $post, $USER, $cm)) {
+        throw new rating_exception('nopermissiontorate');
+    }
+
+    return true;
 }
 
 
@@ -3816,46 +3932,49 @@ function forum_print_attachments($post, $cm, $type) {
 
     $canexport = (has_capability('mod/forum:exportpost', $context) || ($post->userid == $USER->id && has_capability('mod/forum:exportownpost', $context)));
 
-    require_once($CFG->libdir.'/portfoliolib.php');
-    if ($files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $post->id, "timemodified", false)) {
-        $button = new portfolio_add_button();
-        foreach ($files as $file) {
-            $filename = $file->get_filename();
-            $mimetype = $file->get_mimetype();
-            $iconimage = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
-            $path = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$context->id.'/mod_forum/attachment/'.$post->id.'/'.$filename);
+    if (!empty($CFG->enableportfolios)) {
+        require_once($CFG->libdir.'/portfoliolib.php');
+        $files = $fs->get_area_files($context->id, 'mod_forum', 'attachment', $post->id, "timemodified", false);
+        if ($files) {
+            $button = new portfolio_add_button();
+            foreach ($files as $file) {
+                $filename = $file->get_filename();
+                $mimetype = $file->get_mimetype();
+                $iconimage = '<img src="'.$OUTPUT->pix_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
+                $path = file_encode_url($CFG->wwwroot.'/pluginfile.php', '/'.$context->id.'/mod_forum/attachment/'.$post->id.'/'.$filename);
 
-            if ($type == 'html') {
-                $output .= "<a href=\"$path\">$iconimage</a> ";
-                $output .= "<a href=\"$path\">".s($filename)."</a>";
-                if ($canexport) {
-                    $button->set_callback_options('forum_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), '/mod/forum/locallib.php');
-                    $button->set_format_by_file($file);
-                    $output .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
-                }
-                $output .= "<br />";
-
-            } else if ($type == 'text') {
-                $output .= "$strattachment ".s($filename).":\n$path\n";
-
-            } else { //'returnimages'
-                if (in_array($mimetype, array('image/gif', 'image/jpeg', 'image/png'))) {
-                    // Image attachments don't get printed as links
-                    $imagereturn .= "<br /><img src=\"$path\" alt=\"\" />";
-                    if ($canexport) {
-                        $button->set_callback_options('forum_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), '/mod/forum/locallib.php');
-                        $button->set_format_by_file($file);
-                        $imagereturn .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
-                    }
-                } else {
+                if ($type == 'html') {
                     $output .= "<a href=\"$path\">$iconimage</a> ";
-                    $output .= format_text("<a href=\"$path\">".s($filename)."</a>", FORMAT_HTML, array('context'=>$context));
+                    $output .= "<a href=\"$path\">".s($filename)."</a>";
                     if ($canexport) {
                         $button->set_callback_options('forum_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), '/mod/forum/locallib.php');
                         $button->set_format_by_file($file);
                         $output .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
                     }
-                    $output .= '<br />';
+                    $output .= "<br />";
+
+                } else if ($type == 'text') {
+                    $output .= "$strattachment ".s($filename).":\n$path\n";
+
+                } else { //'returnimages'
+                    if (in_array($mimetype, array('image/gif', 'image/jpeg', 'image/png'))) {
+                        // Image attachments don't get printed as links
+                        $imagereturn .= "<br /><img src=\"$path\" alt=\"\" />";
+                        if ($canexport) {
+                            $button->set_callback_options('forum_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), '/mod/forum/locallib.php');
+                            $button->set_format_by_file($file);
+                            $imagereturn .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
+                        }
+                    } else {
+                        $output .= "<a href=\"$path\">$iconimage</a> ";
+                        $output .= format_text("<a href=\"$path\">".s($filename)."</a>", FORMAT_HTML, array('context'=>$context));
+                        if ($canexport) {
+                            $button->set_callback_options('forum_portfolio_caller', array('postid' => $post->id, 'attachment' => $file->get_id()), '/mod/forum/locallib.php');
+                            $button->set_format_by_file($file);
+                            $output .= $button->to_html(PORTFOLIO_ADD_ICON_LINK);
+                        }
+                        $output .= '<br />';
+                    }
                 }
             }
         }
@@ -4227,8 +4346,10 @@ function forum_delete_post($post, $children, $course, $cm, $forum, $skipcompleti
 
     //delete ratings
     require_once($CFG->dirroot.'/rating/lib.php');
-    $delopt = new stdclass();
+    $delopt = new stdClass;
     $delopt->contextid = $context->id;
+    $delopt->component = 'mod_forum';
+    $delopt->ratingarea = 'post';
     $delopt->itemid = $post->id;
     $rm = new rating_manager();
     $rm->delete_ratings($delopt);
@@ -5263,32 +5384,29 @@ function forum_print_latest_discussions($course, $forum, $maxdiscussions=-1, $di
 
 
 /**
- * @global object
- * @global object
+ * Prints a forum discussion
+ *
  * @uses CONTEXT_MODULE
  * @uses FORUM_MODE_FLATNEWEST
  * @uses FORUM_MODE_FLATOLDEST
  * @uses FORUM_MODE_THREADED
  * @uses FORUM_MODE_NESTED
- * @param object $course
- * @param object $cm
- * @param object $forum
- * @param object $discussion
- * @param object $post
- * @param object $mode
+ * @param stdClass $course
+ * @param stdClass $cm
+ * @param stdClass $forum
+ * @param stdClass $discussion
+ * @param stdClass $post
+ * @param int $mode
  * @param mixed $canreply
- * @param bool $cancreate
+ * @param bool $canrate
  */
 function forum_print_discussion($course, $cm, $forum, $discussion, $post, $mode, $canreply=NULL, $canrate=false) {
+    global $USER, $CFG;
 
-    global $USER, $CFG, $DB, $PAGE, $OUTPUT;
     require_once($CFG->dirroot.'/rating/lib.php');
 
-    if (isloggedin()) {
-        $ownpost = ($USER->id == $post->userid);
-    } else {
-        $ownpost = false;
-    }
+    $ownpost = (isloggedin() && $USER->id == $post->userid);
+
     $modcontext = get_context_instance(CONTEXT_MODULE, $cm->id);
     if ($canreply === NULL) {
         $reply = forum_user_can_post($forum, $discussion, $USER, $cm, $course, $modcontext);
@@ -5297,7 +5415,7 @@ function forum_print_discussion($course, $cm, $forum, $discussion, $post, $mode,
     }
 
     // $cm holds general cache for forum functions
-    $cm->cache = new stdClass();
+    $cm->cache = new stdClass;
     $cm->cache->groups      = groups_get_all_groups($course->id, 0, $cm->groupingid);
     $cm->cache->usersgroups = array();
 
@@ -5330,9 +5448,11 @@ function forum_print_discussion($course, $cm, $forum, $discussion, $post, $mode,
     }
 
     //load ratings
-    if ($forum->assessed!=RATING_AGGREGATE_NONE) {
-        $ratingoptions = new stdclass();
+    if ($forum->assessed != RATING_AGGREGATE_NONE) {
+        $ratingoptions = new stdClass;
         $ratingoptions->context = $modcontext;
+        $ratingoptions->component = 'mod_forum';
+        $ratingoptions->ratingarea = 'post';
         $ratingoptions->items = $posts;
         $ratingoptions->aggregate = $forum->assessed;//the aggregation method
         $ratingoptions->scaleid = $forum->scale;
@@ -5344,8 +5464,6 @@ function forum_print_discussion($course, $cm, $forum, $discussion, $post, $mode,
         }
         $ratingoptions->assesstimestart = $forum->assesstimestart;
         $ratingoptions->assesstimefinish = $forum->assesstimefinish;
-        $ratingoptions->plugintype = 'mod';
-        $ratingoptions->pluginname = 'forum';
 
         $rm = new rating_manager();
         $posts = $rm->get_ratings($ratingoptions);
@@ -7008,10 +7126,14 @@ function forum_reset_userdata($data) {
                            WHERE f.course=? AND f.id=fd.forum AND fd.id=fp.discussion";
 
     $forumssql = $forums = $rm = null;
+
     if( $removeposts || !empty($data->reset_forum_ratings) ) {
         $forumssql      = "$allforumssql $typesql";
         $forums = $forums = $DB->get_records_sql($forumssql, $params);
-        $rm = new rating_manager();
+        $rm = new rating_manager();;
+        $ratingdeloptions = new stdClass;
+        $ratingdeloptions->component = 'mod_forum';
+        $ratingdeloptions->ratingarea = 'post';
     }
 
     if ($removeposts) {
@@ -7020,7 +7142,6 @@ function forum_reset_userdata($data) {
 
         // now get rid of all attachments
         $fs = get_file_storage();
-        $ratingdeloptions = new stdclass();
         if ($forums) {
             foreach ($forums as $forumid=>$unused) {
                 if (!$cm = get_coursemodule_from_instance('forum', $forumid)) {
@@ -7068,8 +7189,6 @@ function forum_reset_userdata($data) {
 
     // remove all ratings in this course's forums
     if (!empty($data->reset_forum_ratings)) {
-        $ratingdeloptions = new stdclass();
-
         if ($forums) {
             foreach ($forums as $forumid=>$unused) {
                 if (!$cm = get_coursemodule_from_instance('forum', $forumid)) {
@@ -7837,4 +7956,19 @@ function forum_cm_info_view(cm_info $cm) {
             $cm->set_after_link($out);
         }
     }
+}
+
+/**
+ * Return a list of page types
+ * @param string $pagetype current page type
+ * @param stdClass $parentcontext Block's parent context
+ * @param stdClass $currentcontext Current context of block
+ */
+function forum_page_type_list($pagetype, $parentcontext, $currentcontext) {
+    $forum_pagetype = array(
+        'mod-forum-*'=>get_string('page-mod-forum-x', 'forum'),
+        'mod-forum-view'=>get_string('page-mod-forum-view', 'forum'),
+        'mod-forum-discuss'=>get_string('page-mod-forum-discuss', 'forum')
+    );
+    return $forum_pagetype;
 }

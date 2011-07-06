@@ -89,7 +89,7 @@ class graded_users_iterator {
         $relatedcontexts = get_related_contexts_string($coursecontext);
 
         list($gradebookroles_sql, $params) =
-            $DB->get_in_or_equal(explode(',', $CFG->gradebookroles), SQL_PARAMS_NAMED, 'grbr0');
+            $DB->get_in_or_equal(explode(',', $CFG->gradebookroles), SQL_PARAMS_NAMED, 'grbr');
 
         //limit to users with an active enrolment
         list($enrolledsql, $enrolledparams) = get_enrolled_sql($coursecontext);
@@ -144,7 +144,7 @@ class graded_users_iterator {
 
         if (!empty($this->grade_items)) {
             $itemids = array_keys($this->grade_items);
-            list($itemidsql, $grades_params) = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'items0');
+            list($itemidsql, $grades_params) = $DB->get_in_or_equal($itemids, SQL_PARAMS_NAMED, 'items');
             $params = array_merge($params, $grades_params);
             // $params contents: gradebookroles, enrolledparams, groupid (for $groupwheresql) and itemids
 
@@ -158,7 +158,7 @@ class graded_users_iterator {
                                         FROM {role_assignments} ra
                                        WHERE ra.roleid $gradebookroles_sql
                                          AND ra.contextid $relatedcontexts
-                                  ) rainnner ON rainner.userid = u.id
+                                  ) rainner ON rainner.userid = u.id
                               WHERE u.deleted = 0
                               AND g.itemid $itemidsql
                               $groupwheresql
@@ -235,7 +235,6 @@ class graded_users_iterator {
         $result->user      = $user;
         $result->grades    = $grades;
         $result->feedbacks = $feedbacks;
-
         return $result;
     }
 
@@ -271,20 +270,20 @@ class graded_users_iterator {
     /**
      * _pop
      *
-     * @return void
+     * @return object current grade object
      */
     function _pop() {
         global $DB;
         if (empty($this->gradestack)) {
-            if (!$this->grades_rs) {
+            if (empty($this->grades_rs) || !$this->grades_rs->valid()) {
                 return null; // no grades present
             }
 
-            if ($this->grades_rs->next()) {
-                return null; // no more grades
-            }
+            $current = $this->grades_rs->current();
 
-            return $this->grades_rs->current();
+            $this->grades_rs->next();
+
+            return $current;
         } else {
             return array_pop($this->gradestack);
         }
@@ -2245,7 +2244,7 @@ abstract class grade_helper {
      */
     public static function get_plugins_reports($courseid) {
         global $SITE;
-        
+
         if (self::$gradereports !== null) {
             return self::$gradereports;
         }
