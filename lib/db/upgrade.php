@@ -1854,7 +1854,7 @@ WHERE gradeitemid IS NOT NULL AND grademax IS NOT NULL");
                                   WHERE ctx.id = bi.contextid)
                            ELSE bi.pagetypepattern END,
                        CASE WHEN bi.subpagepattern IS NULL
-                           THEN ''
+                           THEN '" . $DB->sql_empty() . "'
                            ELSE bi.subpagepattern END,
                        0, bi.defaultregion, bi.defaultweight
                   FROM {block_instances} bi
@@ -6633,6 +6633,9 @@ FROM
 
         upgrade_main_savepoint(true, 2011062400.03);
     }
+
+    // Moodle v2.1.0 release upgrade line
+    // Put any upgrade step following this
 
     return true;
 }

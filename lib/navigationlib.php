@@ -995,7 +995,7 @@ class global_navigation extends navigation_node {
      * is an issue explaining why this is a REALLY UGLY HACK thats not
      * for you to use!
      *
-     * @param int $userid userid of profile page that parent wants to navigate around. 
+     * @param int $userid userid of profile page that parent wants to navigate around.
      */
     public function set_userid_for_parent_checks($userid) {
         $this->useridtouseforparentchecks = $userid;
@@ -1289,7 +1289,7 @@ class global_navigation extends navigation_node {
         }
 
         // If the user is not logged in modify the navigation structure as detailed
-        // in {@link http://docs.moodle.org/en/Development:Navigation_2.0_structure}
+        // in {@link http://docs.moodle.org/dev/Navigation_2.0_structure}
         if (!isloggedin()) {
             $activities = clone($this->rootnodes['site']->children);
             $this->rootnodes['site']->remove();
@@ -1459,7 +1459,7 @@ class global_navigation extends navigation_node {
                         } else {
                             // We should never ever arrive here - if we have then there is a bigger
                             // problem at hand.
-                            throw coding_exception('Category path order is incorrect and/or there are missing categories');
+                            throw new coding_exception('Category path order is incorrect and/or there are missing categories');
                         }
                     }
                 }
@@ -1817,7 +1817,9 @@ class global_navigation extends navigation_node {
             } else {
                 // This is the site so add a users node to the root branch
                 $usersnode = $this->rootnodes['users'];
-                $usersnode->action = new moodle_url('/user/index.php', array('id'=>$course->id));
+                if (has_capability('moodle/course:viewparticipants', $coursecontext)) {
+                    $usersnode->action = new moodle_url('/user/index.php', array('id'=>$course->id));
+                }
                 $userviewurl = new moodle_url('/user/profile.php', $baseargs);
             }
             if (!$usersnode) {
@@ -3671,8 +3673,7 @@ class settings_navigation extends navigation_node {
         // Messaging
         if (($currentuser && has_capability('moodle/user:editownmessageprofile', $systemcontext)) || (!isguestuser($user) && has_capability('moodle/user:editmessageprofile', $usercontext) && !is_primary_admin($user->id))) {
             $url = new moodle_url('/message/edit.php', array('id'=>$user->id, 'course'=>$course->id));
-            // Hide the node if messaging disabled
-            $usersetting->add(get_string('editmymessage', 'message'), $url, self::TYPE_SETTING)->display = !empty($CFG->messaging);
+            $usersetting->add(get_string('editmymessage', 'message'), $url, self::TYPE_SETTING);
         }
 
         // Blogs
