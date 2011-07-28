@@ -1,0 +1,412 @@
+html {
+
+  background:#DE4707;
+  background-image:url([[pix:theme|images/gradients/back_black]]);
+  background-repeat:repeat-x;padding: 3%;
+}
+
+#page-wrapper {
+  background: rgb(255, 255, 255);background: rgba(255, 255, 255, 0.30);  /*background: ;*/
+  padding: 5px;
+}
+
+#page {
+  padding: 5px;
+  width: auto;
+}
+
+a:link,
+a:visited {
+  color: #333;
+  text-decoration: none;
+}
+
+a:hover,
+a:active {
+  color: #DE4707;
+  text-decoration: underline;
+}
+
+/* Header */
+
+#page-header {
+  background: #120602;
+  height: 154px;
+  color: #FFFFFF;
+  -moz-border-radius-topleft: 15px;
+  -webkit-border-top-left-radius: 15px;
+  border-radius-top-left: 15px;
+
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  border-radius-bottomright: 15px;
+}
+
+#page-header a:link,
+#page-header a:visited {
+  color: #DE4707;
+}
+
+#page-header h1.headermain {
+  color: #D99E29;
+  font-weight: normal;
+  margin:1em;
+}
+
+.sideblock {
+  border: none;
+}
+
+.sideblock .header {
+  border-color:#091219;
+  background: #091219;
+  padding:2px 5px;
+  background-image:url([[pix:theme|images/gradients/block_black]]);
+  background-repeat:repeat-x;
+  -moz-border-radius-topleft: 15px;
+  -webkit-border-top-left-radius: 15px;
+  border-radius-top-left: 15px;
+}
+
+.sideblock .header h2 {
+
+  color: #FFFFFF;  
+  font-size: 0.95em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.sideblock .content {
+  border-width: 1px;
+  background:#E6E4E4;
+  border-color:#E6E4E4;
+  background: rgb(255, 255, 255);background: rgba(255, 255, 255, 0.40);border-bottom: 2px outset #091219;
+  background-image:url([[pix:theme|images/gradients/block_content_white]]);background-repeat:repeat-x;
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  border-radius-bottomright: 15px;
+
+}
+
+
+
+/* Course */
+
+.coursebox {
+  border-bottom: 1px solid #eee;
+  border-width:0 0 1px 0;
+  padding-bottom:10px;
+  border-color: #091219;
+}
+
+.coursebox h3.name {
+  margin-top: 0;
+}
+
+.categorybox {
+  border: none;
+}
+
+h2.headingblock {
+  font-weight: bold;
+  color: #FFF; 
+  padding: 1%;
+  font-size: 120%;
+  background: #091219;
+  /*border-bottom: 5px solid #120602;*/
+}
+
+/* Forum */
+
+.forumpost .topic {
+  background: #E6E4E4;
+}
+
+
+
+
+.block_settings_navigation_tree .content .footer {text-align: center;}
+.block_settings_navigation_tree .content .footer .adminsearchform {margin-left: 5%;width: 90%;font-size: 9pt;}
+.block_settings_navigation_tree .content .footer .adminsearchform #adminsearchquery {width: 95%;}
+ 
+.block_calendar_month .content .calendar-controls a {color: #DE4707;font-weight: bold;}
+.block_calendar_month .content .minicalendar td {border-color: #FFF;}
+.block_calendar_month .content .minicalendar .day {color: #120602;}
+.block_calendar_month .content .minicalendar .day a {color: #FFF;background-color: #DE4707; padding:1px;}
+.block_calendar_month .content .minicalendar .weekdays th {border-width: 0;font-weight: bold;color: #120602;}
+.block_calendar_month .content .minicalendar .weekdays abbr {border-width: 0;text-decoration: none;}
+ 
+#regions{
+background:none;
+}
+
+#regions-mask{
+background:none;
+}
+
+.results,
+.course-content,
+#general,
+.loginbox,
+.generalboxcontent,
+.informationboxcontent,
+.noticeboxcontent,
+.entryboxheader,
+.entrybox,
+.userinfobox,
+.generaltable,
+.groupinfobox,
+.forumheaderlist,
+.forumpost,
+.que,
+.que .answer,
+#course-user .section,
+#site-index .sitetopic .sitetopiccontent,
+.coursebox,
+.categorybox,
+.cal_popup_fg,
+#course-view .section td.content,
+table.files,
+#admin-index .generalbox,
+.generalbox,
+.admin .generalbox,
+#adminsettings fieldset {
+    padding: 1%;
+    background-position:bottom;
+    background: #E6E4E4;
+    border-top: 3px solid #091219;
+    width: 98%;
+    background: rgb(255, 255, 255);background: rgba(255, 255, 255, 0.70);border-bottom: 2px outset #091219;
+    background-image:url([[pix:theme|images/gradients/block_content_white]]);background-repeat:repeat-x;
+
+}
+
+#page-footer {
+ padding: 1%;
+ width: 98%;
+ background: #E6E4E4;
+ border-top: 3px solid #091219;
+
+  -moz-border-radius-topleft: 15px;
+  -webkit-border-top-left-radius: 15px;
+  border-radius-top-left: 15px;
+
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  border-radius-bottomright: 15px;
+}
+.copyright, .navbar {
+padding: 1%;
+} 
+
+
+
+/*Menu css below*/
+
+.menubox {
+  margin-top: 3px;
+  background: #DE4707;
+  -moz-border-radius-topleft: 15px;
+  -webkit-border-top-left-radius: 15px;
+  border-radius-top-left: 15px;
+
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  border-radius-bottomright: 15px;
+
+}
+
+#cssmenu {
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+
+#cssmenu ul {
+	margin: 0;
+	padding: 0;
+}
+
+#cssmenu li {
+	cursor: pointer;
+	display: block;
+	float: left;
+	margin: 0 2px;
+	padding: 0 14px 0 0;
+	position: relative;
+}
+
+#cssmenu li ul {
+	position: absolute; /* second-level lists */
+	z-index: 99;
+	left: -999em; /* using left instead of display to hide menus because display: none isn't read by screen readers */
+	height: auto;
+	width: 10.9em;
+}
+
+#cssmenu li ul ul {
+	margin: -2.2em 0 0 10.8em; /* third-and-above-level lists */
+}
+
+#cssmenu li li {
+	padding: 0 1em 0 0;
+	margin: 0;
+	width: 10.8em;
+}
+
+#cssmenu ul a {
+	width: 10.6em;
+}
+
+#cssmenu li:hover ul ul, #cssmenu li:hover ul ul ul,
+#cssmenu li.sfhover ul ul, #cssmenu li.havechildsfhover ul ul, #cssmenu li.havechild-activesfhover ul ul, #cssmenu li.activesfhover ul ul,
+#cssmenu li.sfhover ul ul ul, #cssmenu li.havechildsfhover ul ul ul, #cssmenu li.havechild-activesfhover ul ul ul, #cssmenu li.activesfhover ul ul ul {
+	left: -999em;
+}
+
+/* This "unhides" the sub-menus (left: -999em is what hides them) */
+#cssmenu li:hover ul, #cssmenu li li:hover ul, #cssmenu li li li:hover ul,
+#cssmenu li.sfhover ul, #cssmenu li.havechildsfhover ul, #cssmenu li.havechild-activesfhover ul, #cssmenu li.activesfhover ul,
+#cssmenu li li.sfhover ul, #cssmenu li li.havesubchildsfhover ul, #cssmenu li li.havesubchild-activesfhover ul, #cssmenu li li.activesfhover ul,
+#cssmenu li li li.sfhover ul, #cssmenu li li li.havesubchildsfhover ul, #cssmenu li li li.havesubchild-activesfhover ul, #cssmenu li li li.activesfhover ul {
+	left: 0;
+}
+
+/* STYLING THE MENU
+-----------------------------------*/
+/* 1st level */
+#cssmenu li a {
+	color: #fff;
+	display: block;
+	font-size: 92%;
+	line-height: 30px;
+	padding: 0 0 0 15px;
+	text-decoration: none;
+	text-transform: uppercase;
+}
+
+#cssmenu a span {
+	display:block;
+	line-height:30px;
+	padding:0 15px 0 0;
+}
+
+#cssmenu li a:hover,
+#cssmenu li a:active,
+#cssmenu li a:focus {
+	color: #CCCCCC;
+}
+
+#cssmenu li:hover a,
+#cssmenu li.sfhover a,
+#cssmenu li.havechildsfhover a,
+#cssmenu li.havechild-activesfhover a {
+	color: #FFFFFF;
+}
+
+#cssmenu li:hover a span,
+#cssmenu li.sfhover a span,
+#cssmenu li.havechildsfhover a span,
+#cssmenu li.havechild-activesfhover a span{
+}
+
+#cssmenu li a.active,
+#cssmenu li a.active:hover,
+#cssmenu li a.active:active,
+#cssmenu li a.active:focus {
+	color: #FFFFFF;
+}
+
+#cssmenu a:hover span,
+#cssmenu a:active span,
+#cssmenu a:focus span {
+	cursor: pointer;
+}
+
+#cssmenu li.active a,
+#cssmenu li.active a:hover,
+#cssmenu li.active a:active,
+#cssmenu li.active a:focus {
+	color: #FFFFFF;
+}
+
+#cssmenu li.active a span,
+#cssmenu li.active a:hover span,
+#cssmenu li.active a:active span,
+#cssmenu li.active a:focus span {
+	cursor: pointer;
+}
+
+/* 2nd level and above */
+#cssmenu li ul {
+background: #DE4707;	border: 1px solid #5A5A5A;
+	border-top: none;
+	top: 27px;
+}
+
+#cssmenu li ul ul {
+	border: 1px solid #333333;
+}
+
+#cssmenu li ul li {
+	border-top: 1px solid #5A5A5A;
+	border-right: none;
+	background: none;
+}
+
+#cssmenu li ul a {
+	border-right: none;
+	margin: 0;
+	background: none !important;
+	text-transform: none;
+	font-weight: normal;
+	white-space: nowrap;
+	height: auto;
+	line-height: normal;
+	color: #eee !important;
+}
+
+#cssmenu li ul a span {
+	background: none !important;
+}
+
+#cssmenu li.havesubchild,
+#cssmenu li.havesubchild-active {
+}
+
+#cssmenu li ul a:hover,
+#cssmenu li ul a:active,
+#cssmenu li ul a:focus,
+#cssmenu ul li:hover,
+#cssmenu ul li.sfhover,
+#cssmenu ul li.havesubchildsfhover,
+#cssmenu ul li.havesubchild-activesfhover,
+#cssmenu ul ul li:hover,
+#cssmenu ul ul li.sfhover,
+#cssmenu ul ul li.havesubchildsfhover,
+#cssmenu ul ul li.havesubchild-activesfhover {
+	background: #120602;
+	color: #FFFFFF !important;
+}
+
+#cssmenu ul li a.active {
+	background: none !important;
+	font-weight: bold !important;
+}
+
+#cssmenu ul li a.active:hover,
+#cssmenu ul li a.active:active,
+#cssmenu ul li a.active:focus {
+	color: #FFFFFF !important;
+}
+
+
+#page-content {clear:both;float:left;overflow:hidden;position:relative;width:100%;}
+#page-content #regions {float:left;left:200px;position:relative;width:200%;}
+#page-content #regions #regions-mask {float:left;left:50%;margin-left:-400px;position:relative;width:100%;}
+#page-content #regions #regions-mask #region-main {float:right;position:relative;right:100%;width:50%;}
+#page-content #regions #regions-mask #region-main #region-main-mask {margin-right:0px;margin-left:450px;overflow:hidden;}
+#page-content #regions #regions-mask #region-pre {float:left;left:200px;margin-left:-50%;overflow:hidden;position:relative;width:250px;}
+#page-content #regions #regions-mask #region-post {float:left;left:0px;overflow:hidden;position:relative;width:200px;}
+#page-content #regions .region-content {overflow:hidden;padding:10px;}
+

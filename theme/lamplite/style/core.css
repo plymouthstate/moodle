@@ -1,0 +1,93 @@
+#page {width:100%;background:#fffaaa url([[pix:theme|gradient]]) repeat-x;}
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,dl,input,textarea {font-family:Georgia, "Times New Roman", Times, serif;color:#2a2513;}
+#wrapper {background:#fff;margin:0% 5%;padding:5px;border:1px solid #fc8f02;}
+.pagelayout-frontpage #page-content #region-main-box #region-post-box {padding-top:3px;}
+
+a {color:#336699;}
+a:hover {text-decoration:underline;}
+
+/* Header
+------------------------*/
+#page-header {background:#fff580 url([[pix:theme|header_lamplite]]) no-repeat;margin-bottom:3px;}
+.headermain {font-weight:bold;margin:1.25em 0.5em 0.5em 5.5em;}
+
+/* Navbar 
+-------------------------*/
+.navbar {background:#fff888 url([[pix:theme|breadcrumb]]) repeat-x 0 100%;padding:5px;}
+
+/* Blocks
+-------------------------*/
+.block {border-color:#fc8f02;}
+.block .header {background:#fff888;padding-left:5px;}
+.block .title {background:#f9c14b;padding-left:5px;}
+.block .title h2 {background:#fc8f02;margin:0;padding:5px;font-size:1em;color:#fff;}
+.block_action {padding:5px 0 0;}
+.block .content {background:#fff580;border:1px solid #fc8f02;}
+.block .minicalendar td,
+.block .minicalendar th {border-color:#fc8f02;}
+
+/* Course
+----------------------------*/
+.headingblock {background:url([[pix:theme|headingblock]]) repeat-x 0 0;color:#000;font-weight:normal;border:none;padding:2px 75px;}
+
+/* Custom menu
+----------------------------*/
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content,
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content .ul {background-color:#fff888; border:1px solid #fc8f02;}
+#custommenu .yui3-menu-horizontal.javascript-disabled ul {margin:0;padding:0;}
+#custommenu .yui3-menu-horizontal.javascript-disabled li {margin:0;padding:0;list-style:none;width:auto;position:relative;}
+#custommenu .yui3-menu-horizontal.javascript-disabled>.yui3-menu-content>ul>li {float:left;}
+#custommenu .yui3-menu-horizontal.javascript-disabled li a {padding:0 10px;}
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu {position:absolute;top:-10000px;left:-10000px;visibility:hidden;white-space: nowrap;max-width: 250px;background-color:#fc8f02;}
+#custommenu .yui3-menu-horizontal.javascript-disabled li:hover>.yui3-menu {top:100%;left:0;visibility: visible;z-index:10;}
+#custommenu .yui3-menu-horizontal.javascript-disabled li:hover .yui3-menu .yui3-menu {top:0;left:100%;min-width:200px;}
+#custommenu .yui3-menu-horizontal.javascript-disabled>.yui3-menu-content>ul:after {content:"";display:block;clear:both;line-height:0;font-size:0;visibility:hidden;}
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content {line-height:2;padding:0;}
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content .yui3-menu-content {font-size:100%;}
+#custommenu .yui3-menu {background-image:url([[pix:theme|hgradient]]);background-repeat: repeat-x;background-color:#fff888;}
+#custommenu .yui3-menu .yui3-menu {background-image:none;background-color:#FFF888;}
+#custommenu .yui3-menu .yui3-menu-label,
+#custommenu .yui3-menu .yui3-menuitem-content,
+#custommenu .yui3-menu .yui3-menu-content,
+#custommenu .yui3-menu .yui3-menu .yui3-menu-content,
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content,
+#custommenu .yui3-menu-horizontal.javascript-disabled .yui3-menu-content ul {background-color:#fff555;border-color:#fc8f02;}
+#custommenu .yui3-menu .yui3-menuitem-content,
+#custommenu .yui3-menu .yui3-menu .yui3-menuitem-content {cursor:pointer;}
+#custommenu .yui3-menu .yui3-menu-label-menuvisible,
+#custommenu .yui3-menu .yui3-menuitem-active {background-color:#fff888;}
+#custommenu .yui3-menu-horizontal.javascript-disabled a {color:inherit;}
+#custommenu .yui3-menu-horizontal.javascript-disabled a:hover {color:blue;text-decoration:none;}
+
+/* Dock
+-----------------------------*/
+body.has_dock {margin:0;}
+#dock {left:5%;margin-left:-29px;border-width:0;background-color:transparent;}
+#dock .controls {bottom:auto;background-color:#fc8f02;}
+#dock .dockeditem_container {position:relative;}
+#dock .dockeditem.firstdockitem {margin-top:50px;}
+#dock .dockeditem {background-color:#fff;padding:2px;padding-right:0px;}
+#dock .dockedtitle {border-width:1px;border-color: #fc8f02;}
+#dock .dockedtitle h2 {margin:0;padding:10px 3px;}
+#dock .dockedtitle.activeitem {background-color:#f9c14b;width:35px;}
+#dockeditempanel {background-color:#f9c14b;margin-left:5px;}
+#dockeditempanel .dockeditempanel_content {background-color:#fff888;margin:0 3px;position:relative;top:-3px;min-height:100px;border-color:#6f6856;}
+#dockeditempanel .dockeditempanel_hd {background-image:url([[pix:theme|headingblock2]]);border-width:0;}
+#dockeditempanel .dockeditempanel_hd h2 {float:left;margin:0px 0px 0px 25px;font-size:1em;color:#000;}
+
+
+/* Core: ProfileBlock
+----------------------------*/
+
+#profileblock {float:right;text-align:center;max-width:420px;}
+#profilepic {float:right;margin:8px;width:75px;height:75px;border:2px solid #000066;}
+#profilename {background-color: transparent;text-align:center;width: 285px;margin:10px 10px 0px 20px;float:center;}
+.profilename, .profilename a {background-color:transparent;color:#000;font-size:1.1em;letter-spacing: 0px;text-decoration:none;font-weight:bold;margin-right:5px;}
+.profilename, .profilename a:hover {background-color:transparent;color:#f12711;text-decoration:none;}
+#profileoptions {text-align:center;width:320px;margin-right:3px;margin-top:5px;float:center;}
+#profileoptions ul li {padding-left:5px;padding-right:5px;background-color:#fc8f02;border:1px solid #000066;display:inline;margin-right:5px;float:center;}
+.profileoptions {background-color:transparent;color:#2f2f2f;text-decoration:none;letter-spacing:0px;}
+.profileoptions, .profileoptions a {background-color:transparent;color:#ffffff;}
+.profileoptions a:hover {background-color:transparent;color:#f12711;text-decoration:none;}
+
+
