@@ -125,8 +125,8 @@ class page_requirements_manager {
 
         // set up some loader options
         if (debugging('', DEBUG_DEVELOPER)) {
-            $this->yui3loader->filter = YUI_DEBUG; // alternatively we could use just YUI_RAW here
-            $this->yui2loader->filter = YUI_DEBUG; // alternatively we could use just YUI_RAW here
+            $this->yui3loader->filter = YUI_RAW; // for more detailed logging info use YUI_DEBUG here
+            $this->yui2loader->filter = YUI_RAW; // for more detailed logging info use YUI_DEBUG here
         } else {
             $this->yui3loader->filter = null;
             $this->yui2loader->filter = null;
@@ -724,7 +724,7 @@ class page_requirements_manager {
             // Set Y's config.gallery to the version
             $jscode = 'Y.config.gallery='.json_encode($galleryversion).';';
         }
-        $jscode .= 'Y.use('.join(',', array_map('json_encode', $modules)).',function() {'.js_writer::function_call($function, $arguments).'})';
+        $jscode .= 'Y.use('.join(',', array_map('json_encode', $modules)).',function() {'.js_writer::function_call($function, $arguments).'});';
         if ($ondomready) {
             $jscode = "Y.on('domready', function() { $jscode });";
         }

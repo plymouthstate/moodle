@@ -937,6 +937,8 @@ class global_navigation extends navigation_node {
     protected $rootnodes = array();
     /** @var bool */
     protected $showemptysections = false;
+    /** @var bool */
+    protected $showcategories = null;
     /** @var array */
     protected $extendforuser = array();
     /** @var navigation_cache */
@@ -1055,14 +1057,9 @@ class global_navigation extends navigation_node {
             $limit = $CFG->navcourselimit;
         }
 
-        if (!empty($CFG->navshowcategories) && $DB->count_records('course_categories') == 1) {
-            // There is only one category so we don't want to show categories
-            $CFG->navshowcategories = false;
-        }
-
         $mycourses = enrol_get_my_courses(NULL, 'visible DESC,sortorder ASC', $limit);
         $showallcourses = (count($mycourses) == 0 || !empty($CFG->navshowallcourses));
-        $showcategories = ($showallcourses && !empty($CFG->navshowcategories));
+        $showcategories = ($showallcourses && $this->show_categories());
         $issite = ($this->page->course->id != SITEID);
         $ismycourse = (array_key_exists($this->page->course->id, $mycourses));
 
@@ -1159,13 +1156,17 @@ class global_navigation extends navigation_node {
                 // Load the course associated with the page into the navigation
                 $coursenode = $this->load_course($course);
 
+                // If the course wasn't added then don't try going any further.
+                if (!$coursenode) {
+                    $canviewcourseprofile = false;
+                    break;
+                }
+
                 // If the user is not enrolled then we only want to show the
                 // course node and not populate it.
                 $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
                 if (!can_access_course($coursecontext)) {
-                    if ($coursenode) {
-                        $coursenode->make_active();
-                    }
+                    $coursenode->make_active();
                     $canviewcourseprofile = false;
                     break;
                 }
@@ -1222,6 +1223,13 @@ class global_navigation extends navigation_node {
                     }
                     // Load the course associated with the user into the navigation
                     $coursenode = $this->load_course($course);
+
+                    // If the course wasn't added then don't try going any further.
+                    if (!$coursenode) {
+                        $canviewcourseprofile = false;
+                        break;
+                    }
+
                     // If the user is not enrolled then we only want to show the
                     // course node and not populate it.
                     $coursecontext = get_context_instance(CONTEXT_COURSE, $course->id);
@@ -1304,6 +1312,20 @@ class global_navigation extends navigation_node {
         }
         return true;
     }
+
+    /**
+     * Returns true is courses should be shown within categories on the navigation.
+     *
+     * @return bool
+     */
+    protected function show_categories() {
+        global $CFG, $DB;
+        if ($this->showcategories === null) {
+            $this->showcategories = !empty($CFG->navshowcategories) && $DB->count_records('course_categories') > 1;
+        }
+        return $this->showcategories;
+    }
+
     /**
      * Checks the course format to see whether it wants the navigation to load
      * additional information for the course.
@@ -1395,7 +1417,7 @@ class global_navigation extends navigation_node {
         $coursestoload = array();
         if (empty($categoryid)) { // can be 0
             // We are going to load all of the first level categories (categories without parents)
-            $categories = $DB->get_records('course_categories', array('parent'=>'0'), 'sortorder');
+            $categories = $DB->get_records('course_categories', array('parent'=>'0'), 'sortorder ASC, id ASC');
         } else if (array_key_exists($categoryid, $this->addedcategories)) {
             // The category itself has been loaded already so we just need to ensure its subcategories
             // have been loaded
@@ -1406,13 +1428,13 @@ class global_navigation extends navigation_node {
                           FROM {course_categories} cc
                          WHERE (parent = :categoryid OR parent = 0) AND
                                parent {$sql}
-                      ORDER BY sortorder";
+                      ORDER BY depth DESC, sortorder ASC, id ASC";
             } else {
                 $sql = "SELECT *
                           FROM {course_categories} cc
                          WHERE parent = :categoryid AND
                                parent {$sql}
-                      ORDER BY sortorder";
+                      ORDER BY depth DESC, sortorder ASC, id ASC";
             }
             $params['categoryid'] = $categoryid;
             $categories = $DB->get_records_sql($sql, $params);
@@ -1451,7 +1473,11 @@ class global_navigation extends navigation_node {
                     if (!array_key_exists($catid, $this->addedcategories)) {
                         // This category isn't in the navigation yet so add it.
                         $subcategory = $categories[$catid];
-                        if (array_key_exists($subcategory->parent, $this->addedcategories)) {
+                        if ($subcategory->parent == '0') {
+                            // Yay we have a root category - this likely means we will now be able
+                            // to add categories without problems.
+                            $this->add_category($subcategory, $this->rootnodes['courses']);
+                        } else if (array_key_exists($subcategory->parent, $this->addedcategories)) {
                             // The parent is in the category (as we'd expect) so add it now.
                             $this->add_category($subcategory, $this->addedcategories[$subcategory->parent]);
                             // Remove the category from the categories array.
@@ -2122,7 +2148,7 @@ class global_navigation extends navigation_node {
         }
 
         if (!$ismycourse && !$issite && !empty($course->category)) {
-            if (!empty($CFG->navshowcategories)) {
+            if ($this->show_categories()) {
                 // We need to load the category structure for this course
                 $this->load_all_categories($course->category);
             }
@@ -2170,14 +2196,14 @@ class global_navigation extends navigation_node {
      * @param stdClass $course
      * @return bool
      */
-    public function add_course_essentials(navigation_node $coursenode, stdClass $course) {
+    public function add_course_essentials($coursenode, stdClass $course) {
         global $CFG;
 
         if ($course->id == SITEID) {
             return $this->add_front_page_course_essentials($coursenode, $course);
         }
 
-        if ($coursenode == false || $coursenode->get('participants', navigation_node::TYPE_CONTAINER)) {
+        if ($coursenode == false || !($coursenode instanceof navigation_node) || $coursenode->get('participants', navigation_node::TYPE_CONTAINER)) {
             return true;
         }
 

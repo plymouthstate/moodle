@@ -1060,7 +1060,7 @@ function forum_make_mail_html($course, $cm, $forum, $discussion, $post, $userfro
     }
 
     if (!isset($userto->canpost[$discussion->id])) {
-        $canreply = forum_user_can_post($forum, $discussion, $userto);
+        $canreply = forum_user_can_post($forum, $discussion, $userto, $cm, $course);
     } else {
         $canreply = $userto->canpost[$discussion->id];
     }
@@ -6954,7 +6954,7 @@ function forum_discussion_update_last_post($discussionid) {
  * @return array
  */
 function forum_get_view_actions() {
-    return array('view discussion','search','forum','forums','subscribers');
+    return array('view discussion', 'search', 'forum', 'forums', 'subscribers', 'view forum');
 }
 
 /**

@@ -3,6 +3,9 @@
  */
 input[type=text],input[type=password],textarea{width:auto;}
 
+/* Fix for YUI overriding styles */
+strong{font-style:inherit;}em{font-weight:inherit;}
+
 /**
  * General
  */
@@ -25,8 +28,12 @@ a.dimmed,
 a.dimmed:link,
 a.dimmed:visited,
 a.dimmed_text,
+a.dimmed_text:link,
+a.dimmed_text:visited,
 .dimmed_text,
 .dimmed_text a,
+.dimmed_text a:link,
+.dimmed_text a:visited,
 .dimmed_category,
 .dimmed_category a {color:#AAAAAA;}
 
