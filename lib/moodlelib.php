@@ -1125,7 +1125,9 @@ function unset_config($name, $plugin=NULL) {
 function unset_all_config_for_plugin($plugin) {
     global $DB;
     $DB->delete_records('config_plugins', array('plugin' => $plugin));
-    $DB->delete_records_select('config', 'name LIKE ?', array($plugin . '_%'));
+    $like = $DB->sql_like('name', '?', true, true, false, '|');
+    $params = array($DB->sql_like_escape($plugin.'_', '|') . '%');
+    $DB->delete_records_select('config', $like, $params);
     return true;
 }
 
@@ -3583,8 +3585,12 @@ function authenticate_user_login($username, $password) {
                 $user = update_user_record($username);
             }
         } else {
-            // if user not found, create him
-            $user = create_user_record($username, $password, $auth);
+            // if user not found and user creation is not disabled, create it
+            if (empty($CFG->authpreventaccountcreation)) {
+                $user = create_user_record($username, $password, $auth);
+            } else {
+                continue;
+            }
         }
 
         $authplugin->sync_roles($user);

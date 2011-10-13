@@ -57,6 +57,8 @@ $string['antivirus'] = 'Anti-Virus';
 $string['appearance'] = 'Appearance';
 $string['aspellpath'] = 'Path to aspell';
 $string['authentication'] = 'Authentication';
+$string['authpreventaccountcreation'] = 'Prevent account creation when authenticating';
+$string['authpreventaccountcreation_help'] = 'When a user authenticates, an account on the site is automatically created if it doesn\'t yet exist. If an external database, such as LDAP, is used for authentication, but you wish to restrict access to the site to users with an existing account only, then this option should be enabled. New accounts will need to be created manually or via the upload users feature. Note that this setting doesn\'t apply to MNet authentication.';
 $string['authsettings'] = 'Manage authentication';
 $string['autolang'] = 'Language autodetect';
 $string['autologinguests'] = 'Auto-login guests';
@@ -438,7 +440,7 @@ $string['denyemailaddresses'] = 'Denied email domains';
 $string['development'] = 'Development';
 $string['devicedetectregex'] = 'Device detection regular expressions';
 $string['devicedetectregex_desc'] = '<p>By default, Moodle can detect devices of the type default (desktop PCs, laptops, etc), mobile (phones and small hand held devices), tablet (iPads, Android tablets) and legacy (Internet Explorer 6 users).  The theme selector can be used to apply separate themes to all of these.  This setting allows regular expressions that allow the detection of extra device types (these take precedence over the default types).</p>
-<p>For example, you could enter the regular expression \'/(MIDP-1.0|Maemo|Windows CE)/\' to detect some commonly used feasture phones add the return value \'featurephone\'.  This adds \'featurephone\' on the theme selector that would allow you to add a theme that would be used on these devices.  Other phones would still use the theme selected for the mobile device type.</p>';
+<p>For example, you could enter the regular expression \'/(MIDP-1.0|Maemo|Windows CE)/\' to detect some commonly used feature phones add the return value \'featurephone\'.  This adds \'featurephone\' on the theme selector that would allow you to add a theme that would be used on these devices.  Other phones would still use the theme selected for the mobile device type.</p>';
 $string['devicedetectregexexpression'] = 'Regular expression';
 $string['devicedetectregexvalue'] = 'Return value';
 $string['devicetype'] = 'Device type';

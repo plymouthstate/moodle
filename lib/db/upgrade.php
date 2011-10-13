@@ -6051,11 +6051,12 @@ WHERE gradeitemid IS NOT NULL AND grademax IS NOT NULL");
          // Define field secret to be added to registration_hubs
         $table = new xmldb_table('registration_hubs');
         $field = new xmldb_field('secret', XMLDB_TYPE_CHAR, '255', null, null, null,
-                $CFG->siteidentifier, 'confirmed');
+                null, 'confirmed');
 
-        // Conditionally launch add field secret
+        // Conditionally launch add field secret  and set its value
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
+            $DB->set_field('registration_hubs', 'secret', $CFG->siteidentifier);
         }
 
         // Main savepoint reached
@@ -6656,9 +6657,28 @@ FROM
         upgrade_main_savepoint(true, 2011070101.04);
     }
 
+    if ($oldversion < 2011070101.09) {
+        // Changing the default of field secret on table registration_hubs to NULL
+        $table = new xmldb_table('registration_hubs');
+        $field = new xmldb_field('secret', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'confirmed');
+
+        // Launch change of default for field secret
+        $dbman->change_field_default($table, $field);
+
+        // Main savepoint reached
+        upgrade_main_savepoint(true, 2011070101.09);
+    }
+
+    if ($oldversion < 2011070101.10) {
+        //preference not required since 2.0
+        $DB->delete_records('user_preferences', array('name'=>'message_showmessagewindow'));
+
+        //re-introducing emailstop. check that its turned off so people dont suddenly stop getting notifications
+        $DB->set_field('user', 'emailstop', 0, array('emailstop' => 1));
+
+        upgrade_main_savepoint(true, 2011070101.10);
+    }
 
     return true;
 }
 
-
-//TODO: AFTER 2.0 remove the column user->emailstop and the user preference "message_showmessagewindow"

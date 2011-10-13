@@ -230,19 +230,19 @@ class MoodleQuickForm_editor extends HTML_QuickForm_element {
         //Apply editor validation if required field
         $editorrules = '';
         if (!is_null($this->getAttribute('onblur')) && !is_null($this->getAttribute('onchange'))) {
-            $editorrules = 'onblur="'.htmlspecialchars($this->getAttribute('onblur')).'" onchange="'.htmlspecialchars($this->getAttribute('onchange')).'"';
+            $editorrules = ' onblur="'.htmlspecialchars($this->getAttribute('onblur')).'" onchange="'.htmlspecialchars($this->getAttribute('onchange')).'"';
         }
         $str .= '<div><textarea id="'.$id.'" name="'.$elname.'[text]" rows="'.$rows.'" cols="'.$cols.'"'.$editorrules.'>';
         $str .= s($text);
         $str .= '</textarea></div>';
 
         $str .= '<div>';
-        $str .= '<select name="'.$elname.'[format]">';
-        foreach ($formats as $key=>$desc) {
-            $selected = ($format == $key) ? 'selected="selected"' : '';
-            $str .= '<option value="'.s($key).'" '.$selected.'>'.$desc.'</option>';
+        if (count($formats)>1) {
+            $str.= html_writer::select($formats, $elname.'[format]', $format, false);
+        } else {
+            $str.= html_writer::empty_tag('input',
+                    array('name'=>$elname.'[format]', 'type'=> 'hidden', 'value' => array_pop(array_keys($formats))));
         }
-        $str .= '</select>';
         $str .= '</div>';
 
         // during moodle installation, user area doesn't exist

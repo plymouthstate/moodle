@@ -42,6 +42,8 @@ $string['defaultformat_help'] = 'This setting determines the default format used
 * Creole - A common wiki markup language for which a small edit toolbar is available
 * Nwiki - Mediawiki-like markup language used in the contributed Nwiki module';
 $string['deletecomment'] = 'Deleting comment';
+$string['deletecommentcheck'] = 'Delete comment';
+$string['deletecommentcheckfull'] = 'Are you sure you want to delete the comment?';
 $string['deleteupload'] = 'Delete';
 $string['deletedbegins'] = 'Deleted begins';
 $string['deletedends'] = 'Deleted ends';
@@ -91,6 +93,7 @@ $string['insertimage'] = 'Insert an image...';
 $string['insertimage_help'] = 'This drop-down list will insert an image to the wiki editor. If you need to add more images to the wiki, please use "Files" tab.';
 $string['invalidlock'] = 'This page is already locked by another user.';
 $string['invalidparameters'] = 'Invalid parameters have been given.';
+$string['invalidsection'] = 'Invalid section.';
 $string['invalidsesskey'] = 'The given sesskey is not valid. Please resend data again';
 $string['individualpagedoesnotexist'] = 'Individual wiki page doesn\'t exist';
 $string['javascriptdisabledlocks'] = 'Javascript is disabled on your browser and locks are not working. The changes you make may not be saved correctly.';

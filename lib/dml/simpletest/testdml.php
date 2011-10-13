@@ -503,6 +503,28 @@ class dml_test extends UnitTestCase {
         $this->assertIdentical(array_values($params), array_values($inparams));
     }
 
+    public function test_strtok() {
+        // strtok was previously used by bound emulation, make sure it is not used any more
+        $DB = $this->tdb;
+        $dbman = $this->tdb->get_manager();
+
+        $table = $this->get_test_table();
+        $tablename = $table->getName();
+
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('course', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0');
+        $table->add_field('name', XMLDB_TYPE_CHAR, '255', null, null, null, 'lala');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+        $dbman->create_table($table);
+
+        $str = 'a?b?c?d';
+        $this->assertIdentical(strtok($str, '?'), 'a');
+
+        $DB->get_records($tablename, array('id'=>1));
+
+        $this->assertIdentical(strtok('?'), 'b');
+    }
+
     public function test_tweak_param_names() {
         // Note the tweak_param_names() method is only available in the oracle driver,
         // hence we look for expected results indirectly, by testing various DML methods
@@ -705,6 +727,11 @@ class dml_test extends UnitTestCase {
         $table->add_field('description', XMLDB_TYPE_TEXT, 'small', null, null, null, null);
         $table->add_field('enumfield', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, 'test2');
         $table->add_field('onenum', XMLDB_TYPE_NUMBER, '10,2', null, null, null, 200);
+        $table->add_field('onefloat', XMLDB_TYPE_FLOAT, '10,2', null, null, null, 300);
+        $table->add_field('anotherfloat', XMLDB_TYPE_FLOAT, null, null, null, null, 400);
+        $table->add_field('negativedfltint', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '-1');
+        $table->add_field('negativedfltnumber', XMLDB_TYPE_NUMBER, '10', null, XMLDB_NOTNULL, null, '-2');
+        $table->add_field('negativedfltfloat', XMLDB_TYPE_FLOAT, '10', null, XMLDB_NOTNULL, null, '-3');
         $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
         $dbman->create_table($table);
 
@@ -749,9 +776,38 @@ class dml_test extends UnitTestCase {
         $field = $columns['onenum'];
         $this->assertEqual('N', $field->meta_type);
         $this->assertFalse($field->auto_increment);
+        $this->assertEqual(10, $field->max_length);
+        $this->assertEqual(2, $field->scale);
         $this->assertTrue($field->has_default);
         $this->assertEqual(200.0, $field->default_value);
         $this->assertFalse($field->not_null);
+
+        $field = $columns['onefloat'];
+        $this->assertEqual('N', $field->meta_type);
+        $this->assertFalse($field->auto_increment);
+        $this->assertTrue($field->has_default);
+        $this->assertEqual(300.0, $field->default_value);
+        $this->assertFalse($field->not_null);
+
+        $field = $columns['anotherfloat'];
+        $this->assertEqual('N', $field->meta_type);
+        $this->assertFalse($field->auto_increment);
+        $this->assertTrue($field->has_default);
+        $this->assertEqual(400.0, $field->default_value);
+        $this->assertFalse($field->not_null);
+
+        // Test negative defaults in numerical columns
+        $field = $columns['negativedfltint'];
+        $this->assertTrue($field->has_default);
+        $this->assertEqual(-1, $field->default_value);
+
+        $field = $columns['negativedfltnumber'];
+        $this->assertTrue($field->has_default);
+        $this->assertEqual(-2, $field->default_value);
+
+        $field = $columns['negativedfltfloat'];
+        $this->assertTrue($field->has_default);
+        $this->assertEqual(-3, $field->default_value);
 
         for ($i = 0; $i < count($columns); $i++) {
             if ($i == 0) {
