@@ -210,8 +210,8 @@ if (empty($CFG->filepermissions)) {
 umask(0000);
 
 // exact version of currently used yui2 and 3 library
-$CFG->yui2version = '2.8.2';
-$CFG->yui3version = '3.2.0';
+$CFG->yui2version = '2.9.0';
+$CFG->yui3version = '3.4.1';
 
 
 // special support for highly optimised scripts that do not need libraries and DB connection
@@ -663,6 +663,9 @@ if (isset($_SERVER['PHP_SELF'])) {
     unset($phppos);
 }
 
+// initialise ME's - this must be done BEFORE starting of session!
+initialise_fullme();
+
 // init session prevention flag - this is defined on pages that do not want session
 if (CLI_SCRIPT) {
     // no sessions in CLI scripts possible
@@ -684,10 +687,6 @@ if (CLI_SCRIPT) {
 session_get_instance();
 $SESSION = &$_SESSION['SESSION'];
 $USER    = &$_SESSION['USER'];
-
-// initialise ME's
-// This must presently come AFTER $USER has been set up.
-initialise_fullme();
 
 // Late profiling, only happening if early one wasn't started
 if (!empty($CFG->profilingenabled)) {
