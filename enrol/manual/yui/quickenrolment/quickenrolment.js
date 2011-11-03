@@ -114,9 +114,6 @@ YUI.add('moodle-enrol_manual-quickenrolment', function(Y) {
                         .append(create('<div class="'+CSS.CLOSEBTN+'"></div>')
                             .append(create('<input type="button" value="'+M.str.enrol.finishenrollingusers+'" />'))
                         )
-                        .append(Y.Node.create('<div class="'+CSS.CLOSEBTN+'"></div>')
-                            .append(Y.Node.create('<input type="button" value="'+M.str.enrol.finishenrollingusers+'" />'))
-                        )
                     )
                 )
             );
