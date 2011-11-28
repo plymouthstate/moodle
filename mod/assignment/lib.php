@@ -756,9 +756,16 @@ class assignment_base {
                 $offset = required_param('offset', PARAM_INT);
                 $nextid = required_param('nextid', PARAM_INT);
                 $id = required_param('id', PARAM_INT);
-                $offset = (int)$offset+1;
-                //$this->display_submission($offset+1 , $nextid);
-                redirect('submissions.php?id='.$id.'&userid='. $nextid . '&mode=single&offset='.$offset);
+                $filter = optional_param('filter', self::FILTER_ALL, PARAM_INT);
+
+                if ($mode == 'next' || $filter !== self::FILTER_REQUIRE_GRADING) {
+                    $offset = (int)$offset+1;
+                }
+                $redirect = new moodle_url('submissions.php',
+                        array('id' => $id, 'offset' => $offset, 'userid' => $nextid,
+                        'mode' => 'single', 'filter' => $filter));
+
+                redirect($redirect);
                 break;
 
             case 'singlenosave':
@@ -959,7 +966,7 @@ class assignment_base {
         /// Get all ppl that can submit assignments
 
         $currentgroup = groups_get_activity_group($cm);
-        $users = get_enrolled_users($context, 'mod/assignment:view', $currentgroup, 'u.id');
+        $users = get_enrolled_users($context, 'mod/assignment:submit', $currentgroup, 'u.id');
         if ($users) {
             $users = array_keys($users);
             // if groupmembersonly used, remove users who are not in any group
@@ -982,7 +989,10 @@ class assignment_base {
             $userfields = user_picture::fields('u', array('lastaccess'));
             $select = "SELECT $userfields,
                               s.id AS submissionid, s.grade, s.submissioncomment,
-                              s.timemodified, s.timemarked ";
+                              s.timemodified, s.timemarked,
+                              CASE WHEN s.timemarked > 0 AND s.timemarked >= s.timemodified THEN 1
+                                   ELSE 0 END AS status ";
+
             $sql = 'FROM {user} u '.
                    'LEFT JOIN {assignment_submissions} s ON u.id = s.userid
                    AND s.assignment = '.$this->assignment->id.' '.
@@ -995,8 +1005,6 @@ class assignment_base {
 
             if (is_array($auser) && count($auser)>1) {
                 $nextuser = next($auser);
-            /// Calculate user status
-                $nextuser->status = ($nextuser->timemarked > 0) && ($nextuser->timemarked >= $nextuser->timemodified);
                 $nextid = $nextuser->id;
             }
         }
@@ -1316,7 +1324,10 @@ class assignment_base {
         if (!empty($users)) {
             $select = "SELECT $ufields,
                               s.id AS submissionid, s.grade, s.submissioncomment,
-                              s.timemodified, s.timemarked ";
+                              s.timemodified, s.timemarked,
+                              CASE WHEN s.timemarked > 0 AND s.timemarked >= s.timemodified THEN 1
+                                   ELSE 0 END AS status ";
+
             $sql = 'FROM {user} u '.
                    'LEFT JOIN {assignment_submissions} s ON u.id = s.userid
                     AND s.assignment = '.$this->assignment->id.' '.
@@ -1346,8 +1357,6 @@ class assignment_base {
                             $locked_overridden = 'overridden';
                         }
 
-                    /// Calculate user status
-                        $auser->status = ($auser->timemarked > 0) && ($auser->timemarked >= $auser->timemodified);
                         $picture = $OUTPUT->user_picture($auser);
 
                         if (empty($auser->submissionid)) {
@@ -1764,7 +1773,7 @@ class assignment_base {
                 $info->username = fullname($user, true);
                 $info->assignment = format_string($this->assignment->name,true);
                 $info->url = $CFG->wwwroot.'/mod/assignment/submissions.php?id='.$this->cm->id;
-                $info->timeupdated = strftime('%c',$submission->timemodified);
+                $info->timeupdated = userdate($submission->timemodified, '%c', $teacher->timezone);
 
                 $postsubject = $strsubmitted.': '.$info->username.' -> '.$this->assignment->name;
                 $posttext = $this->email_teachers_text($info);

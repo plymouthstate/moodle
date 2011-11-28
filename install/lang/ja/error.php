@@ -28,9 +28,11 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $string['cannotcreatelangdir'] = 'langディレクトリを作成できません。';
 $string['cannotcreatetempdir'] = 'tempディレクトリを作成できません。';
-$string['cannotdownloadcomponents'] = 'コンポーネットをダウンロードできません。';
+$string['cannotdownloadcomponents'] = 'コンポーネントをダウンロードできません。';
 $string['cannotdownloadzipfile'] = 'ZIPファイルをダウンロードできません。';
 $string['cannotfindcomponent'] = 'コンポーネントを見つけることができません。';
 $string['cannotsavemd5file'] = 'mp5ファイルを保存できません。';

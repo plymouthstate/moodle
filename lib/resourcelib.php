@@ -233,6 +233,8 @@ function resourcelib_embed_mp3($fullurl, $title, $clicktoopen) {
 
     if ($fullurl instanceof moodle_url) {
         $fullurl = $fullurl->out(false);
+    } else {
+        $fullurl = str_replace('&amp;', '&', $fullurl);
     }
 
     $id = 'resource_mp3_'.time(); //we need something unique because it might be stored in text cache
@@ -259,6 +261,8 @@ function resourcelib_embed_flashvideo($fullurl, $title, $clicktoopen) {
 
     if ($fullurl instanceof moodle_url) {
         $fullurl = $fullurl->out(false);
+    } else {
+        $fullurl = str_replace('&amp;', '&', $fullurl);
     }
 
     $id = 'resource_flv_'.time(); //we need something unique because it might be stored in text cache
@@ -276,7 +280,7 @@ function resourcelib_embed_flashvideo($fullurl, $title, $clicktoopen) {
     }
     $output = '<div class="resourcecontent resourceflv">';
     $output .= html_writer::tag('span', $clicktoopen, array('id'=>$id, 'class'=>'resourcemediaplugin resourcemediaplugin_flv', 'title'=>$title));
-    $output .= html_writer::script(js_writer::function_call('M.util.add_video_player', array($id, $fullurl, $width, $height, $autosize)));
+    $output .= html_writer::script(js_writer::function_call('M.util.add_video_player', array($id, rawurlencode($fullurl), $width, $height, $autosize)));
     $output .= '</div>';
 
     return $output;

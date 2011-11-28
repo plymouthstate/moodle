@@ -121,7 +121,7 @@
 /*all courses view*/
 #page-course-index .categorylist .course.clearfloat { height: auto; }
 
-/** 
+/**
 * Overide for RTL layout
 */
 .dir-rtl .coursebox .info {float: right; text-align: right;}

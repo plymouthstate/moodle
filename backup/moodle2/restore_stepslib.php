@@ -802,7 +802,14 @@ class restore_groups_structure_step extends restore_structure_step {
 
         $data->groupingid = $this->get_new_parentid('grouping'); // Use new parentid
         $data->groupid    = $this->get_mappingid('group', $data->groupid); // Get from mappings
-        $DB->insert_record('groupings_groups', $data);  // No need to set this mapping (no child info nor files)
+
+        $params = array();
+        $params['groupingid'] = $data->groupingid;
+        $params['groupid']    = $data->groupid;
+
+        if (!$DB->record_exists('groupings_groups', $params)) {
+            $DB->insert_record('groupings_groups', $data);  // No need to set this mapping (no child info nor files)
+        }
     }
 
     protected function after_execute() {
@@ -1099,7 +1106,6 @@ class restore_course_structure_step extends restore_structure_step {
         global $CFG, $DB;
 
         $data = (object)$data;
-        $oldid = $data->id; // We'll need this later
 
         $fullname  = $this->get_setting_value('course_fullname');
         $shortname = $this->get_setting_value('course_shortname');
@@ -1112,7 +1118,13 @@ class restore_course_structure_step extends restore_structure_step {
         $data->id = $this->get_courseid();
         $data->fullname = $fullname;
         $data->shortname= $shortname;
-        $data->idnumber = '';
+
+        $context = get_context_instance_by_id($this->task->get_contextid());
+        if (has_capability('moodle/course:changeidnumber', $context, $this->task->get_userid())) {
+            $data->idnumber = '';
+        } else {
+            unset($data->idnumber);
+        }
 
         // Only restrict modules if original course was and target site too for new courses
         $data->restrictmodules = $data->restrictmodules && !empty($CFG->restrictmodulesfor) && $CFG->restrictmodulesfor == 'all';

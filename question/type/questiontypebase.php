@@ -702,6 +702,16 @@ class question_type {
         $question->createdby = $questiondata->createdby;
         $question->modifiedby = $questiondata->modifiedby;
 
+        //Fill extra question fields values
+        $extraquestionfields = $this->extra_question_fields();
+        if (is_array($extraquestionfields)) {
+            //omit table name
+            array_shift($extraquestionfields);
+            foreach($extraquestionfields as $field) {
+                $question->$field = $questiondata->options->$field;
+            }
+        }
+
         $this->initialise_question_hints($question, $questiondata);
     }
 
@@ -995,10 +1005,11 @@ class question_type {
             array_shift($extraanswersfields);
         }
         foreach ($question->options->answers as $answer) {
+            // TODO this should be re-factored to use $format->write_answer().
             $percent = 100 * $answer->fraction;
-            $expout .= "    <answer fraction=\"$percent\">\n";
+            $expout .= "    <answer fraction=\"$percent\" {$format->format($answer->answerformat)}>\n";
             $expout .= $format->writetext($answer->answer, 3, false);
-            $expout .= "      <feedback>\n";
+            $expout .= "      <feedback {$format->format($question->feedbackformat)}>\n";
             $expout .= $format->writetext($answer->feedback, 4, false);
             $expout .= "      </feedback>\n";
             if (is_array($extraanswersfields)) {

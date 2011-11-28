@@ -28,11 +28,13 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 $string['admindirname'] = '管理目录';
 $string['availablelangs'] = '可用的语言包';
 $string['chooselanguagehead'] = '选择一种语言';
 $string['chooselanguagesub'] = '请选择在安装过程中使用的语言。这个语言也会成为网站的缺省语言，不过以后可以随时更改。';
-$string['clialreadyinstalled'] = '文件config.php已存在。如果您想升级网站，请使用admin/cli/upgrade.php';
+$string['clialreadyinstalled'] = '文件config.php已存在。如果您想升级网站，请使用admin/cli/upgrade.php。';
 $string['cliinstallheader'] = 'Moodle {$a}命令行安装程序';
 $string['databasehost'] = '数据库主机';
 $string['databasename'] = '数据库名';
