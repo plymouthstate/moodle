@@ -1,0 +1,19 @@
+/***
+ *** Message
+ ***/
+
+table.message_search_results td {
+  border-color:#000000;
+}
+
+.message .author {
+  color: #999999;
+}
+
+.message .time {
+  color: #999999;
+}
+
+.message .content {
+}
+
