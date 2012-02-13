@@ -14,7 +14,7 @@ M.alter_guest_policy = {
 
 	mod_buttons: function( pageid ) {
 		Y = this.Y;
-		Y.one('.noticebox').set('hidden', true);
+		Y.one('.noticebox').setStyle('visibility', 'hidden');
 		var notice_msg = Y.one('#notice p');
 		notice_msg.set('text', 'Moodle has recognized you as a guest. If this is correct, select the “Continue as Guest” button.');
 		var el = Y.Node.create('<p>If you are a PSU user, select the “Login” button to enter your username and password.</p>');
@@ -24,7 +24,7 @@ M.alter_guest_policy = {
 			if( this.get('action').indexOf('policy.php') != -1 ) {
 				this.one('input').set('value', 'Continue as Guest');
 			} else {
-				this.set('action', 'http://www.plymouth.edu/webapp/courses2/login/index.php');
+				this.set('action', '/webapp/courses2/login/index.php');
 				this.one('input').set('value', 'Login');
 			}
 		});
