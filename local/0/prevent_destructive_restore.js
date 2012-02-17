@@ -32,5 +32,5 @@ M.local_psu_mod = {
 				Y.one('#' + to_toggle.get('id') + ' > option').set('selected','selected');
 			}
 		});
-	},
+	}
 }

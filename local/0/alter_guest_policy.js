@@ -15,6 +15,7 @@ M.alter_guest_policy = {
 	mod_buttons: function( pageid ) {
 		Y = this.Y;
 		Y.one('.noticebox').setStyle('visibility', 'hidden');
+		Y.one('.noticebox').setStyle('display', 'none');
 		var notice_msg = Y.one('#notice p');
 		notice_msg.set('text', 'Moodle has recognized you as a guest. If this is correct, select the “Continue as Guest” button.');
 		var el = Y.Node.create('<p>If you are a PSU user, select the “Login” button to enter your username and password.</p>');
