@@ -29,9 +29,7 @@ html a:hover,body a:hover {
     color: [[setting:linkcolor]];
 }
 
-td.maincalendar table.calendartable th, table.rolecap .header,.generaltable .header,.forumheaderlist .header,.files .header,.editcourse .header,.logtable .header,#attempts .header,table#categoryquestions th {
-    background: [[setting:linkcolor]] url([[pix:theme|shadtop]]) repeat-x bottom left !important;
-}
+
 /** remove text decoration from some links **/
 
 div.yui3-widget-bd a, .tabtree li a, .block div.content a, .unlist a, .categorybox a, .course_category_tree a, .section a {
@@ -247,9 +245,10 @@ span.arrow.sep {
     -webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
-	-webkit-box-shadow: 0px 1px 3px #ccc;
-	-moz-box-shadow: -1px 1px 3px #ccc;
-	box-shadow: -1px 1px 3px #ccc;
+	-webkit-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+	-moz-box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+	box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+	margin-bottom: 5px;
 }
 
 /** Block styles **/
@@ -313,12 +312,6 @@ span.arrow.sep {
     font-size: 12px;
     font-weight: 200;
     padding: 10px 15px 15px;
-}
-
-/** extra left padding on right side blocks **/
-
-#region-post .block div.content {
-    padding-left: 20px;
 }
 
 /** some specific block styles for calendar block, login block, my profile block, etc. **/
@@ -441,66 +434,125 @@ div.yui3-widget-bd h1.helpheading {
 	width: 60%;
 	border: 0px solid #fff !important;
 	margin-left: 25px;
-	margin-top: 29px;
+	margin-top: 25px;
 }
 
 #custommenu2 * {
 	border: none !important;
 }
 
+/*overrides for custom menu. don't touch */
 /*YUI Reset */
-.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-content{ background-position: -10000px -10000px; }
+.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-content{ background-position: -10000px -10000px; border: none;
+	border-top: none;}
 
-.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label{ background-position: -10000px -10000px; }
+.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label{ background-position: -10000px -10000px; border: none;
+	border-top: none; }
 
-.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label-active,.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menuitem-active .yui3-menuitem-content,.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label-menuvisible{ background-position: -10000px -10000px; }
+.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label-active,.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menuitem-active .yui3-menuitem-content,.yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label-menuvisible{ background-position: -10000px -10000px; border: none;
+	border-top: none; }
 
 .yui3-skin-sam #page .yui3-menu-label,
-.yui3-skin-sam #page .yui3-menu .yui3-menu .yui3-menu-label { background-position: right center; }
+.yui3-skin-sam #page .yui3-menu .yui3-menu .yui3-menu-label { background-position: right center; border: none;
+	border-top: none;}
 
-.yui3-skin-sam #page .yui3-menubuttonnav .yui3-menu-label em { background-position: right center; }
+.yui3-skin-sam #page .yui3-menubuttonnav .yui3-menu-label em { background-position: right center; border: none;
+	border-top: none;}
 
-.yui3-skin-sam #page .yui3-splitbuttonnav .yui3-menu-label .yui3-menu-toggle { background-position: 3px center;	 }
+.yui3-skin-sam #page .yui3-splitbuttonnav .yui3-menu-label .yui3-menu-toggle { background-position: 3px center;	border: none;
+	border-top: none; }
 
-.yui3-skin-sam #page .yui3-splitbuttonnav .yui3-menu-label-menuvisible .yui3-menu-toggle { background-position: 0% 50%; }
+.yui3-skin-sam #page .yui3-splitbuttonnav .yui3-menu-label-menuvisible .yui3-menu-toggle { background-position: 0% 50%; border: none;
+	border-top: none;}
 
-.yui3-skin-sam #page .yui3-menu-label, .yui3-skin-sam #page .yui3-menuitem-content  {
-	color: #aaa;
-	font-weight: 300;
-	text-shadow: 1px -1px 1px #000;
-}
-
-.custom_menu_submenu .yui3-menu-label, .custom_menu_submenu .yui3-menuitem-content {
-	color: #000 !important;
-	text-shadow: none !important;
-}
-
-.yui3-skin-sam #page .yui3-menu-label.yui3-menu-label-active, .yui3-skin-sam #page .yui3-menuitem-active .yui3-menuitem-content {
-	color: #fff;
-
-}
-
-
-
-.yui3-skin-sam #page .yui3-menu-content, .yui3-skin-sam #page .yui3-menu-content, .yui3-skin-sam #page .yui3-menu .yui3-menu .yui3-menu-content, .yui3-skin-sam #page .yui3-menu-horizontal .yui3-menu-label, .yui3-skin-sam #page .yui3-menu-horizontal .yui3-menuitem-content  {
+.yui3-skin-sam #page .yui3-menu-content, .yui3-skin-sam #page .yui3-menu .yui3-menu .yui3-menu-content, .yui3-skin-sam #page .yui3-menu ul.first-of-type, .yui3-skin-sam #page .yui3-menu-horizontal ul  {
 	border: none;
+	border-top: none;
 }
 
 .yui3-skin-sam .yui3-menu-horizontal .yui3-menu-label, .yui3-skin-sam .yui3-menu-horizontal .yui3-menuitem-content {
-border-color:#808080;
-border-style:solid;
-border-width:0px 0;
+	margin: 0 0 !important;
 }
 
-#page .custom_menu_submenu {
-	border: 2px solid [[setting:maincolor]] !important;
-	background: #fff;
-	 -webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border-radius: 2px;
-	-webkit-box-shadow: 0px 1px 3px #ccc;
-	-moz-box-shadow: 0px 1px 3px #ccc;
-	box-shadow: 0px 1px 3px #ccc;
+/*end overrides for custom menu. don't touch */
+
+/* menu bar background */
+#custommenu {
+	font-size: 13px;
+	font-weight: 600;
+	background: transparent !important;
+}
+
+#custommenu * {
+	border: none ;
+}
+
+/*bar menu item */
+.yui3-menu-content li a {
+	font-size: 13px;
+	font-weight: 300;
+	line-height: 32px;
+	cursor: pointer;
+	border: none !important;
+	color: #aaa !important;
+	text-shadow: 1px -1px 1px #000;
+}
+
+/*bar menu item hover background color */
+.yui3-menu-content li:hover, div.yui3-menu.custom_menu_submenu {
+	background: [[setting:maincolor]] !important;
+	box-shadow: 1px 3px 4px  rgba(0, 0, 0, 0.25);
+}
+
+div.yui3-menu.custom_menu_submenu div.yui3-menu.custom_menu_submenu {
+	background: none !important;
+	min-width: 100px;
+}
+
+/*submenu background color */
+div.yui3-menu.custom_menu_submenu div.yui3-menu-content {
+	background: [[setting:maincolor]] !important;
+}
+
+div.yui3-menu.custom_menu_submenu div.yui3-menu-content {
+	min-width: 200px;
+	padding-bottom: 0 !important;
+}
+
+div.yui3-menu.custom_menu_submenu .yui3-menu-content li {
+	border-left: none;
+	background: none !important;
+}
+
+/*submenu link color and size */
+div.yui3-menu.custom_menu_submenu .yui3-menu-content li a {
+	font-size: 12px;
+	text-transform: none;
+	background: none !important;
+	text-decoration: none !important;
+}
+
+/*submenu hover */
+div.yui3-menu.custom_menu_submenu .yui3-menu-content li a:hover, div.yui3-menu.custom_menu_submenu li a.yui3-menu-label:hover {
+	background: [[setting:linkcolor]] !important;
+}
+
+/*custom menu, may not work in all situations */
+.custom_menu_submenu.yui3-menu-hidden {
+	opacity: 0.0;
+}
+
+.custom_menu_submenu {
+	opacity: 1.0;
+	-webkit-transition: opacity 0.3s ease-in-out;
+	-moz-transition: opacity 0.3s ease-in-out;
+	transition: opacity 0.3s ease-in-out;
+}
+
+.yui3-menu-content li:hover {
+	-moz-transition:background-color 0.3s ease-in-out;
+	-webkit-transition:background-color 0.3s ease-in-out;
+	transition:background-color 0.3s ease-in-out;
 }
 
 /** yui moodle dock bar **/
@@ -713,41 +765,23 @@ table a {
     text-decoration: none;
 }
 
-td.maincalendar table.calendartable th, table.rolecap .header,.generaltable .header,.forumheaderlist .header,.files .header,.editcourse .header,.logtable .header,#attempts .header,table#categoryquestions th {
-    font-size: 11px;
-    font-weight: 200;
-    text-decoration: none;
-    color: #fff !important;
-    border-top: 1px #ccc solid !important;
-    padding: 5px;
+/* report fixes and grade table fixes */
+.path-course-report #region-main-box #region-main .region-content, .path-course-report #page-content #region-main-box #region-post-box #region-main-wrap #region-main .region-content, .pagelayout-report .no-overflow {
+	overflow: auto;
 }
 
-table#categoryquestions th a {
-    color: #fff;
-}
-
-.generaltable .header a,.forumheaderlist .header a, th.header.questionnametext a {
-    border: none;
-    color: #fff !important;
-    font-size: 12px;
-    text-decoration: none;
-    padding: 5px;
-}
-
-tr.r1 td {
-    background-color: #f9f9f9;
-}
-
-table.rolecap td, table.rolecap th {
-    border-bottom: 1px solid #dadada;
-}
-
-table.rolecap td.risk {
-    border-left: 1px solid #dadada;
-}
+.pagelayout-report #page-content {
+    overflow: hidden;
+} 
 
 .overview-tablecontainer, .graph {
 	overflow: auto;
+}
+
+table#completion-progress {
+	display: block !important;
+    overflow: auto;
+    width: 100%;
 }
 
 #translator td.cell.lastcol {
@@ -1104,8 +1138,50 @@ div.singlebutton.forumaddnew {
   text-decoration: none;
   text-shadow: 0 1px 0px  #fff;
   font-size: 12px;
+  cursor: pointer;
 }
 
 #ebutton td input[type="submit"] {
 	margin-top: 10px;
+}
+
+#page-content #region-main-box .region-content {
+    padding: 0;
+}
+
+.path-course-view li.activity span.autocompletion, .path-course-view li.activity form.togglecompletion {
+    right: -10px;
+}
+
+.course-content .section li.activity {
+	padding: 3px 0px;
+}    
+
+/*css3 transition effects for various moodle areas */
+/*blocks */
+.gecko .block.hidden .content, .safari .block.hidden .content {
+    display: block;
+    
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 0px;
+    min-height:0px;
+    max-height:0px;
+    overflow: hidden;
+    
+    opacity: 0.0;
+    -webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.4s ease-in-out;
+	transition: all 0.4s ease-in-out;
+   }
+
+.gecko .block .content, .safari .block .content {
+	height: 100%;
+	min-height:10px;
+    max-height:5000px;
+    
+	opacity: 1.0;
+	-webkit-transition: all 0.3s ease-in-out;
+	-moz-transition: all 0.4s ease-in-out;
+	transition: all 0.4s ease-in-out;
 }
