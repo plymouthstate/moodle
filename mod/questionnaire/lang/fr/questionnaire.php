@@ -1,4 +1,4 @@
-<?PHP // $Id: questionnaire.php,v 1.4 2011/03/05 10:06:05 joseph_rezeau Exp $ 
+<?PHP // $Id$ 
 $string['action'] = 'Action';
 $string['additionalinfo'] = 'Info supplémentaire';
 $string['additionalinfo_help'] = 'Texte qui sera affiché en tête de la première page de ce questionnaire (consignes, etc.).';
@@ -141,7 +141,7 @@ $string['noteligible'] = 'Vous n\'êtes pas autorisé à répondre à ce questio
 $string['notemplatesurveys'] = 'Pas de modèles de questionnaires.';
 $string['notopen'] = 'Ce questionnaire ne sera pas disponible avant le {$a}.';
 $string['num'] = 'n°';
-$string['numberfloat'] = 'Le nombre que vous avez tapé<strong>{$a}->number</strong> a été reformaté/arrondi avec une précision de <strong>{$a}->precision</strong> chiffres après la virgule.';
+$string['numberfloat'] = 'Le nombre que vous avez tapé<strong>{$a->number}</strong> a été reformaté/arrondi avec une précision de <strong>{$a->precision}</strong> chiffres après la virgule.';
 $string['numberofdecimaldigits'] = 'Nb de chiffres après la virgule';
 $string['numberscaleitems'] = 'Nb d\'items sur l\'échelle';
 $string['numberscaleitems_help'] = 'Nb d\'items sur l\'échelle indique le nombre d\'items qui seront affichés sur votre échelle horizontale. Une valeur comprise entre 3 et 5 est habituelle. La valeur par défaut est de 5.';
@@ -300,7 +300,7 @@ Vous pouvez saisir plusieurs adresses, séparées par une virgule.
 (laissez vide si vous ne souhaitez pas recevoir de courriel).';
 $string['settings'] = 'Paramètres';
 $string['settingssaved'] = 'Paramètres enregistrés.';
-$string['strfdate'] = '%%d-%%m-%%Y';
+$string['strfdate'] = '%d-%m-%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:i:s';
 $string['submitoptions'] = 'Options d\'envoi du questionnaire';
 $string['submitsurvey'] = 'Envoyer le questionnaire';

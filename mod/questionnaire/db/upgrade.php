@@ -1,4 +1,4 @@
-<?php //$Id: upgrade.php,v 1.25 2010/11/25 20:51:16 mchurch Exp $
+<?php //$Id$
 
 function xmldb_questionnaire_upgrade($oldversion=0) {
     global $CFG, $DB;
@@ -318,7 +318,7 @@ function xmldb_questionnaire_upgrade($oldversion=0) {
             $recstart = 0;
             $recstoget = 100;
             while ($recstart < $numrecs) {
-                if ($records = $dman->get_records('questionnaire_question_type', array(), '', '*', $recstart, $recstoget)) {
+                if ($records = $dbman->get_records('questionnaire_question_type', array(), '', '*', $recstart, $recstoget)) {
                     foreach ($records as $record) {
                         $dbman->set_field('questionnaire_question_type', 'typeid', $record->id, array('id' => $record->id));
                     }

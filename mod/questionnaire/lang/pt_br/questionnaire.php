@@ -1,4 +1,4 @@
-<?php // $Id: questionnaire.php,v 1.4 2010/05/03 21:21:30 mchurch Exp $
+<?php // $Id$
 $string['action'] = 'Ação';
 $string['additionalinfo'] = 'Informação Adicional';
 $string['addnewquestion'] = 'Adicionando questão do tipo: $a';
@@ -205,7 +205,7 @@ $string['selecttheme'] = 'Selecione um tema (css) a ser usado nesta enquete.';
 $string['sendemail'] = 'Envia uma cópia contendo os dados de cada submissão para o endereço de email informado. Deixe em branco caso não desejes receber cópias.';
 $string['settings'] = 'Opções';
 $string['settingssaved'] = 'Opções salvas';
-$string['strfdate'] = '%%d/%%m/%%Y';
+$string['strfdate'] = '%d/%m/%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:i:s';
 $string['submitoptions'] = 'Opções de envio';
 $string['submitsurvey'] = 'Enviar enquete';

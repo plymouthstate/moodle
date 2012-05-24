@@ -1,4 +1,19 @@
-<?php  // $Id: report.php,v 1.50 2011/04/11 12:49:54 mchurch Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 
 /// This page prints a particular instance of questionnaire
     global $SESSION, $CFG;
@@ -49,19 +64,14 @@
     $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
 
     /// If you can't view the questionnaire, or can't view a specified response, error out.
-    if (!($questionnaire->capabilities->view && $questionnaire->can_view_response($rid))) {
+    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
+    if (!has_capability('mod/questionnaire:readallresponseanytime',$context) &&
+      !($questionnaire->capabilities->view && $questionnaire->can_view_response($rid))) {
         /// Should never happen, unless called directly by a snoop...
         print_error('nopermissions', 'moodle', $CFG->wwwroot.'/mod/questionnaire/view.php?id='.$cm->id);
     }
 
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-
-    /// Should never happen, unless called directly by a snoop...
-    if ( !has_capability('mod/questionnaire:readallresponseanytime',$context) ) {
-        print_error('Permission denied');
-    }
-
-    $questionnaire->canviewallgroups = has_capability('moodle/site:accessallgroups', $context, NULL, false);
+    $questionnaire->canviewallgroups = has_capability('moodle/site:accessallgroups', $context);
     $sid = $questionnaire->survey->id;
 
     $url = new moodle_url($CFG->wwwroot.'/mod/questionnaire/report.php');
@@ -92,8 +102,6 @@
     /// Tab setup:
     $SESSION->questionnaire->current_tab = 'allreport';
 
-    $formdata = data_submitted();
-
     $strcrossanalyze = get_string('crossanalyze', 'questionnaire');
     $strcrosstabulate = get_string('crosstabulate', 'questionnaire');
     $strdeleteallresponses = get_string('deleteallresponses', 'questionnaire');
@@ -107,15 +115,16 @@
     /// get all responses for further use in viewbyresp and deleteall etc.
     // all participants
     $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-             FROM ".$CFG->prefix."questionnaire_response R
-             WHERE R.survey_id=".$sid." AND
+             FROM {questionnaire_response} R
+             WHERE R.survey_id = ? AND
                    R.complete='y'
              ORDER BY R.id";
-    if (!($respsallparticipants = $DB->get_records_sql($sql))) {
+    if (!($respsallparticipants = $DB->get_records_sql($sql, array($sid)))) {
         $respsallparticipants = array();
     }
     $SESSION->questionnaire->numrespsallparticipants = count ($respsallparticipants);
     $SESSION->questionnaire->numselectedresps = $SESSION->questionnaire->numrespsallparticipants;
+    $castsql = $DB->sql_cast_char2int('R.username');
 
     //available group modes (0 = no groups; 1 = separate groups; 2 = visible groups)
     $groupmode = groups_get_activity_groupmode($cm, $course);
@@ -152,32 +161,30 @@
             }
 
             // all members of any group
-            $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-                    FROM ".$CFG->prefix."questionnaire_response R,
-                        ".$CFG->prefix."groups_members GM
-                     WHERE R.survey_id=".$sid." AND
-                       R.complete='y' AND
-                       GM.groupid>0 AND
-                       R.username=GM.userid
+            $sql = "SELECT DISTINCT R.id, R.survey_id, R.submitted, R.username
+                    FROM {questionnaire_response} R,
+                        {groups_members} GM
+                    WHERE R.survey_id = ? AND
+                          R.complete='y' AND
+                          GM.groupid>0 AND " . $castsql. " = GM.userid
                     ORDER BY R.id";
-            if (!($respsallgroupmembers = $DB->get_records_sql($sql))) {
+            if (!($respsallgroupmembers = $DB->get_records_sql($sql, array($sid)))) {
                 $respsallgroupmembers = array();
             }
             $SESSION->questionnaire->numrespsallgroupmembers = count ($respsallgroupmembers);
 
             // not members of any group
-            $sql = "SELECT R.id, R.survey_id, R.submitted, R.username, U.id AS user
-                    FROM ".$CFG->prefix."questionnaire_response R,
-                        ".$CFG->prefix."user U
-                     WHERE R.survey_id=".$sid." AND
-                       R.complete='y' AND
-                       R.username=U.id
-                    ORDER BY user";
-            if (!($respsnongroupmembers = $DB->get_records_sql($sql))) {
+            $sql = "SELECT R.id, R.survey_id, R.submitted, R.username, U.id AS userid
+                    FROM {questionnaire_response} R,
+                        {user} U
+                     WHERE R.survey_id = ? AND
+                       R.complete='y' AND " . $castsql . "=U.id
+                    ORDER BY userid";
+            if (!($respsnongroupmembers = $DB->get_records_sql($sql, array($sid)))) {
                 $respsnongroupmembers = array();
             }
             foreach ($respsnongroupmembers as $resp=>$key) {
-                if (groups_has_membership($cm, $key->user)) {
+                if (groups_has_membership($cm, $key->userid)) {
                     unset($respsnongroupmembers[$resp]);
                 }
             }
@@ -188,14 +195,13 @@
 
             // current group members
             $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-                FROM ".$CFG->prefix."questionnaire_response R,
-                    ".$CFG->prefix."groups_members GM
-                 WHERE R.survey_id=".$sid." AND
+                FROM {questionnaire_response} R,
+                    {groups_members} GM
+                 WHERE R.survey_id= ? AND
                    R.complete='y' AND
-                   GM.groupid=".$currentgroupid." AND
-                   R.username=GM.userid
+                   GM.groupid = ? AND " . $castsql . "=GM.userid
                 ORDER BY R.id";
-                if (!($currentgroupresps = $DB->get_records_sql($sql))) {
+                if (!($currentgroupresps = $DB->get_records_sql($sql, array($sid, $currentgroupid)))) {
                     $currentgroupresps = array();
                 }
                 $SESSION->questionnaire->numcurrentgroupresps = count ($currentgroupresps);
@@ -394,7 +400,7 @@
         }
 
     /// Print the page header
-        $PAGE->set_title(get_string('deletingresponse', 'questionnaire'));
+        $PAGE->set_title(get_string('deleteallresponses', 'questionnaire'));
         $PAGE->set_heading(format_string($course->fullname));
         $PAGE->navbar->add('Survey Reports');
         echo $OUTPUT->header();
@@ -418,14 +424,13 @@
                             break;
                     default: // members of a specific group
                     $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-                            FROM ".$CFG->prefix."questionnaire_response R,
-                                ".$CFG->prefix."groups_members GM
-                             WHERE R.survey_id=".$sid." AND
+                            FROM {questionnaire_response} R,
+                                {groups_members} GM
+                             WHERE R.survey_id = ? AND
                                R.complete='y' AND
-                               GM.groupid=".$groupid." AND
-                               R.username=GM.userid
+                               GM.groupid = ? AND " . $castsql . "=GM.userid
                             ORDER BY R.id";
-                    if (!($resps = $DB->get_records_sql($sql))) {
+                    if (!($resps = $DB->get_records_sql($sql, array($sid, $groupid)))) {
                         $resps = array();
                     }
                 }
@@ -465,11 +470,11 @@
                 $deletedstr = get_string('deletedallgroupresp', 'questionnaire', '<strong>'.groups_get_group_name($groupid).'</strong>');
             }
             $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-                     FROM ".$CFG->prefix."questionnaire_response R
-                     WHERE R.survey_id=".$sid." AND
+                     FROM {questionnaire_response} R
+                     WHERE R.survey_id = ? AND
                            R.complete='y'
                      ORDER BY R.id";
-            if (!($resps = $DB->get_records_sql($sql))) {
+            if (!($resps = $DB->get_records_sql($sql, array($sid)))) {
                 $respsallparticipants = array();
             }
             if (empty($resps)) {
@@ -661,14 +666,13 @@
                             break;
                     default: // members of a specific group
                     $sql = "SELECT R.id, R.survey_id, R.submitted, R.username
-                            FROM ".$CFG->prefix."questionnaire_response R,
-                                ".$CFG->prefix."groups_members GM
-                             WHERE R.survey_id=".$sid." AND
+                            FROM {questionnaire_response} R,
+                                {groups_members} GM
+                             WHERE R.survey_id= ? AND
                                R.complete='y' AND
-                               GM.groupid=".$groupid." AND
-                               R.username=GM.userid
-                            ORDER BY R.id";
-                    if (!($resps = $DB->get_records_sql($sql))) {
+                               GM.groupid= ? AND ".$castsql."=GM.userid
+                              ORDER BY R.id";
+                    if (!($resps = $DB->get_records_sql($sql, array($sid, $groupid)))) {
                         $resps = array();
                     }
                 }
@@ -742,4 +746,3 @@
         echo $OUTPUT->footer($course);
         break;
     }
-?>

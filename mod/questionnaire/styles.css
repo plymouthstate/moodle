@@ -8,10 +8,6 @@
     display: none;
 }
 
-#page-mod-questionnaire-questions .mform div.qcontainer fieldset.felement {
-    width: 100%;
-}
-
 #page-mod-questionnaire-mod .mform{
     width: 100%;
 }
@@ -78,9 +74,6 @@ div.qoptcontainer div.ftextarea textarea.qopts {
     width: 600px;
     height: 10em;
     margin-left: 1px;
-}
-div.felement.ftextarea textarea {
-    width:600px;
 }
 
 .response span.selected,
@@ -242,4 +235,21 @@ body#page-mod-questionnaire-myreport .generaltable {
 .floatprinticon {
     margin-top:-30px;
     float:right;
+}
+
+/* new styles - keep old (quOuter, qnInner, qnInnerTable, qnType) for sections etc. */
+#page-mod-questionnaire-view .qn-number {
+    float: left;
+}
+#page-mod-questionnaire-view .qn-question {
+    margin-left: 35px;
+    padding-left: 5px;
+    padding-bottom: 2px;
+    border-left: #CCCCCC thin dotted;
+}
+#page-mod-questionnaire-view .qn-type {
+    margin-left: 35px;
+    padding: 5px;
+    border-left: #CCCCCC thin dotted;
+    border-bottom: #CCCCCC thin dotted;
 }

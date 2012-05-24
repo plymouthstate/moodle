@@ -1,8 +1,8 @@
-<?php // $Id: choose_group_form.php,v 1.6 2010/12/08 13:53:07 joseph_rezeau Exp $
+<?php // $Id$
 /**
 * prints the form to choose the group you want to analyse
 *
-* @version $Id: choose_group_form.php,v 1.6 2010/12/08 13:53:07 joseph_rezeau Exp $
+* @version $Id$
 * @author Andreas Grabs
 * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
 * @package questionnaire
@@ -33,7 +33,7 @@ class questionnaire_choose_group_form extends moodleform {
     //this function have to be called manually
     //the advantage is that the data are already set
     function set_form_elements(){
-        global $CFG, $SESSION, $DB;
+        global $SESSION, $DB;
         $mform =& $this->_form;
         $sid = $SESSION->questionnaire_survey_id;
         $elementgroup = array();
@@ -52,14 +52,14 @@ class questionnaire_choose_group_form extends moodleform {
                 $groups_options['-1'] = get_string('allparticipants');
             }
             // count number of responses in each group
+            $castsql = $DB->sql_cast_char2int('R.username');
             foreach($this->questionnairedata->groups as $group) {
-                $sql = "SELECT R.id, GM.id 
-                    FROM ".$CFG->prefix."questionnaire_response R, ".$CFG->prefix."groups_members GM
-                    WHERE R.survey_id=".$sid." AND
-                        R.complete='y' AND
-                        GM.groupid=".$group->id." AND
-                        R.username=GM.userid";
-                if (!($resps = $DB->get_records_sql($sql))) {
+                $sql = "SELECT R.id, GM.id as groupid
+                    FROM {questionnaire_response} R, {groups_members} GM
+                    WHERE R.survey_id= ? AND
+                          R.complete='y' AND
+                          GM.groupid= ? AND " . $castsql . "=GM.userid";
+                if (!($resps = $DB->get_records_sql($sql, array($sid, $group->id)))) {
                     $resps = array();
                 }
                 if (!empty ($resps)) {
@@ -87,4 +87,3 @@ class questionnaire_choose_group_form extends moodleform {
     }
 
 }
-?>

@@ -1,8 +1,22 @@
-<?php // $Id: questions_form.php,v 1.33 2010/12/15 17:29:40 joseph_rezeau Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
 * print the form to add or edit a questionnaire-instance
 *
-* @version $Id: questions_form.php,v 1.33 2010/12/15 17:29:40 joseph_rezeau Exp $
 * @author Mike Churchward
 * @license http://www.gnu.org/copyleft/gpl.html GNU Public License
 * @package questionnaire
@@ -19,7 +33,7 @@ class questionnaire_questions_form extends moodleform {
     }
 
     function definition() {
-        global $CFG, $COURSE, $questionnaire, $QUESTIONNAIRE_REALMS, $SESSION;
+        global $CFG, $questionnaire, $SESSION;
         global $DB;
 
         $mform    =& $this->_form;
@@ -353,7 +367,7 @@ class questionnaire_edit_question_form extends moodleform {
             $stryes = get_string('yes');
             $strno  = get_string('no');
 
-            $mform->addElement('text', 'name', get_string('optionalname', 'questionnaire'), array('size'=>'25'));
+            $mform->addElement('text', 'name', get_string('optionalname', 'questionnaire'), array('size'=>'30', 'maxlength'=>'30'));
             $mform->setType('name', PARAM_TEXT);
             $mform->addHelpButton('name', 'optionalname', 'questionnaire');
 
@@ -462,4 +476,3 @@ class questionnaire_edit_question_form extends moodleform {
     }
 
 }
-?>

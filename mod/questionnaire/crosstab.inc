@@ -1,6 +1,6 @@
-<?php // $Id: crosstab.inc,v 1.13 2008/07/21 18:50:20 mchurch Exp $
+<?php // $Id$
 
- # $Id: crosstab.inc,v 1.13 2008/07/21 18:50:20 mchurch Exp $
+ # $Id$
 
 /* The Cross Tabulation feature has been kept separate from the rest of phpESP intentionally.
    It provides an easier means of disabling it by commenting out the require line in results.inc
@@ -167,12 +167,12 @@
                 $total_row = 0;
             foreach ($cids_col as $xx) {
                 $sql = 'SELECT count(*) '.
-                       'FROM '.$CFG->prefix.'questionnaire_'.$tbl[0].' r1, '.
-                       $CFG->prefix.'questionnaire_'.$tbl[1].' r2 '.
-                       'WHERE (r1.question_id = \''.$qids[0].'\' AND r1.choice_id = \''.$xx.'\') '.
-                          'AND (r2.question_id = \''.$qids[1].'\' AND r2.choice_id = \''.$yy.'\') '.
+                       'FROM {questionnaire_'.$tbl[0].'} r1, '.
+                       '{questionnaire_'.$tbl[1].'} r2 '.
+                       'WHERE (r1.question_id = ? AND r1.choice_id = ?) '.
+                          'AND (r2.question_id = ? AND r2.choice_id = ?) '.
                           'AND r1.response_id = r2.response_id';
-                $result = $DB->count_records_sql($sql);
+                $result = $DB->count_records_sql($sql, array($qids[0], $xx, $qids[1], $yy));
                 $total_row += intval($result);
                 array_push($col_counts, $result);
           }
@@ -234,7 +234,7 @@
                 echo ("<div align=\"center\"><strong>TOTALS</strong></div></td>\n");
 
                 for ($f = 0; $f < $cids_col_count; $f++){
-            $grand_total = 0;
+                    $grand_total = 0;
                         for ($g = 0; $g < $cids_row_count; $g++){
                                 if ($g == 0){
                                         $subtotal = $f;

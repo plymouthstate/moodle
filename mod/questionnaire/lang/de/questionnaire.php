@@ -1,4 +1,4 @@
-<?PHP // $Id: questionnaire.php,v 1.5 2010/05/03 21:21:29 mchurch Exp $ 
+<?PHP // $Id$ 
       // questionnaire.php - created with Moodle 1.5.3+ (2005060230)
 
 
@@ -13,7 +13,7 @@ $string['averagerank'] = 'Durchschnittsbewertung';
 $string['bodytext'] = 'Texterläuterung';
 $string['cancelandreturn'] = 'Abbrechen & Zurück';
 $string['changeorder'] = 'Verändern Sie die Reihenfolge der angezeigten Fragen durch Auswahl der gewünschte Position aus der Liste';
-$string['closed'] = 'Die Befragung wurde am $a abgeschlossen. Danke.';
+$string['closed'] = 'Die Befragung wurde am {$a} abgeschlossen. Danke.';
 $string['closedate'] = 'Enddatum';
 $string['confirmationpage'] = 'Bestätigungsseite';
 $string['confpagedesc'] = 'Überschrift (fett) and Erläuterungstext für die \"Bestätigungs\"seite, die angezeigt wird, wenn die Befragung voin dem/der Nutzer/in abgeschlossen wurde.  (URL der Seite mit dem entsprechenden Inhalt)';
@@ -30,7 +30,7 @@ $string['errquestionoption'] = 'Sorry. Sie müssen mindestens eine Antwortoption
 $string['errquestiontext'] = 'Tragen Sie bitte Text für diese Frage ein.';
 $string['errquestiontype'] = 'Sorry. Sie müssen einen Fragentyp auswählen.';
 $string['errrequiredfields'] = 'Sorry, füllen Sie den Namen, die Gruppe und den Titel aus, bevor Sie fortfahren.';
-$string['field'] = 'Feld $a';
+$string['field'] = 'Feld {$a}';
 $string['fieldname'] = 'Feldname';
 $string['generalpage'] = 'Die Informationen in diesem Abschnitt beeinflussen diegesamte Befragung. Füllen Sie diese Seite aus. Gehen Sie dann zum Tab <strong>Felder</strong>, um die einzelnen Felder zu bearbeiten.';
 $string['headingtext'] = 'Überschrift';
@@ -41,9 +41,9 @@ $string['missingquestions'] = 'Folgende Fragen müssen noch beantwortet werden.'
 $string['modulename'] = 'Befragung';
 $string['modulenameplural'] = 'Befragungen';
 $string['mustcomplete'] = '<strong>Sie müssen die Befragung <em>jetzt</em> vollständig ausfüllen, damit Ihre Daten gespeichert werden können. Sie können die Befragung nicht zu einem späteren Zeitpunkt wiederholen.</strong><br><br>';
-$string['myresponsedated'] = 'Ihr Antwortdatum: $a';
+$string['myresponsedated'] = 'Ihr Antwortdatum: {$a}';
 $string['myresponses'] = 'Alle Ihre Antworten';
-$string['myresponsetitle'] = 'Ihre Ergebnisse für $a Antworten';
+$string['myresponsetitle'] = 'Ihre Ergebnisse für {$a} Antworten';
 $string['myresults'] = 'Meine Ergebnisse';
 $string['name'] = 'Name';
 $string['navigateirs'] = 'Abgegebene Detailantworten durchsehen';
@@ -55,14 +55,14 @@ $string['noresponsedata'] = 'Keine Antworten für diese Frage';
 $string['noresponses'] = 'Keine Antworten';
 $string['notavail'] = 'Die Befragung steht z. Zt. nicht zur Verfügung. Versuchen Sie es bitte später noch einmal.';
 $string['noteligible'] = 'Sie sind nicht berechtigt, diese Befragung zu bearbeiten';
-$string['notopen'] = 'Diese Befragung steht ab $a zur Verfügung.';
+$string['notopen'] = 'Diese Befragung steht ab {$a} zur Verfügung.';
 $string['notused'] = 'Nicht genutzt';
 $string['num'] = '#';
 $string['of'] = 'von';
 $string['opendate'] = 'Startdatum';
 $string['owner'] = 'Ersteller';
 $string['page'] = 'Seite';
-$string['pageof'] = 'Seite $a->page von $a->totpages';
+$string['pageof'] = 'Seite {$a->page} von {$a->totpages}';
 $string['possibleanswers'] = 'Geben Sie die Antwortvorgaben, wenn vorgesehen, an. Geben Sie in eine Zeile <tt>!other</tt> ein, um ein Feld zu erzeugen, dass beim Ausfüllen frei ausgefüllt werden kann. Andere leere Zeilen werden unterdrückt.';
 $string['precision'] = 'Genauigkeit';
 $string['preview'] = 'Vorschau für die Befragung. In der Vorschau werden die Navigationsbuttons deaktiviert. Nutzen Sie die Abschnittsnummern-Buttons, um zwischen den Abschnitten zu navigieren. Einige der Navigationsbuttons werden u.U. in der fertigen Befragung nicht angezeigt. Dies ist abhängig von anderen Einstellungen des Zugriffs. Die Hintergrundfarbe der Befragung ist vom Dokument, in den sie eingebettet ist, abhängig. Um die Vorschau abzuschließen, klicken Sie am Seitenende auf <strong>Beenden</strong>.';
@@ -85,7 +85,7 @@ $string['realm'] = 'Fragentyp';
 $string['redirecturl'] = 'URL zu der der Antwortende nach Abschluß geführt wird. ';
 $string['remove'] = 'Entfernen';
 $string['required'] = 'Pflichtfeld';
-$string['requiredquestions'] = 'Fragen, die mit $a gekennzeichnet sind, sind Pflichtfelder.';
+$string['requiredquestions'] = 'Fragen, die mit {$a} gekennzeichnet sind, sind Pflichtfelder.';
 $string['reset'] = 'Zurücksetzen';
 $string['respondent'] = 'Befragte/r';
 $string['respondentabrev'] = 'Befr.';
@@ -131,7 +131,7 @@ $string['unknown'] = 'Unbekannt';
 $string['url'] = 'URL';
 $string['usepublic'] = 'Öffentlich nutzen';
 $string['usetemplate'] = 'Kopie besteht';
-$string['usingsurvey'] = '$a verwenden.';
+$string['usingsurvey'] = '{$a} verwenden.';
 $string['viewresponses'] = 'Alle Antworten: Zeige §a';
 $string['viewyourresponses'] = 'Ihre Antworten: zeige §a';
 

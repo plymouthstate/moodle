@@ -1,4 +1,18 @@
-<?php  // $Id: lib.php,v 1.55 2011/02/08 20:36:15 mchurch Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /// Library of functions and constants for module questionnaire
 /// (replace questionnaire with the name of your module and delete this line)
@@ -49,6 +63,13 @@ function questionnaire_supports($feature) {
         default: return null;
     }
 }
+
+/**
+ * @return array all other caps used in module
+ */
+function questionnaire_get_extra_capabilities() {
+    return array('moodle/site:accessallgroups');
+} 
 
 global $QUESTIONNAIRE_TYPES;
 $QUESTIONNAIRE_TYPES = array (QUESTIONNAIREUNLIMITED => get_string('qtypeunlimited', 'questionnaire'),
@@ -255,13 +276,13 @@ function questionnaire_user_outline($course, $user, $mod, $questionnaire) {
  * Get all the questionnaire responses for a user
  */
 function questionnaire_get_user_responses($surveyid, $userid) {
-    global $CFG, $DB;
+    global $DB;
 
     return $DB->get_records_sql ("SELECT *
-        FROM {$CFG->prefix}questionnaire_response
-        WHERE survey_id = '$surveyid'
-        AND username = '$userid'
-        ORDER BY submitted ASC ");
+        FROM {questionnaire_response}
+        WHERE survey_id = ?
+        AND username = ?
+        ORDER BY submitted ASC ", array($surveyid, $userid));
 }
 
 function questionnaire_user_complete($course, $user, $mod, $questionnaire) {
@@ -313,15 +334,18 @@ function questionnaire_grades($questionnaireid) {
  * @return array array of grades, false if none
  */
 function questionnaire_get_user_grades($questionnaire, $userid=0) {
-    global $CFG, $DB;
-
-    $user = $userid ? "AND u.id = $userid" : "";
+    global $DB;
+    $params = array();
+    if (!empty($userid)) {
+        $usersql = "AND u.id = ?";
+        $params[] = $userid;
+    }
 
     $sql = "SELECT a.id, u.id AS userid, r.grade AS rawgrade, r.submitted AS dategraded, r.submitted AS datesubmitted
-            FROM {$CFG->prefix}user u, {$CFG->prefix}questionnaire_attempts a, {$CFG->prefix}questionnaire_response r
-            WHERE u.id = a.userid AND a.qid = $questionnaire->id AND r.id = a.rid $user";
+            FROM {user} u, {questionnaire_attempts} a, {questionnaire_response} r
+            WHERE u.id = a.userid AND a.qid = $questionnaire->id AND r.id = a.rid $usersql";
 
-    return $DB->get_records_sql($sql);
+    return $DB->get_records_sql($sql, $params);
 }
 
 /**
@@ -360,7 +384,7 @@ function questionnaire_update_grades($questionnaire=null, $userid=0, $nullifnone
 
     } else {
         $sql = "SELECT q.*, cm.idnumber as cmidnumber, q.course as courseid
-                  FROM {$CFG->prefix}questionnaire q, {$CFG->prefix}course_modules cm, {$CFG->prefix}modules m
+                  FROM {questionnaire} q, {course_modules} cm, {modules} m
                  WHERE m.name='questionnaire' AND m.id=cm.module AND cm.instance=q.id";
         if ($rs = $DB->get_recordset_sql($sql)) {
             foreach ($rs as $questionnaire) {
@@ -407,8 +431,12 @@ function questionnaire_grade_item_update($questionnaire, $grades=NULL) {
         $params['gradetype'] = GRADE_TYPE_SCALE;
         $params['scaleid']   = -$questionnaire->grade;
 
+    } else if ($questionnaire->grade == 0) { //No Grade..be sure to delete the grade item if it exists
+        $grades = NULL;
+        $params = array('deleted' => 1);
+
     } else {
-        $params['gradetype'] = GRADE_TYPE_TEXT; // allow text comments only
+        $params = NULL; // allow text comments only
     }
 
     if ($grades  === 'reset') {
@@ -424,12 +452,12 @@ function questionnaire_get_participants($questionnaireid) {
 //for a given instance of questionnaire. Must include every user involved
 //in the instance, independient of his role (student, teacher, admin...)
 //See other modules as example.
-    global $CFG, $DB;
+    global $DB;
 
     //Get students
     $users = $DB->get_records_sql('SELECT DISTINCT u.* '.
-                             'FROM '.$CFG->prefix.'user u, '.
-                             '     '.$CFG->prefix.'questionnaire_attempts qa '.
+                             'FROM {user} u, '.
+                             '     {questionnaire_attempts} qa '.
                              'WHERE qa.qid = \''.$questionnaireid.'\' AND '.
                              '      u.id = qa.userid');
     return ($users);
@@ -487,7 +515,7 @@ function questionnaire_get_context($cmid) {
  * @return bool false if file not found, does not return if found - justsend the file
  */
 function questionnaire_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
-    global $CFG, $DB;
+    global $DB;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
@@ -566,11 +594,11 @@ function questionnaire_load_capabilities($cmid) {
 /// This function *really* shouldn't be needed, but since sometimes we can end up with
 /// orphaned surveys, this will clean them up.
 function questionnaire_cleanup() {
-    global $CFG, $DB;
+    global $DB;
 
     /// Find surveys that don't have questionnaires associated with them.
-    $sql = 'SELECT qs.* FROM '.$CFG->prefix.'questionnaire_survey qs '.
-           'LEFT JOIN '.$CFG->prefix.'questionnaire q ON q.sid = qs.id '.
+    $sql = 'SELECT qs.* FROM {questionnaire_survey} qs '.
+           'LEFT JOIN {questionnaire} q ON q.sid = qs.id '.
            'WHERE q.sid IS NULL';
 
     if ($surveys = $DB->get_records_sql($sql)) {
@@ -664,25 +692,39 @@ function questionnaire_get_survey_list($courseid=0, $type='') {
 
     if ($courseid == 0) {
         if (isadmin()) {
-            $select = '';
-            $fields = 'id,name,owner,realm,status';
+            $sql = "SELECT id,name,owner,realm,status " .
+            	   "{questionnaire_survey} " .
+                   "ORDER BY realm,name ";
+            $params = null;
         } else {
             return false;
         }
     } else if (!empty($type)) {
         if ($type == 'public') {
-            $select = 'status != ' . QUESTIONNAIRE_ARCHIVED . ' AND realm = \'' . $type . '\' ';
+            $sql = "SELECT s.id,s.name,s.owner,s.realm,s.status,s.title,q.id as qid " .
+                   "FROM {questionnaire} q " .
+                   "INNER JOIN {questionnaire_survey} s ON s.id = q.sid " .
+                   "WHERE status != ? AND realm = ? " .
+                   "ORDER BY realm,name ";
+            $params = array(QUESTIONNAIRE_ARCHIVED, $type);
     /// Any survey owned by the user or typed as 'template' can be copied.
         } else if ($type == 'template') {
-            $select = 'status != ' . QUESTIONNAIRE_ARCHIVED . ' AND '
-                      .'(realm = \''.$type.'\' OR owner = \''.$courseid.'\') ';
+            $sql = "SELECT s.id,s.name,s.owner,s.realm,s.status,s.title,q.id as qid " .
+                   "FROM {questionnaire} q " .
+                   "INNER JOIN {questionnaire_survey} s ON s.id = q.sid " .
+                   "WHERE status != ? AND (realm = ? OR owner = ?) " .
+                   "ORDER BY realm,name ";
+            $params = array(QUESTIONNAIRE_ARCHIVED, $type, $courseid);
         }
-        $fields = 'id,name,owner,realm,status,title';
     } else {
-        $select = 'status != ' . QUESTIONNAIRE_ARCHIVED . ' AND owner = \'' . $courseid . '\' ';
-        $fields = 'id,name,owner,realm,status';
+        $sql = "SELECT s.id,s.name,s.owner,s.realm,s.status,q.id as qid " .
+               "FROM {questionnaire} q " .
+               "INNER JOIN {questionnaire_survey} s ON s.id = q.sid " .
+               "WHERE status != ? AND owner = ? " .
+               "ORDER BY realm,name ";
+        $params = array(QUESTIONNAIRE_ARCHIVED, $courseid);
     }
-    return $DB->get_records_select('questionnaire_survey', $select, null, 'realm,name', $fields);
+    return $DB->get_records_sql($sql, $params);
 }
 
 function questionnaire_survey_has_questions($sid) {
@@ -698,7 +740,7 @@ function questionnaire_survey_exists($sid) {
 }
 
 function questionnaire_get_survey_select($instance, $courseid=0, $sid=0, $type='') {
-    global $CFG, $OUTPUT;
+    global $OUTPUT;
 
     $surveylist = array();
     if ($surveys = questionnaire_get_survey_list($courseid, $type)) {
@@ -726,7 +768,11 @@ function questionnaire_get_survey_select($instance, $courseid=0, $sid=0, $type='
             if ($type == 'public' && $survey->owner == $courseid) {
                 continue;
             } else {
-                $link = new moodle_url("/mod/questionnaire/preview.php?sid={$survey->id}&popup=1");
+                $args = "sid={$survey->id}&popup=1";
+                if (!empty($survey->qid)) {
+                    $args .= "&qid={$survey->qid}";
+                }
+                $link = new moodle_url("/mod/questionnaire/preview.php?{$args}");
                 $action = new popup_action('click', $link);
                 $label = $OUTPUT->action_link($link, $survey->title, $action, array('title'=>$survey->title));
                 $surveylist[$type.'-'.$survey->id] = $label;
@@ -794,21 +840,29 @@ function questionnaire_print_overview($courses,&$htmlarray) {
     }
 
     // get all questionnaire logs in ONE query (much better!)
-    $sql = "SELECT instance,cmid,l.course,COUNT(l.id) as count FROM {$CFG->prefix}log l "
-        ." JOIN {$CFG->prefix}course_modules cm ON cm.id = cmid "
-        ." JOIN {$CFG->prefix}questionnaire q ON cm.instance = q.id "
+    $params = array();
+    $sql = "SELECT instance,cmid,l.course,COUNT(l.id) as count FROM {log} l "
+        ." JOIN {course_modules} cm ON cm.id = cmid "
+        ." JOIN {questionnaire} q ON cm.instance = q.id "
         ." WHERE (";
     foreach ($courses as $course) {
-        $sql .= '(l.course = '.$course->id.' AND l.time > '.$course->lastaccess.') OR ';
+        $sql .= '(l.course = ? AND l.time > ?) OR ';
+        $params[] = $course->id;
+        $params[] = $course->lastaccess;
     }
+
+
     $sql = substr($sql,0,-3); // take off the last OR
 
     $sql .= ") AND l.module = 'questionnaire' AND action = 'submit' "
-        ." AND userid != ".$USER->id
-        ." AND q.resp_view <> " . QUESTIONNAIRE_STUDENTVIEWRESPONSES_WHENANSWERED
+        ." AND userid != ?"
+        ." AND q.resp_view <> ?"
         ." GROUP BY cmid,l.course,instance";
 
-    if (!$new = $DB->get_records_sql($sql)) {
+    $params[] = $USER->id;
+    $params[] = QUESTIONNAIRE_STUDENTVIEWRESPONSES_WHENANSWERED;
+
+    if (!$new = $DB->get_records_sql($sql, $params)) {
         $new = array(); // avoid warnings
     }
 
@@ -922,5 +976,3 @@ function questionnaire_set_events($questionnaire) {
         }
     }
 }
-
-?>

@@ -1,4 +1,4 @@
-<?PHP // $Id: questionnaire.php,v 1.1 2010/05/03 21:21:31 mchurch Exp $ 
+<?PHP // $Id$ 
       // questionnaire.php - created with Moodle 1.9.2+ (Build: 20080806) (2007101521)
       // local modifications from http://www.resonance.com.pl/moodle
 
@@ -202,7 +202,7 @@ $string['selecttheme'] = 'Wybierz szablon graficzny (styl CSS), jaki ma być uż
 $string['sendemail'] = 'Przesyła kopię wypełnionego kwestionariusza na podany adres (pozostaw to pole puste, jeśli nie chcesz potwierdzenia przez email).';
 $string['settings'] = 'Ustawienia';
 $string['settingssaved'] = 'Zapisano ustawienia';
-$string['strfdate'] = '%%d-%%m-%%Y';
+$string['strfdate'] = '%d-%m-%Y';
 $string['strfdateformatcsv'] = 'd-m-Y H:i:s';
 $string['submitoptions'] = 'Opcje przesyłania';
 $string['submitsurvey'] = 'Prześlij kwestionariusz';

@@ -1,4 +1,4 @@
-<?php // $Id: questionnaire.php,v 1.36 2011/03/05 10:06:05 joseph_rezeau Exp $
+<?php // $Id$
 $string['action'] = 'Action';
 $string['additionalinfo'] = 'Additional Info';
 $string['additionalinfo_help'] = 'Text to be displayed at the top of the first page of this questionnaire. (i.e. instructions, background info, etc.)';
@@ -111,8 +111,8 @@ value to its default **0** value. If you set **Min.** or **Max.** to values othe
 respondent does not comply with your requirements. Obviously you should make any requirements clear to the respondent either in the general instructions of
 your Questionnaire or in the text of relevant questions.';
 $string['misconfigured'] = 'Course is misconfigured';
-$string['missingquestion'] = 'You are missing required question ';
-$string['missingquestions'] = 'You are missing required questions: ';
+$string['missingquestion'] = 'Error, please answer question ';
+$string['missingquestions'] = 'Error, please answer questions: ';
 $string['modulename'] = 'Questionnaire';
 $string['modulenameplural'] = 'Questionnaires';
 $string['move'] = 'Move this question';
@@ -151,6 +151,7 @@ $string['of'] = 'of';
 $string['opendate'] = 'Use Open Date';
 $string['opendate_help'] = 'You can specify a date to open the questionnaire here. Check the check box, and select the date and time you want. 
 Users will not be able to fill out the questionnaire before that date. If this is not selected, it will be open immediately.';
+$string['option'] = 'option {$a}';
 $string['optionalname'] = 'Question Name';
 $string['optionalname_help'] = 'The Question Name is only used when you export responses to CSV/Excel format. 
 If you never export to CSV, then you needn\'t worry about Question names at all. 

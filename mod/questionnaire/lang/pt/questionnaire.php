@@ -1,4 +1,4 @@
-<?php // $Id: questionnaire.php,v 1.5 2010/05/03 21:21:30 mchurch Exp $
+<?php // $Id$
 $string['addaline'] = 'Adicionar linha de resposta';
 $string['additionalinfo'] = 'Informação Adicional';
 $string['addsectionbreak'] = 'Adicionar Quebra de Secção';
@@ -173,7 +173,7 @@ $string['sectiontext'] = 'Texto&nbsp;de&nbsp;Secção';
 $string['selectexisting'] = 'ou seleccione existente';
 $string['selecttheme'] = 'Seleccione um tema (css) para usar com este questionário.';
 $string['sendemail'] = 'Envia uma cópia de cada questionário submetido para o endereço de email indicado. (deixe em branco para não enviar email).';
-$string['strfdate'] = '%%d/%%m/%%Y';
+$string['strfdate'] = '%d/%m/%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:m:s';
 $string['submitsurvey'] = 'Submeter Questionário';
 $string['submitted'] = 'Submetida em:';

@@ -1,4 +1,4 @@
-<?PHP // <?PHP // $Id: questionnaire.php,v 1.1 2010/05/03 21:21:30 mchurch Exp $       
+<?PHP // <?PHP // $Id$       
      // questionnaire.php - created with Moodle 2.0 dev (Build: 20080418) (2008030700)
 
 $string['additionalinfo'] = 'Dodatne informacije';     
@@ -207,7 +207,7 @@ $string['selecttheme'] = 'Odaberite šablon (css) koji će odrediti vizuelni izg
 $string['sendemail'] = 'Pošalji kopiju svakog unosa elektronskom poštom (ostavite prazno ako ne želite da aktivirate ovu opciju)';
 $string['settings'] = 'Podešavanja';
 $string['settingssaved'] = 'Podešavanja sačuvana';
-$string['strfdate'] = '%%d/%%m/%%Y';
+$string['strfdate'] = '%d/%m/%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:i:s';
 $string['submitoptions'] = 'Preusmeravanje ispitanika i unosa';
 $string['submitsurvey'] = 'Pošaljite svoje odgovore';

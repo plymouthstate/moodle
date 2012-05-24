@@ -1,4 +1,19 @@
-<?php // $Id: preview.php,v 1.12 2010/12/15 22:18:08 mchurch Exp $
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 
 /// This page displays a non-completable instance of questionnaire
 
@@ -8,6 +23,7 @@
     $id     = optional_param('id', 0, PARAM_INT);
     $sid    = optional_param('sid', 0, PARAM_INT);
     $popup  = optional_param('popup', 0, PARAM_INT);
+    $qid    = optional_param('qid', 0, PARAM_INT);
 
     if ($id) {
         if (! $cm = get_coursemodule_from_id('questionnaire', $id)) {
@@ -36,7 +52,11 @@
         $questionnaire->sid = $sid;
         $questionnaire->resume = 0;
         ///Dummy cm object:
-        $cm = false;
+        if (!empty($qid)) {
+            $cm = get_coursemodule_from_instance('questionnaire', $qid, $course->id);
+        } else {
+            $cm = false;
+        }
     }
 
 /// Check login and get context.
@@ -56,7 +76,7 @@
         $PAGE->set_context($context);
     }
 
-    $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
+    $questionnaire = new questionnaire($qid, $questionnaire, $course, $cm);
     $owner = (trim($questionnaire->survey->owner) == trim($course->id));
 
     $canpreview = (!isset($questionnaire->capabilities) &&
@@ -94,4 +114,3 @@
         echo $OUTPUT->close_window_button();
     }
     echo $OUTPUT->footer($course);
-?>
