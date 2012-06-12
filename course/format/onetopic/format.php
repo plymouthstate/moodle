@@ -14,11 +14,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * This file contains general functions for the course format Topic
  *
  * @since 2.0
  * @package contribution
- * @copyright 2011 David Herney Bernal - cirano
+ * @copyright 2012 David Herney Bernal - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -34,8 +33,15 @@ require_once($CFG->libdir.'/completionlib.php');
 $topic = optional_param('topic', -1, PARAM_INT);
 
 if ($topic != -1) {
-    $displaysection = course_set_display($course->id, $topic);
-} else {
+     if (!isloggedin() or isguestuser()) {
+         $USER->display[$course->id] = $topic;
+         $displaysection = $topic;
+    }
+    else {
+        $displaysection = course_set_display($course->id, $topic);
+    }
+} 
+else {
     if (isset($USER->display[$course->id])) {
         $displaysection = $USER->display[$course->id];
     } else {
@@ -83,6 +89,7 @@ if (ismoving($course->id)) {
     $sectionmenu = array();
     $tabs = array();
 
+    $default_topic = -1;
     while ($section <= $course->numsections) {
 
         if (empty($sections[$section])) {
@@ -100,11 +107,30 @@ if (ismoving($course->id)) {
         else {
             $thissection = $sections[$section];
         }
-            
-        $showsection = (has_capability('moodle/course:viewhiddensections', $context) or $thissection->visible or !$course->hiddensections);
+        
+        $showsection = true;
+        if (!$thissection->visible) {
+            $showsection = false;
+        }
+        else if ($section == 0 && !($thissection->summary or $thissection->sequence or $PAGE->user_is_editing())){
+            $showsection = false;
+        }
+        
+        if (!$showsection) {
+            $showsection = (has_capability('moodle/course:viewhiddensections', $context) or !$course->hiddensections);
+        }
 
         if (isset($displaysection)) {
             if ($showsection) {
+                
+                if ($default_topic < 0) {
+                    $default_topic = $section;
+                    
+                    if ($displaysection == 0) {
+                        $displaysection = $default_topic;
+                    }
+                }
+
                 $sectionname = get_section_name($course, $thissection);
 
                 if ($displaysection != $section) {
@@ -173,7 +199,7 @@ if (ismoving($course->id)) {
     
                 if ($PAGE->user_is_editing() && has_capability('moodle/course:update', get_context_instance(CONTEXT_COURSE, $course->id))) {
                     echo ' <a title="'.$streditsummary.'" href="editsection.php?id='.$thissection->id.'">'.
-                         '<img src="'.$OUTPUT->pix_url('t/edit') . '" class="icon edit" alt="'.$streditsummary.'" /></a><br /><br />';
+                         '<img src="'.$OUTPUT->pix_url('t/edit') . '" class="iconsmall edit" alt="'.$streditsummary.'" /></a><br /><br />';
                 }
                 echo '</div>';
     

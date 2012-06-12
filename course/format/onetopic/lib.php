@@ -18,7 +18,7 @@
  *
  * @since 2.0
  * @package contribution
- * @copyright 2011 David Herney Bernal - cirano
+ * @copyright 2012 David Herney Bernal - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +33,10 @@ function callback_onetopic_uses_sections() {
 }
 
 /**
- * Used to display the course structure for a course where format=ontopic
+ * Used to display the course structure for a course where format=onetopic
+ *
+ * This is called automatically by {@link load_course()} if the current course
+ * format = weeks.
  *
  * @param array $path An array of keys to the course node in the navigation
  * @param stdClass $modinfo The mod info object for the current course
@@ -66,11 +69,7 @@ function callback_onetopic_request_key() {
 function callback_onetopic_get_section_name($course, $section) {
     // We can't add a node without any text
     if (!empty($section->name)) {
-        if (strlen($section->name) < 57) {
-            return $section->name;
-        } else {
-            return substr($section->name, 0, 60).'...';
-        }
+        return format_string($section->name, true, array('context' => get_context_instance(CONTEXT_COURSE, $course->id)));
     } else {
         return get_string('sectionname', 'format_onetopic') . ' '.$section->section;
     }
@@ -87,4 +86,15 @@ function callback_onetopic_ajax_support() {
     $ajaxsupport->capable = true;
     $ajaxsupport->testedbrowsers = array('MSIE' => 6.0, 'Gecko' => 20061111, 'Safari' => 531, 'Chrome' => 6.0);
     return $ajaxsupport;
+}
+
+/**
+ * Returns a URL to arrive directly at a section
+ *
+ * @param int $courseid The id of the course to get the link for
+ * @param int $sectionnum The section number to jump to
+ * @return moodle_url
+ */
+function callback_onetopic_get_section_url($courseid, $sectionnum) {
+    return new moodle_url('/course/view.php', array('id' => $courseid, 'topic' => $sectionnum));
 }

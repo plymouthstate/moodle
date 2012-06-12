@@ -14,7 +14,6 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'format_onetopic', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @since 2.0
  * @package contribution
@@ -22,7 +21,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['sectionname'] = 'Topic';
-$string['pluginname'] = 'Onetopic format';
-$string['page-course-view-topics'] = 'Any course main page in onetopic format';
-$string['page-course-view-topics-x'] = 'Any course page in onetopic format';
+defined('MOODLE_INTERNAL') || die();
+
+$plugin->version = '2012021301';        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->component = 'format_onetopic';    // Full name of the plugin (used for diagnostics)
