@@ -27,20 +27,33 @@ if(md5($username . $_GET['time'] . 'monkeyballz') != $_GET['hash']){
 //load the CAS plugin moodle style
 $authcas = get_auth_plugin('cas');
 
-//check to make sure we have a valid LDAP (myPlymouth) user
-if(!$authcas->user_exists($username)){
+//check to make sure we have a valid Banner (myPlymouth) user
+if(!IDMObject::getIdentifier($username, 'login_name', 'pidm')){
 	exit('Sorry, ' . $username . ' does not appear to be a valid Banner user');
 }//end valid user check
 
-$user = $authcas->get_userinfo_asobj(addslashes($username));
+//$user = $authcas->get_userinfo_asobj(addslashes($username));
+$user = new StdClass;
+$identifiers = IDMObject::getIdentifier($username, 'login_name', '*');
+unset( $identifiers['ssn'] );
+$user->username = $username;
+$user->idnumber = $identifiers['psu_id'];
+$user->firstname = $identifiers['first_name'];
+$user->lastname = $identifiers['last_name'];
 $user->email = $username . '@plymouth.edu';
-$user->idnumber = IDMObject::getIdentifier($pidm, 'pidm', 'psu_id');
+$user->icq = '';
+$user->phone1 = '';
+$user->phone2 = '';
+$user->institution = '';
+$user->department = '';
 $user->timemodified   = time();
 $user->confirmed  = 1;
 $user->auth       = 'cas';
 $user->mnethostid = $CFG->mnet_localhost_id;
+$user->address = '';
 $user->city = 'Plymouth';
 $user->country = 'US';
+$user->url = '';
 if (empty($user->lang)) {
 	$user->lang = $CFG->lang;
 }
