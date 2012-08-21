@@ -39,7 +39,7 @@ if (empty($gram_size)||empty($window_size)) {
 }
 
 // main loop on crot_files table - check if there are files marked for the check up 
-$link = mysql_connect($CFG->dbhost.':'.$CFG->dboptions['dbport'], $CFG->dbuser, $CFG->dbpass) or die("Could not connect");
+$link = mysql_connect($CFG->dbhost . ':' . $CFG->dboptions['dbport'], $CFG->dbuser, $CFG->dbpass) or die('Could not connect');
 mysql_select_db("$CFG->dbname") or die ("Could not select database");
 $sql_query = "SELECT cf.* FROM {plagiarism_crot_files} cf where cf.status = 'queue'";
 $files = $DB->get_records_sql($sql_query);
