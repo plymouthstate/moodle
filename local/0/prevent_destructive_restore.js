@@ -30,7 +30,6 @@ M.local_psu_mod = {
 
 	toggle_select: function( to_toggle ) {
 		Y = this.Y;
-		console.log(to_toggle.get('id'));
 		to_toggle.get('options').each(function(){
 			var selected = this.get('selected');
 
