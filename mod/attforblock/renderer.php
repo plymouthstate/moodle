@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Attendance module renderering methods
@@ -450,7 +464,7 @@ class mod_attforblock_renderer extends plugin_renderer_base {
             $firstname = get_string('firstname');
 
         if ($data->pageparams->sort == ATT_SORT_FIRSTNAME)
-            $lastname = html_writer::link($data->url(array('sort' => SORT_LASTNAME)), get_string('lastname'));
+            $lastname = html_writer::link($data->url(array('sort' => ATT_SORT_LASTNAME)), get_string('lastname'));
         else
             $lastname = get_string('lastname');
 
@@ -778,4 +792,3 @@ class mod_attforblock_renderer extends plugin_renderer_base {
     }
 
 }
-?>

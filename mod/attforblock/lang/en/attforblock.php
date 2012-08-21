@@ -1,6 +1,18 @@
-<?PHP // $Id: attforblock.php,v 1.1.2.4 2009/04/12 17:50:11 dlnsk Exp $ 
-      // attendanceblk.php - created with Moodle 1.5.3+ (2005060230)
-
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['Aacronym'] = 'A';
 $string['Afull'] = 'Absent';
@@ -17,6 +29,7 @@ $string['addsession'] = 'Add session';
 $string['allcourses'] = 'All courses';
 $string['all'] = 'All';
 $string['allpast'] = 'All past';
+$string['attendancedata'] = 'Attendance data';
 $string['attendanceforthecourse'] = 'Attendance for the course';
 $string['attendancegrade'] = 'Attendance grade';
 $string['attendancenotstarted'] = 'Attendance has not started yet for this course';
@@ -82,6 +95,10 @@ $string['enrolmentsuspended'] = 'Enrolment suspended';
 $string['errorgroupsnotselected'] = 'Select one or more groups';
 $string['errorinaddingsession'] = 'Error in adding session';
 $string['erroringeneratingsessions'] = 'Error in generating sessions ';
+$string['gradebookexplanation'] = 'Grade in gradebook';
+$string['gradebookexplanation_help'] = 'The Attendance module displays your current attendance grade based on the number of points you have earned to date and the number of points that could have been earned to date; it does not include class periods in the future. In the gradebook, your attendance grade is based on your current attendance percentage and the number of points that can be earned over the entire duration of the course, including future class periods. As such, your attendance grades displayed in the Attendance module and in the gradebook may not be the same number of points but they are the same percentage.
+
+For example, if you have earned 8 of 10 points to date (80% attendance) and attendance for the entire course is worth 50 points, the Attendance module will display 8/10 and the gradebook will display 40/50. You have not yet earned 40 points but 40 is the equivalent point value to your current attendance percentage of 80%. The point value you have earned in the Attendance module can never decrease, as it is based only on attendance to date; however, the attendance point value shown in the gradebook may increase or decrease depending on your future attendance, as it is based on attendance for the entire course.';
 $string['gridcolumns'] = 'Grid columns';
 $string['groupsession'] = 'Group';
 $string['hiddensessions'] = 'Hidden sessions';
@@ -135,6 +152,7 @@ $string['sessions'] = 'Sessions';
 $string['sessionscompleted'] = 'Sessions completed';
 $string['sessionsids'] = 'IDs of sessions: ';
 $string['sessionsgenerated'] = 'Sessions successfully generated';
+$string['sessionsnotfound'] = 'There is no sessions in the selected timespan';
 $string['sessionstartdate'] = 'Session start date';
 $string['sessiontype'] = 'Session type';
 $string['sessiontype_help'] = 'There are two types of sessions: common and groups. Ability to add different types depends on activity group mode.
@@ -153,6 +171,7 @@ $string['sortedgrid'] = 'Sorted grid';
 $string['sortedlist'] = 'Sorted list';
 $string['startofperiod'] = 'Start of period';
 $string['status'] = 'Status';
+$string['statuses'] = 'Statuses';
 $string['statusdeleted'] = 'Status deleted';
 $string['strftimedm'] = '%d.%m';
 $string['strftimedmy'] = '%d.%m.%Y';
@@ -171,5 +190,3 @@ $string['viewmode'] = 'View mode';
 $string['week'] = 'week(s)';
 $string['weeks'] = 'Weeks';
 $string['youcantdo'] = 'You can\'t do anything';
-
-?>

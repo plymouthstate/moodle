@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Attendance module renderering helpers
  *
@@ -174,6 +189,8 @@ function construct_session_full_date_time($datetime, $duration) {
 }
 
 function construct_user_data_stat($stat, $statuses, $gradable, $grade, $maxgrade, $decimalpoints) {
+    global $OUTPUT;
+    
     $stattable = new html_table();
     $stattable->attributes['class'] = 'attlist';
     $row = new html_table_row();
@@ -191,7 +208,7 @@ function construct_user_data_stat($stat, $statuses, $gradable, $grade, $maxgrade
 
     if ($gradable) {
         $row = new html_table_row();
-        $row->cells[] = get_string('attendancegrade','attforblock') . ':';
+        $row->cells[] = get_string('attendancegrade','attforblock') . $OUTPUT->help_icon('gradebookexplanation', 'attforblock') . ':';
         $row->cells[] = $grade . ' / ' . $maxgrade;
         $stattable->data[] = $row;
 
@@ -214,12 +231,12 @@ function construct_full_user_stat_html_table($attforblock, $course, $user) {
 
         $gradeable = $attforblock->grade > 0;
         $statuses = att_get_statuses($attforblock->id);
-        $userstatusesstat = get_user_statuses_stat($attforblock->id, $course->startdate, $user->id);
-        $stat['completed'] = get_user_taken_sessions_count($attforblock->id, $course->startdate, $user->id);
+        $userstatusesstat = att_get_user_statuses_stat($attforblock->id, $course->startdate, $user->id);
+        $stat['completed'] = att_get_user_taken_sessions_count($attforblock->id, $course->startdate, $user->id);
         $stat['statuses'] = $userstatusesstat;
         if ($gradeable) {
             $grade = att_get_user_grade($userstatusesstat, $statuses);
-            $maxgrade = att_get_user_max_grade(get_user_taken_sessions_count($attforblock->id, $course->startdate, $user->id), $statuses);
+            $maxgrade = att_get_user_max_grade(att_get_user_taken_sessions_count($attforblock->id, $course->startdate, $user->id), $statuses);
             if (!$decimalpoints = grade_get_setting($course->id, 'decimalpoints')) {
                 $decimalpoints = $CFG->grade_decimalpoints;
             }
@@ -233,6 +250,3 @@ function construct_full_user_stat_html_table($attforblock, $course, $user) {
 		return construct_user_data_stat($stat, $statuses,
                     $gradeable, $grade, $maxgrade, $decimalpoints);
 }
-
-
-?>
