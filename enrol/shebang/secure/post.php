@@ -42,8 +42,8 @@
 
 
     if (!defined('SHEBANG_SECURE_REALM')) define ('SHEBANG_SECURE_REALM', 'SHEBanG Authentication');
-    if (!defined('SHEBANG_HEADER_MSGID')) define ('SHEBANG_HEADER_MSGID', 'JMSMessageId');
-    if (!defined('SHEBANG_HEADER_LDISP')) define ('SHEBANG_HEADER_LDISP', 'ldisp_id');
+    if (!defined('SHEBANG_HEADER_MSGID')) define ('SHEBANG_HEADER_MSGID', 'HTTP_JMSMESSAGEID');
+    if (!defined('SHEBANG_HEADER_LDISP')) define ('SHEBANG_HEADER_LDISP', 'HTTP_LDISP_ID');
 
 
     $enrolment_plugin = new enrol_shebang_plugin();
@@ -63,20 +63,20 @@
     }
 
     // If we get to this point, then security checks, if any, are satisfied
-    if (!($msg_headers = getallheaders())) {
+    $ldisp_id  = array_key_exists(SHEBANG_HEADER_LDISP, $_SERVER)
+               ? $_SERVER[SHEBANG_HEADER_LDISP]
+               : "";
+
+    $jms_id    =  array_key_exists(SHEBANG_HEADER_MSGID, $_SERVER)
+               ? $_SERVER[SHEBANG_HEADER_MSGID]
+               : "";
+
+    if (!$ldisp_id || !$jms_id) {
         header("HTTP/1.0 400 Bad Request");
         die(get_string('ERR_MSG_NOHEADERS', enrol_shebang_plugin::PLUGIN_NAME));
     }
 
-    $msg_id  = array_key_exists(SHEBANG_HEADER_LDISP, $msg_headers)
-             ? $msg_headers[SHEBANG_HEADER_LDISP]
-             : SHEBANG_HEADER_LDISP;
-    $msg_id .= ":";
-    $msg_id .= array_key_exists(SHEBANG_HEADER_MSGID, $msg_headers)
-             ? $msg_headers[SHEBANG_HEADER_MSGID]
-             : SHEBANG_HEADER_MSGID;
-
-    $enrolment_plugin->import_lmb_message(file_get_contents('php://input'), $msg_id);
+    $enrolment_plugin->import_lmb_message(file_get_contents('php://input'), "{$ldisp_id}:{$jms_id}");
 
     exit; /* End of page processing
     -------------------------------------------------------------------------------- */

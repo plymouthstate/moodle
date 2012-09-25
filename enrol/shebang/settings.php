@@ -1,7 +1,5 @@
 <?php
 
-    defined('MOODLE_INTERNAL') || die();
-
     /**
      * SHEBanG enrolment plugin/module for SunGard HE Banner(r) data import
      *
@@ -25,12 +23,15 @@
      * @subpackage  shebang
      */
 
-    require_once(dirname(__FILE__) . '/version.php');
+    defined('MOODLE_INTERNAL') || die();
+
+    require     (dirname(__FILE__) . '/version.php');
     require_once(dirname(__FILE__) . '/lib.php');
     require_once("{$CFG->dirroot}/course/lib.php");
 
-    if (!defined('PLUGIN_NAME')) define('PLUGIN_NAME', 'enrol_' . $enrol);
-    if (!defined('PLUGIN_PATH')) define('PLUGIN_PATH', '/enrol/' . $enrol);
+    define('PLUGIN_NAME', 'enrol_shebang');
+    define('PLUGIN_PATH', '/enrol/shebang');
+
 
     /**
      * Index (in order of appearance) of config values
@@ -59,6 +60,7 @@
      * person_auth_method
      * person_shib_domain
      * person_password
+     * person_password_changes
      * person_firstname_changes
      * person_lastname_changes
      * person_telephone
@@ -68,6 +70,7 @@
      * person_locality
      * person_locality_default
      * person_country
+     * person_idnumber_sctid
      *
      * course_category
      * course_category_id
@@ -206,6 +209,8 @@
               enrol_shebang_plugin::OPT_PERSON_PASSWORD_USERID_SCTID => get_string('LBL_PERSON_PASSWORD_USERID_SCTID', PLUGIN_NAME)
             )));
 
+        $settings->add(new admin_setting_configcheckbox(PLUGIN_NAME . '/person_password_changes',  get_string('LBL_PERSON_PASSWORD_CHANGES',  PLUGIN_NAME), '', '0'));
+
         $settings->add(new admin_setting_configcheckbox(PLUGIN_NAME . '/person_firstname_changes', get_string('LBL_PERSON_FIRSTNAME_CHANGES', PLUGIN_NAME), '', '1'));
 
         $settings->add(new admin_setting_configcheckbox(PLUGIN_NAME . '/person_lastname_changes',  get_string('LBL_PERSON_LASTNAME_CHANGES',  PLUGIN_NAME), '', '1'));
@@ -229,6 +234,7 @@
 
         $settings->add(new admin_setting_configselect(PLUGIN_NAME   . '/person_country', get_string('LBL_PERSON_COUNTRY', PLUGIN_NAME), '', enrol_shebang_plugin::DEF_PERSON_COUNTRY, get_string_manager()->get_list_of_countries()));
 
+        $settings->add(new admin_setting_configcheckbox(PLUGIN_NAME . '/person_idnumber_sctid',   get_string('LBL_PERSON_IDNUMBER_SCTID',   PLUGIN_NAME), '', '0'));
 
         /*
          * Course-section (group) messages

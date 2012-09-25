@@ -1,7 +1,5 @@
 <?php
 
-    defined('MOODLE_INTERNAL') || die();
-
     /**
      * SHEBanG enrolment plugin/module for SunGard HE Banner(r) data import
      *
@@ -24,6 +22,8 @@
      * @package     enrol
      * @subpackage  shebang
      */
+
+    defined('MOODLE_INTERNAL') || die();
 
 
     /**
@@ -75,23 +75,22 @@
             $admin_url  = new moodle_url(enrol_shebang_plugin::PLUGIN_PATH . "/admin/settings.php", array('section' => 'enrolsettingsshebang'));
             $index_url  = new moodle_url(enrol_shebang_plugin::PLUGIN_PATH . '/tools.php');
 
-            $PAGE->set_heading($SITE->fullname);
-            $PAGE->set_title($SITE->fullname . ':' . get_string('LBL_TOOLS_INDEX', enrol_shebang_plugin::PLUGIN_NAME));
             $PAGE->set_context(get_context_instance(CONTEXT_SYSTEM));
-            $PAGE->set_url($admin_url);
+            $PAGE->set_title($SITE->fullname . ':' . get_string('LBL_TOOLS_INDEX', enrol_shebang_plugin::PLUGIN_NAME));
+            $PAGE->set_url($index_url);
             $PAGE->set_pagelayout('admin');
+            $PAGE->set_heading($SITE->fullname);
 
             $PAGE->navbar->add(get_string('LBL_TOOLS_INDEX',  enrol_shebang_plugin::PLUGIN_NAME), null);
 
             navigation_node::override_active_url($admin_url);
-
 
             echo $OUTPUT->header();
 
             echo $OUTPUT->heading(get_string('LBL_TOOLS_INDEX', enrol_shebang_plugin::PLUGIN_NAME));
 
             $table = new html_table();
-            $table->width = "100%";
+            $table->attributes = array('style' => 'width: 100%;');
             $table->align = array('right', 'left');
             $table->wrap = array('wrap', '');
             $table->head = array(get_string('name'), get_string('description'));
@@ -101,13 +100,13 @@
             foreach(glob(dirname(__FILE__) . '/tools_*_class.php') as $file_path) {
 
                 $name_parts = explode('_', basename($file_path, '.php'));
-                if (($action = $name_parts[1]) == 'index') continue;
+                if (($task = $name_parts[1]) == 'index') continue;
 
                 include_once($file_path);
 
-                $tool_class_name = enrol_shebang_plugin::PLUGIN_NAME . "_tools_{$action}";
+                $tool_class_name = enrol_shebang_plugin::PLUGIN_NAME . "_tools_{$task}";
                 $tool = new $tool_class_name();
-                $tool_url = new moodle_url(enrol_shebang_plugin::PLUGIN_PATH . "/tools.php", array('action' => $tool->action));
+                $tool_url = new moodle_url(enrol_shebang_plugin::PLUGIN_PATH . "/tools.php", array('task' => $tool->task));
                 $table->data[] = array("<a href=\"" . $tool_url->out() . "\">{$tool->name}</a>", $tool->desc);
 
             }

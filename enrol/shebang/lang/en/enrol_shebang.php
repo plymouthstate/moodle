@@ -1,7 +1,5 @@
 <?php
 
-    defined('MOODLE_INTERNAL') || die();
-
     /**
      * SHEBanG enrolment plugin/module for SunGard HE Banner(r) data import
      *
@@ -24,6 +22,9 @@
      * @package     enrol
      * @subpackage  shebang
      */
+
+    defined('MOODLE_INTERNAL') || die();
+
 
 /* CONFIG STRINGS */
 $string['pluginname']                       = 'SHEBanG';
@@ -73,6 +74,7 @@ $string['LBL_PERSON_USERNAME_FAILSAFE_INFO']= 'Used if username undetected and o
 $string['LBL_PERSON_AUTH_METHOD']           = 'New users\' auth. method';
 $string['LBL_PERSON_SHIB_DOMAIN']           = 'Shibboleth domain for new users';
 $string['LBL_PERSON_PASSWORD']              = 'Source field for user password';
+$string['LBL_PERSON_PASSWORD_CHANGES']      = 'Keep passwords updated';
 $string['LBL_PERSON_PASSWORD_INFO']         = 'Only effective for Manual auth.';
 $string['LBL_PERSON_PASSWORD_RANDOM']       = 'Random String';
 $string['LBL_PERSON_PASSWORD_USERID_LOGON'] = 'Banner Password';
@@ -94,6 +96,7 @@ $string['LBL_PERSON_LOCALITY_DEF']          = 'Default configured value';
 $string['LBL_PERSON_LOCALITY_IFF']          = 'Locality if present, else Default';
 $string['LBL_PERSON_LOCALITY_DEFAULT']      = 'Default locality/city';
 $string['LBL_PERSON_COUNTRY']               = 'Country for new users';
+$string['LBL_PERSON_IDNUMBER_SCTID']        = 'Use SCTID for idnumber';
 
 
 $string['LBL_COURSE']                       = 'Course (Section) Messages';
@@ -139,16 +142,23 @@ $string['LBL_ENROLL_ROLE_NOMAP']            = 'Not Mapped';
 
 $string['LBL_TOOLS_INDEX']                  = 'SHEBanG Admin. Utilities';
 $string['LBL_TOOLS_IMPORT']                 = 'SHEBanG Import File';
-$string['LBL_TOOLS_IMPORT_FILE']            = 'Select file to import';
-$string['LBL_TOOLS_IMPORT_SUBMIT']          = 'Upload';
+$string['LBL_TOOLS_IMPORT_SELECT']          = 'Select file to import';
+$string['LBL_TOOLS_IMPORT_UPLOAD']          = 'Upload or select a file';
+$string['LBL_TOOLS_IMPORT_SAVE']            = 'Save to SHEBanG files';
+$string['LBL_TOOLS_IMPORT_CANCEL']          = 'Cancel';
+$string['LBL_TOOLS_IMPORT_LINK_IMPORT']     = 'Import File';
+$string['LBL_TOOLS_IMPORT_LINK_DELETE']     = 'Delete File';
 $string['LBL_TOOLS_LINK']                   = 'Admin. Utilities: <a href="{$a}">Click Here</a>';
+$string['LBL_TOOLS_FILES']                  = 'SHEBanG Manage Files';
+
+$string['LBL_TOOLS_IMPORT_help']            = '<p>Import a previously uploaded file, or upload a new file.</p>';
 
 
 /* ERROR STRINGS */
-$string['ERR_MSG_NOHEADERS']                = 'No HTTP message headers found';
+$string['ERR_MSG_NOHEADERS']                = 'Required HTTP message headers not found';
 $string['ERR_XMLLIBS_NOTFOUND']             = 'Required XML libraries not present';
 $string['ERR_CONFIGS_NOTSET']               = 'Configuration settings not found';
-$string['ERR_DATADIR_IMPORT']               = 'Unable to create the import data directory';
+$string['ERR_DATADIR_CREATE']               = 'Unable to create the enrol_shebang data directory';
 $string['ERR_DATADIR_MESGLOG']              = 'Unable to create the message logging directory';
 $string['ERR_DATADIR_PROCLOG']              = 'Unable to create the process logging directory';
 $string['ERR_MESGLOG_NOOPEN']               = 'Unable to open the message logging file';
@@ -173,14 +183,30 @@ $string['ERR_CREATE_CROSSLIST_GROUP']       = 'Failed to create course group';
 $string['ERR_UPDATE_CROSSLIST_GROUP']       = 'Failed to update cross-list with course group id';
 $string['ERR_COURSECAT_ZERO']               = 'Could not determine category for new course';
 $string['ERR_ENROL_INSERT']                 = 'Could not create enrol instance in course';
+$string['ERR_CROSSLISTNOTENABLED']          = 'Cross-listing is not enabled';
+$string['ERR_METANOTENABLED']               = 'Cross-listing is not enabled';
 
 
 /* INFO STRINGS */
 $string['INF_USERDELETE_NOACTION']          = 'No action taken for delete user recstatus';
 $string['INF_USERCREATE_NOACTION']          = 'No action taken for create user';
+$string['INF_COURSEDELETE_NOACTION']        = 'No action taken for course delete';
 
 
 $string['INF_TOOLS_IMPORT_PROGRESS']        = '<smaller>{$a->blocks_read} of {$a->blocks_total} blocks read</smaller>';
+$string['INF_TOOLS_IMPORT_FILENOTFOUND']    = 'File specified was not found';
+
+
+$string['INF_CRON_START']                   = 'SHEBanG cron: Beginning cron task.';
+$string['INF_CRON_FINISH']                  = 'SHEBanG cron: Finished cron task.';
+$string['INF_CRON_MONITOR_START']           = 'SHEBanG cron: Monitor task begins.';
+$string['INF_CRON_MONITOR_FINISH']          = 'SHEBanG cron: Monitor task finished.';
+$string['INF_CRON_MONITOR_DISABLED']        = 'SHEBanG cron: Not enabled. Exiting.';
+$string['INF_CRON_MONITOR_WRONGDAY']        = 'SHEBanG cron: Not today. Exiting.';
+$string['INF_CRON_MONITOR_WRONGTIME']       = 'SHEBanG cron: Not in window. Exiting';
+$string['INF_CRON_MONITOR_MSGTHRESHOLD']    = 'SHEBanG cron: Last message time threshold not exceeded. Exiting.';
+$string['INF_CRON_MONITOR_NOTICETHRESHOLD'] = 'SHEBanG cron: Last notice time threshold not exceeded. Exiting.';
+$string['INF_CRON_MONITOR_NOTICESENT']      = 'SHEBanG cron: Email notice sent to $a.';
 
 
 /* HELP STRINGS */

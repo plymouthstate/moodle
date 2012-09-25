@@ -1,7 +1,5 @@
 <?php
 
-    defined('MOODLE_INTERNAL') || die();
-
     /**
      * SHEBanG enrolment plugin/module for SunGard HE Banner(r) data import
      *
@@ -25,21 +23,73 @@
      * @subpackage  shebang
      */
 
+    defined('MOODLE_INTERNAL') || die();
+
+    require_once("$CFG->dirroot/lib/ddllib.php");
+
+
     /**
      * Handle database updates
      *
      * @param   int         $oldversion     The currently recorded version for this mod/plugin
      * @return  boolean
+     * @uses $DB
      */
     function xmldb_enrol_shebang_upgrade($oldversion=0) {
 
-        global $db;
+        global $DB;
 
 
-
+        $dbman = $DB->get_manager();
         $result = true;
 
-        if ($oldversion < 0000000000) {
+
+        if ($oldversion < 2012062500) {
+
+            try
+            {
+
+                // Start keeping the person/user association in the person
+                // table (with a user id) rather than in the user table in
+                // the form the SCTID value in the idnumber column
+                $table = new xmldb_table('enrol_shebang_person');
+                $field = new xmldb_field('userid_moodle', XMLDB_TYPE_INTEGER, 10, false, false, false, null, 'update_date');
+                $dbman->add_field($table, $field);
+
+                // Populate new column with values if possible
+                $sql = "UPDATE {enrol_shebang_person} p "
+                     . "   SET p.userid_moodle = ( "
+                     . "SELECT u.id FROM {user} u WHERE u.idnumber = p.userid_sctid) ";
+
+                $result = $DB->execute($sql);
+
+                $key   = new xmldb_key('xak4', XMLDB_KEY_UNIQUE, array('userid_moodle'));
+                //$dbman->add_key($table, $key);
+
+                unset($table); unset($field); unset($key);
+
+                // Only one enrollment per person/roletype in a given course section
+                $table = new xmldb_table('enrol_shebang_member');
+                $key   = new xmldb_key('xak1', XMLDB_KEY_UNIQUE, array('section_source_id','person_source_id','roletype'));
+
+                $dbman->add_key($table, $key);
+
+                unset($table); unset($key);
+
+                // Populate new column with values if possible
+                //$sql = "UPDATE {enrol_shebang_person} p "
+                //     . "   SET p.userid_moodle = ( "
+                //     . "SELECT u.id FROM {user} u WHERE u.idnumber = p.userid_sctid) ";
+
+                //$result = $DB->execute($sql);
+				return $result;
+
+            }
+            catch (Exception $exc)
+            {
+                $result = false;
+            }
+
         }
 
         return $result;
