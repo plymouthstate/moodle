@@ -13,3 +13,9 @@
 		'requires'  =>  array('base', 'node', 'io', 'json'),
 	);
 	$PAGE->requires->js_init_call('M.alter_guest_policy.init', null, true, $jsmod_aup);
+	$jsmod_lo = array(
+		'name' => 'logo_override',
+		'fullpath' => '/local/0/logo_override.js',
+		'requires'  =>  array('base', 'node', 'io', 'json'),
+	);
+	$PAGE->requires->js_init_call('M.logo_override.init', null, true, $jsmod_lo);
