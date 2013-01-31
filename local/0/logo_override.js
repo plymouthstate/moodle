@@ -4,7 +4,9 @@ M.logo_override = {
 
 	init: function(Y) {
 		this.Y = Y;
-		Y.one('#headerinner a').set('href', 'http://www.plymouth.edu');
-		Y.one('#headerinner a').set('target', '_blank');
-	},
+		if( Y.one('#headerinner a') ) {
+			Y.one('#headerinner a').set('href', 'http://www.plymouth.edu');
+			Y.one('#headerinner a').set('target', '_blank');
+		}
+	}
 }
