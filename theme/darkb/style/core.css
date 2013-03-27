@@ -89,7 +89,11 @@ a:focus {
 	float: right;
 	text-align: right;
 	margin-top: 10px;
-	margin-right: 20px;
+	margin-right: 0px;
+}
+
+#ebutton .singlebutton {
+	text-align: right;
 }
 
 
@@ -201,7 +205,7 @@ div.johndocsleft {
     font-weight: 300;
     text-decoration: none;
     color: #eee;
-    text-shadow: 1px -1px 1px #333;
+    text-shadow: 1px -1px 1px rgba(0, 0, 0, 0.5);
     font-size: 11px;
 }
 
@@ -228,7 +232,7 @@ div#jcontrols_button2 span.arrow.sep {
 
 span.arrow.sep {
 	font-size: 80%;
-	text-shadow: 0 -1px 1px #000000;
+	text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.8);
 }
 
 #page-content #region-main {
@@ -290,15 +294,20 @@ span.arrow.sep {
     margin-right: 3px;
 }
 
-.title h2 {
-    padding: 0px 0px 0px 10px;
+.block .header h2 {
+    padding: 10px;
     font-size: 12px;
     text-transform: uppercase;
     margin: 0 !important;
     font-weight: 400;
     color: #fff;
-    padding-top: 8px;
-    text-shadow: 1px -1px 1px #333;
+    text-shadow: 1px -1px 1px rgba(0, 0, 0, 0.6);
+}
+
+.block .header .block_action {
+    float: right;
+    margin: 2px 5px 3px 0;
+    vertical-align: top;
 }
 
 .block div.block_action input, .block div.block_action img {
@@ -392,11 +401,7 @@ span.arrow.sep {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
-/** a few styles for the tabs **/
 
-div.tabtree li a span {
-    font-size: 11px;
-}
 
 /** yui overlays **/
 
@@ -487,6 +492,12 @@ div.yui3-widget-bd h1.helpheading {
 	border: none ;
 }
 
+/*keep items the same size while loading */
+#custommenu .yui3-menu-horizontal.javascript-disabled li a {
+    display: block;
+    padding: 0;
+}
+
 /*bar menu item */
 .yui3-menu-content li a {
 	font-size: 13px;
@@ -495,7 +506,8 @@ div.yui3-widget-bd h1.helpheading {
 	cursor: pointer;
 	border: none !important;
 	color: #aaa !important;
-	text-shadow: 1px -1px 1px #000;
+	text-shadow: 1px -1px 1px rgba(0, 0, 0, 0.6);
+	padding: 0px 15px !important;
 }
 
 /*bar menu item hover background color */
@@ -778,11 +790,28 @@ table a {
 	overflow: auto;
 }
 
-table#completion-progress {
+table#completion-progress, #page-admin-course-index .editcourse {
 	display: block !important;
     overflow: auto;
     width: 100%;
 }
+
+#page-admin-plugins #plugins-control-panel {
+    display: block;
+    overflow: auto;
+}
+
+/*grade menu hover menu */
+.actionmenu .yui3-menu-content li a, .actionmenu .yui3-menu-content li, .actionmenu .yui3-menu-content li:hover a {
+	color: #000 !important;
+}
+
+.actionmenu div.yui3-menu {
+	border: 1px solid #ccc !important;
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+	background: #fff !important;
+}
+
 
 #translator td.cell.lastcol {
 	padding-left: 0px;
@@ -892,8 +921,14 @@ div.course_category_tree div.controls div {
 }
 
 /** inside  of course **/
+/** inside  of course **/
+ul.topics, ul.weeks {
+	margin: 0px;
+}
+
 .path-course-view .course-content li.section {
-    border: 1px solid #e5e5e5;
+    border: 0px solid transparent;
+    border-bottom: 1px solid #eee;
 }
 
 .path-course-view .course-content .side {
@@ -908,17 +943,154 @@ div.course_category_tree div.controls div {
 }
 
 .course-content .main {
-  background:#eee;
+  background:#fff;
  }
 
+/*current topic hightlight */
 .course-content .current {
-  background:#ffffcc;
-  color:#000;
+  background:#ffffee;
  }
+
+.course-content .current .left.side {
+	color: #333;
+} 
  
 .course-content .main .content {
-    padding: 10px;
-    background:#fff;
+    padding: 10px 0px;
+    background:transparent;
+}
+
+.course-content .section li.activity {
+	padding: 3px 0px;
+}
+
+span.completionprogress {
+    font-size: 11px;
+    font-weight: 200;
+    padding-top: 3px;
+}
+
+.path-course-view li.activity span.autocompletion, .path-course-view li.activity form.togglecompletion {
+    right: -10px;
+}
+
+.course-content ul.weeks li.section, .course-content ul.topics li.section {
+	margin: 0 0;
+	padding: 10px 0px;
+}
+
+/*course combo list on front page */
+.course_category_tree .category {
+    background-color: #FFFFFF;
+    background: #fff url([[pix:theme|hgradient]]) repeat-x top left;
+    
+    border: 1px solid #DDDDDD;
+    margin-bottom: 10px;
+}
+
+.course_category_tree .category .subcategories {
+    background-color: inherit;
+    border: 1px solid #FFFFFF;
+    padding-left: 16px;
+}
+
+.course_category_tree .category.with_children .category_label {
+    background-position: 3px 3px;
+}
+
+.course_category_tree .category.with_children > .category_label {
+    background-repeat: no-repeat;
+}
+
+.course_category_tree .category_label {
+    padding-left: 13px;
+}
+
+.course_category_tree .category_link {
+    display: block;
+    font-size: 120%;
+    font-weight: bold;
+    margin: 5px;
+}
+
+.course_category_tree .category .courses {
+    background-color: inherit;
+}
+
+.course_category_tree .category .course {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #F9F9F9 #F9F9F9 #EEEEEE;
+    border-style: solid;
+    border-width: 1px 0 1px 1px;
+}
+
+.course_category_tree .category .courses .course_link {
+    margin: 5px 100px 5px 5px;
+}
+
+.course_category_tree .category .course.even {
+    background-color: #F6F6F6;
+    border-color: #F9F9F9 #EEEEEE #EEEEEE;
+}
+
+.course_category_tree .category .course_info {
+    right: 3px;
+    top: 3px;
+}
+
+/*new 2.3 changes */
+span.section-modchooser-link a{
+	padding: .5em 0;
+	display: inline-block;
+}
+
+#dndupload-status {
+  	border: 1px solid transparent;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    font-weight: 800;
+    padding: 0.8em;
+    text-shadow: 0 1px 1px #FFFFFF;
+}
+
+/*titles for single sections */
+.course-content .single-section .section-navigation.headingblock {
+	background: #eee url([[pix:theme|bar1]]) repeat-x bottom left;
+	margin-bottom: 0px;
+	border: 1px solid #DDDDDD;
+	border-bottom: 0px;
+    box-shadow: 0 1px 1px #FAFAFA inset;
+    text-shadow: 1px 1px 1px white;
+}
+
+.course-content .single-section ul li.section {
+	margin-top: 0px;
+}
+
+.course-content .single-section .section-navigation .title {
+	font-size: .8em;
+	font-weight: inherit;
+}
+
+.course-content .single-section .section-navigation .mdl-right {
+    font-size: 75%;
+}
+
+.course-content .single-section .section-navigation .mdl-right .rarrow {
+    margin-left: 0.4em;
+    font-size: .6em;
+}
+
+.course-content .single-section .section-navigation .mdl-left {
+	font-size: 75%;
+}
+
+.course-content .single-section .section-navigation .mdl-left .larrow {
+    margin-right: 0.4em;
+    font-size: .7em;
 }
 
 
@@ -997,10 +1169,7 @@ table.glossarypost td.entry h3 {
 /** some MISC styles to clean things up and keep the theme consistant **/
 
 div#intro {
-    border: none;
-    text-align: center;
-    font-size: 14px;
-    color: #333333;
+   border: 0px solid transparent;
 }
 
 div.que {
@@ -1081,10 +1250,6 @@ div.course-content div.availabilityinfo {
 
 div.forgetpass {
     clear: both;
-}
-
-div.loginform {
-    width: 50% !important;
 }
 
 div.loginform div.form-input input {
@@ -1185,3 +1350,75 @@ div.singlebutton.forumaddnew {
 	-moz-transition: all 0.4s ease-in-out;
 	transition: all 0.4s ease-in-out;
 }
+
+/*tabs */
+.tabtree ul {
+    text-align: center;
+}
+
+.tabtree .tabrow0 li a {
+   background: #fff ;
+}
+
+.tabtree .tabrow0 .here a {
+    background: #fff ;
+    padding-bottom: 5px;
+    border-top: 1px solid [[setting:maincolor]];
+    font-weight: 600;
+}
+
+.tabtree .tabrow1 li a {
+	border-top: 0px solid transparent !important;
+}
+
+.tabtree .tabrow0 li a {
+    border-color: #E6E6E6;
+    border-style: solid;
+    border-width: 1px 1px 0;
+    padding: 8px 10px 4px;
+    text-transform: uppercase;
+    color: #959595;
+    font-weight: 400;
+    margin: 0 0;
+}
+
+.tabtree .tabrow0 li a:hover {
+	border-top: 1px solid [[setting:maincolor]];
+}
+
+.ie7 .tabtree .tabrow0 li a {
+	padding-bottom: 7px;
+	border-color: #E6E6E6;
+}
+
+.tabtree .tabrow0 li.here .empty {
+    bottom: -5px;
+}
+
+/*2nd row */
+.tabtree .tabrow0 .tabrow1 {
+    padding: 10px 0 2px;
+}
+
+.tabtree .tabrow0 .tabrow1 {
+    margin-top: 4px;
+}
+
+.tabtree .tabrow1 li a {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 1px 0;
+    padding: 8px 10px 4px;
+}
+
+.tabtree .tabrow0 ul, .tabtree .tabrow0 div {
+    border-top: 1px solid #E6E6E6;
+}    
+
+.tabtree .tabrow1 ul, .tabtree .tabrow1 div {
+    border-top: 0px;
+}
+
+tabtree .tabrow0 ul, .tabtree .tabrow0 div {
+    border-top: 1px solid #E6E6E6;
+} 

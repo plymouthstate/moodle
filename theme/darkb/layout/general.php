@@ -30,7 +30,7 @@ echo $OUTPUT->doctype() ?>
     <link rel="shortcut icon" href="<?php echo $OUTPUT->pix_url('favicon', 'theme')?>" />
     <?php echo $OUTPUT->standard_head_html() ?>
 </head>
-<body id="<?php echo $PAGE->bodyid ?>" class="<?php echo $PAGE->bodyclasses.' '.join(' ', $bodyclasses) ?>">
+<body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)) ?>">
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
 
 <div id="page">
@@ -85,7 +85,7 @@ echo $OUTPUT->doctype() ?>
                     				<div id="region-main">
                         				<div class="region-content">
          								<div id="mainpadder">
-                            			<?php echo core_renderer::MAIN_CONTENT_TOKEN ?>
+                            			<?php echo $OUTPUT->main_content() ?>
                             			</div>
                         				</div>
                     				</div>

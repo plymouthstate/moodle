@@ -25,7 +25,7 @@ $settings->add($setting);
 	$name = 'theme_psu_darkb/maincolor';
 	$title = get_string('maincolor','theme_psu_darkb');
 	$description = get_string('maincolordesc', 'theme_psu_darkb');
-	$default = '#0a1f33';
+	$default = '#00573D';
 	$previewconfig = NULL;
 	$setting = new admin_setting_configcolourpicker($name, $title, $description, $default, $previewconfig);
 	$settings->add($setting);
