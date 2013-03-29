@@ -19,3 +19,9 @@
 		'requires'  =>  array('base', 'node', 'io', 'json'),
 	);
 	$PAGE->requires->js_init_call('M.logo_override.init', null, true, $jsmod_lo);
+	$jsmod_pni = array(
+		'name' => 'psu_nav_items',
+		'fullpath' => '/local/0/psu_nav_items.js',
+		'requires'  =>  array('base', 'node', 'io', 'json'),
+	);
+	$PAGE->requires->js_init_call('M.psu_nav_items.init', null, true, $jsmod_pni);
