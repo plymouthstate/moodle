@@ -6,6 +6,7 @@ include_once('../../../config.php');
 
 define('EDITING_TEACHER', 3);
 define('NON_EDITING_TEACHER', 4);
+define('CROSSLIST_TABLE', 'enrol_shebang_crosslist');
 
 $username = $_GET['username'];
 
@@ -28,10 +29,13 @@ complete_user_login($user);
 
 //if we got the $USER object, go ahead and create JSON to return to the channel
 if($USER->id != 0){
+	global $DB, $CFG;
 	$courses = enrol_get_users_courses($USER->id);
 	foreach($courses as $course){
 		$i = 0;	
 		$context = get_context_instance(CONTEXT_COURSE, $course->id);
+
+		$course->parents = $DB->get_records_select( CROSSLIST_TABLE, 'status = :status and recstatus != :recstatus and parent_source_id = :parent_source_id', array( 'status' => 1, 'recstatus' => 3, 'parent_source_id' => $course->idnumber ) );
 		
 		//get the editing faculty roles
 		$teachers = get_role_users(EDITING_TEACHER, $context);
