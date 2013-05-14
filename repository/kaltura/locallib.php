@@ -257,35 +257,36 @@ function repository_kaltura_format_metadata_profile($profile) {
 
 
 /**
- * Create the root category structure in the KMC
+ * Create the root category structure in the KMC and set the repository plugin
+ * configuration value
  *
- * @param - Kaltura connection object
+ * @param kaltura_connection $connection: a Kaltura connection object
  * @return mixed - an array with the root category path and the root category id
  *  or false if something wrong happened
  */
 function repository_kaltura_create_root_category($connection) {
 
     $first            = true;
-    $parent_id        = '';
+    $parentid         = '';
     $categories       = null;
-    $root_category    = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
-    $root_category_id = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
+    $rootcategory     = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
+    $rootcategoryid   = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
     $duplicate        = false;
 
     // Split categories into an array
-    if (!empty($root_category)) {
-        $categories = explode('>', $root_category);
+    if (!empty($rootcategory)) {
+        $categories = explode('>', $rootcategory);
     }
 
     $category_to_created = '';
 
     // Check if categories already exist in the KMC
-    foreach ($categories as $category_name) {
+    foreach ($categories as $categoryname) {
 
         if (empty($category_to_created)) {
-            $category_to_created = $category_name;
+            $category_to_created = $categoryname;
         } else {
-            $category_to_created = $category_to_created . '>' . $category_name;
+            $category_to_created = $category_to_created . '>' . $categoryname;
         }
 
         // Check if the category already exists.  If any exists then we cannot create the category
@@ -301,32 +302,32 @@ function repository_kaltura_create_root_category($connection) {
     }
 
     // Create categories
-    foreach ($categories as $category_name) {
+    foreach ($categories as $categoryname) {
 
         if ($first) {
-            $result = repository_kaltura_create_category($connection, $category_name);
+            $result = repository_kaltura_create_category($connection, $categoryname);
         } else {
-            $result = repository_kaltura_create_category($connection, $category_name, $parent_id);
+            $result = repository_kaltura_create_category($connection, $categoryname, $parentid);
         }
 
         if (!empty($result)) {
 
             if ($first) {
-                $root_category = $result->name;
+                $rootcategory = $result->name;
             } else {
-                $root_category .= '>' . $result->name;
+                $rootcategory .= '>' . $result->name;
             }
 
             $first         = false;
-            $parent_id     = $result->id;
+            $parentid      = $result->id;
         }
     }
 
     // Save configuration
-    set_config('rootcategory', $root_category, REPOSITORY_KALTURA_PLUGIN_NAME);
+    set_config('rootcategory', $rootcategory, REPOSITORY_KALTURA_PLUGIN_NAME);
     set_config('rootcategory_id', $result->id, REPOSITORY_KALTURA_PLUGIN_NAME);
 
-    return array($root_category, $result->id);
+    return array($rootcategory, $result->id);
 }
 
 /**

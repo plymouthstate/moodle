@@ -28,8 +28,8 @@ class filter_kaltura extends moodle_text_filter {
 
     // Static class variables are used to generate the same
     // user session string for all videos displayed on the page
-    public static $videos    = array();
-    public static $k_session = '';
+    public static $videos         = array();
+    public static $ksession       = '';
 
     public static $player = '';
     public static $courseid = 0;
@@ -37,7 +37,6 @@ class filter_kaltura extends moodle_text_filter {
     public static $kaltura_mobile_js_init = false;
     public static $mobile_theme_used = false;
     public static $player_number = 0;
-
 
     /** This function resolves KALDEV-201
      *
@@ -90,25 +89,35 @@ class filter_kaltura extends moodle_text_filter {
 
         if (!empty($CFG->filter_kaltura_enable)) {
 
-            // Get the filter player ui conf id
-            self::$player = local_kaltura_get_player_uiconf('player_filter');
-
-            // Get the course id of the current context
-            self::$courseid = get_courseid_from_context($PAGE->context);
-
             $uri = local_kaltura_get_host();
             $uri = rtrim($uri, '/');
             $uri = str_replace(array('.', '/', 'https'), array('\.', '\/', 'https?'), $uri);
 
             $search = '/<a\s[^>]*href="('.$uri.')\/index\.php\/kwidget\/wid\/_([0-9]+)\/uiconf_id\/([0-9]+)\/entry_id\/([\d]+_([a-z0-9]+))\/v\/flash"[^>]*>([^>]*)<\/a>/is';
 
-            // Update the static array of videos
+            // Update the static array of videos, so that later on in the code we can create generate
+            // a viewing session for each video 
             preg_replace_callback($search, 'update_video_list', $newtext);
+
+            // Exit the function if the video entries array is empty
+            if (empty(self::$videos)) {
+                return $text;
+            }
+            
+            // Get the filter player ui conf id
+            if (empty(self::$player)) {
+                self::$player = local_kaltura_get_player_uiconf('player_filter');
+            }
+
+            // Get the course id of the current context
+            if (empty(self::$courseid)) {
+                self::$courseid = get_courseid_from_context($PAGE->context);
+            }
 
             try {
 
                 // Create the the session for viewing of each video detected
-                self::$k_session = local_kaltura_generate_kaltura_session(self::$videos);
+                self::$ksession = local_kaltura_generate_kaltura_session(self::$videos);
 
                 $kaltura    = new kaltura_connection();
                 $connection = $kaltura->get_connection(true, KALTURA_SESSION_LENGTH);
@@ -157,12 +166,12 @@ function update_video_list($link) {
 }
 
 /**
- * Change links to YouTube into embedded YouTube videos
+ * Change links to Kaltura into embedded Kaltura videos
  *
  * Note: resizing via url is not supported, user can click the fullscreen button instead
  *
- * @param  $link
- * @return string
+ * @param  array $link: an array of elements matching the regular expression from class filter_kaltura - filter()
+ * @return string - Kaltura embed video markup
  */
 function filter_kaltura_callback($link) {
     global $CFG, $PAGE;
@@ -189,9 +198,9 @@ function filter_kaltura_callback($link) {
     $uid = filter_kaltura::$player_number . '_' . mt_rand();
 
     if (!filter_kaltura::$mobile_theme_used) {
-        $markup  = local_kaltura_get_kdp_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$k_session/*, $uid*/);
+        $markup  = local_kaltura_get_kdp_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$ksession/*, $uid*/);
     } else {
-        $markup  = local_kaltura_get_kwidget_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$k_session/*, $uid*/);
+        $markup  = local_kaltura_get_kwidget_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$ksession/*, $uid*/);
     }
 
 return <<<OET

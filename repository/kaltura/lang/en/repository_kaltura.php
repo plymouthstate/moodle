@@ -76,6 +76,7 @@ $string['kaltura:sharedvideovisibility'] = 'Shared Video Visibility';
 
 // Search UI
 $string['search_name_tooltip'] = 'Type in media name or tag and press enter';
+$string['search_name'] = 'Media name';
 $string['search_tags'] = 'Media tags';
 $string['search_site'] = 'Vidoes shared with site';
 $string['search_site'] = 'Videos shared with course(s)';
