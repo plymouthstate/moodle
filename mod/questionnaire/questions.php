@@ -139,10 +139,10 @@
                     $reload = true;
                 } else {
 	                /// Switch to edit question screen.
-    	            $action = 'question';
-        	        $qtype = $qformdata->type_id;
-            	    $qid = 0;
-                	$reload = true;
+                    $action = 'question';
+                    $qtype = $qformdata->type_id;
+                    $qid = 0;
+                    $reload = true;
                 }
             } else if (isset($qformdata->moveupbutton)) {
             /// Need to use the key, since IE returns the image position as the value rather than the specified
@@ -284,7 +284,7 @@
                     foreach ($allchoices as $choice) {
                         if ($choice) {
                             // check for number from 1 to 3 digits, followed by the equal sign =
-                             if (ereg("^[0-9]{1,3}=", $choice)) {
+                             if (preg_match("/^[0-9]{1,3}=/", $choice)) {
                                 $nbnameddegrees++;
                             } else {
                                 $nbvalues++;

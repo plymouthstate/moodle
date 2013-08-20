@@ -279,7 +279,8 @@
         public static $courseNameTokens = array('/%termcode%/i', '/%termdesc%/i',
                                                 '/%fullname%/i', '/%longname%/i', '/%shortname%/i', '/%sourceid%/i',
                                                 '/%deptcode%/i', '/%deptname%/i',
-                                                '/%parentcode%/i');
+                                                '/%parentcode%/i',
+                                                '/%coursenum%/i', '/%sectionnum%/i');
 
         /**
          * Array of this plugin's config names, keyed with the name, and a boolean value indicating whether
@@ -360,6 +361,14 @@
             'enroll_rolemap_07'              => array('type' => 'number',   'default' => '0'),
             'enroll_rolemap_08'              => array('type' => 'number',   'default' => '0')
         );
+
+        /**
+         * Did a course insert take place
+         *
+         * @var boolean
+         * @access private
+         */
+        private $courseInserted         = false;
 
 
 
@@ -823,9 +832,16 @@
 
                 } // while (true == ($data = fread...
 
+                // If any courses inserted in this
+                // import, fix up the sort order
+                if ($this->courseInserted) {
+                    $this->courseInserted = false;
+                    fix_course_sortorder();
+                }
+
                 // Clean up before leaving
                 xml_parser_free($xml_parser);
-                flock($fh, LOCK_UN); fclose($fh);
+                fclose($fh);
 
                 return true;
             }
@@ -833,7 +849,7 @@
             {
                 $this->log_process_exception($exc);
                 if ($fh != null) {
-                    flock($fh, LOCK_UN); fclose($fh);
+                    fclose($fh);
                 }
                 if ($xml_parser != null) {
                     xml_parser_free($xml_parser);
@@ -890,6 +906,13 @@
 
                 if (!xml_parse($xml_parser, $data, true)) {
                     throw new Exception(sprintf("XML error: %s at line %d", xml_error_string(xml_get_error_code($xml_parser)), xml_get_current_line_number($xml_parser)));
+                }
+
+                // If any courses inserted in this
+                // message, fix up the sort order
+                if ($this->courseInserted) {
+                    $this->courseInserted = false;
+                    fix_course_sortorder();
                 }
 
                 $this->log_lmb_message($msg_id, null, false, $this->lastRetCode);
@@ -1370,11 +1393,12 @@
             // Insert the course, leave if that fails
             try
             {
-                // This course library routine will call several other
-                // fix ups, such as blocks_add_default_course_blocks(),
-                // fix_course_sortorder(), mark_context_dirty(), etc.,
-                // but will also create the default (0) section row
-                $course = create_course($new_course_data);
+                // Call this plugin's create_course method which mimics
+                // the Moodle course/lib.php routine, but does not do
+                // any more in the database than is needed. Set a bool
+                // to indicate a call fix_course_sortorder is needed.
+                $course = $this->create_course($new_course_data);
+                $this->courseInserted = true;
 
                 // Set up an enrol plugin for this course. In the call to create_course()
                 // an attempt was made to create an enrol instance for the course, but
@@ -2203,11 +2227,12 @@
 
                 try
                 {
-                    // This course library routine will call several other
-                    // fix ups, such as blocks_add_default_course_blocks(),
-                    // fix_course_sortorder(), mark_context_dirty(), etc.,
-                    // but will also create the default (0) section row
-                    $parent_course = create_course($parent_course_data);
+                    // Call this plugin's create_course method which mimics
+                    // the Moodle course/lib.php routine, but does not do
+                    // any more in the database than is needed. Set a bool
+                    // to indicate a call fix_course_sortorder is needed.
+                    $parent_course = $this->create_course($parent_course_data);
+                    $this->courseInserted = true;
                 }
                 catch (Exception $exc)
                 {
@@ -2520,6 +2545,104 @@
 
 
         /**
+         * Create a new course
+         *
+         * Lifted from Moodle's course/lib.php and modified go back to the database
+         * as seldom as possible since it may be called from a batch import.
+         *
+         * @param  stdClass    $data    Data needed for an entry in the 'course' table
+         * @return stdClass             New course instance
+         */
+        private function create_course(stdClass $data) {
+
+            // Normally an application-level RI check for category
+            // is done, but that is handled by the calling routine
+            //$category = $DB->get_record('course_categories', array('id'=>$data->category), '*', MUST_EXIST);
+
+            // Then an application-level check for shotname
+            if (!empty($data->shortname)) {
+                if ($this->moodleDB->record_exists('course', array('shortname' => $data->shortname))) {
+                    throw new moodle_exception('shortnametaken');
+                }
+            }
+
+            // Then an application-level check for idnumber uniqueness,
+            // but the calling routine has done this already
+            //if (!empty($data->idnumber)) {
+            //    if ($this->moodleDB->record_exists('course', array('idnumber' => $data->idnumber))) {
+            //        throw new moodle_exception('idnumbertaken');
+            //    }
+            //}
+
+            $data->timecreated  = time();
+            $data->timemodified = $data->timecreated;
+
+            // place at beginning of any category
+            $data->sortorder = 0;
+
+            // No editoroptions to consider here
+            //if ($editoroptions) {
+            //    // summary text is updated later, we need context to store the files first
+            //    $data->summary = '';
+            //    $data->summary_format = FORMAT_HTML;
+            //}
+
+            // Visibility determined by plugin config
+            //if (!isset($data->visible)) {
+            //    // data not from form, add missing visibility info
+            //    $data->visible = $category->visible;
+            //}
+            //$data->visibleold = $data->visible;
+
+            $newcourseid = $this->moodleDB->insert_record('course', $data);
+            $context = get_context_instance(CONTEXT_COURSE, $newcourseid, MUST_EXIST);
+
+            // Still, no editoroptions to consider here
+            //if ($editoroptions) {
+            //    // Save the files used in the summary editor and store
+            //    $data = file_postupdate_standard_editor($data, 'summary', $editoroptions, $context, 'course', 'summary', 0);
+            //    $DB->set_field('course', 'summary', $data->summary, array('id'=>$newcourseid));
+            //    $DB->set_field('course', 'summaryformat', $data->summary_format, array('id'=>$newcourseid));
+            //}
+
+            // Could just use the $data object, but we'd miss
+            // any column defaults set in the database
+            $course = $this->moodleDB->get_record('course', array('id'=>$newcourseid));
+
+            // Setup the blocks
+            blocks_add_default_course_blocks($course);
+
+            $section = new stdClass();
+            $section->course        = $course->id;   // Create a default section.
+            $section->section       = 0;
+            $section->summaryformat = FORMAT_HTML;
+            $this->moodleDB->insert_record('course_sections', $section);
+
+            // To expensive to do in a batch import,
+            // defer until last course is processed
+            //fix_course_sortorder();
+
+            // new context created - better mark it as dirty
+            mark_context_dirty($context->path);
+
+            // Save any custom role names.
+            //save_local_role_names($course->id, (array)$data);
+
+            // set up enrolments
+            enrol_course_updated(true, $course, $data);
+
+            // No need to log this
+            //add_to_log(SITEID, 'course', 'new', 'view.php?id='.$course->id, $data->fullname.' (ID '.$course->id.')');
+
+            // Trigger events
+            events_trigger('course_created', $course);
+
+            return $course;
+        }
+
+
+
+        /**
          * Substitute name tokens for their respective values
          *
          * @access  private
@@ -2551,17 +2674,18 @@
 
             // We will assume that the dept code, not explicitly identified in the message
             // is the the prefix part of the long description delimited by a hyphen (-).
-            $dept_code = '';
-            $course_name_parts = explode('-', $lmb_data->desc_long);
-            if (count($course_name_parts) > 1) {
-                $dept_code = $course_name_parts[0];
-            }
+            list($dept_code, $course_num, $section_num) = explode('-', $lmb_data->desc_long);
+
+            if (!isset($dept_code))   $dept_code   = '';
+            if (!isset($course_num))  $course_num  = '';
+            if (!isset($section_num)) $section_num = '';
 
             return preg_replace(self::$courseNameTokens,
                                 array($lmb_data->term, $term_desc,
                                       $lmb_data->desc_full, $lmb_data->desc_long, $lmb_data->desc_short, $lmb_data->source_id,
                                       $dept_code, $lmb_data->dept_name,
-                                      $lmb_data->course_source_id),
+                                      $lmb_data->course_source_id,
+                                      $course_num, $section_num),
                                 $pattern);
 
         } // replace_name_tokens

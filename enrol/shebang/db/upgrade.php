@@ -56,15 +56,8 @@
                 $field = new xmldb_field('userid_moodle', XMLDB_TYPE_INTEGER, 10, false, false, false, null, 'update_date');
                 $dbman->add_field($table, $field);
 
-                // Populate new column with values if possible
-                $sql = "UPDATE {enrol_shebang_person} p "
-                     . "   SET p.userid_moodle = ( "
-                     . "SELECT u.id FROM {user} u WHERE u.idnumber = p.userid_sctid) ";
-
-                $result = $DB->execute($sql);
-
                 $key   = new xmldb_key('xak4', XMLDB_KEY_UNIQUE, array('userid_moodle'));
-                //$dbman->add_key($table, $key);
+                $dbman->add_key($table, $key);
 
                 unset($table); unset($field); unset($key);
 
@@ -77,12 +70,11 @@
                 unset($table); unset($key);
 
                 // Populate new column with values if possible
-                //$sql = "UPDATE {enrol_shebang_person} p "
-                //     . "   SET p.userid_moodle = ( "
-                //     . "SELECT u.id FROM {user} u WHERE u.idnumber = p.userid_sctid) ";
+                $sql = "UPDATE {enrol_shebang_person} p "
+                     . "   SET p.userid_moodle = ( "
+                     . "SELECT u.id FROM {user} u WHERE u.idnumber = p.userid_sctid) ";
 
-                //$result = $DB->execute($sql);
-				return $result;
+                $result = $DB->execute($sql);
 
             }
             catch (Exception $exc)

@@ -27,7 +27,7 @@ require_once($CFG->dirroot.'/mod/questionnaire/lib.php');
 
 class questionnaire_questions_form extends moodleform {
 
-    function questionnaire_questions_form($action, $moveq=false) {
+    function __construct($action, $moveq=false) {
         $this->moveq = $moveq;
         return parent::moodleform($action);
     }
@@ -171,8 +171,8 @@ class questionnaire_questions_form extends moodleform {
                 }
                 $rsrc = $CFG->wwwroot.'/mod/questionnaire/images/delete.gif';
 
-    		//Question numbers
-    		 	${$quesgroup}[] =& $mform->createElement('static', 'qnums', '', '<div class="qnums">'.$qnum_txt.'</div>');
+            //Question numbers
+                ${$quesgroup}[] =& $mform->createElement('static', 'qnums', '', '<div class="qnums">'.$qnum_txt.'</div>');
 
             /// Need to index by 'id' since IE doesn't return assigned 'values' for image inputs.
                 ${$quesgroup}[] =& $mform->createElement('static', 'opentag_'.$question->id, '', '<div class="qicons">');
@@ -184,8 +184,8 @@ class questionnaire_questions_form extends moodleform {
                 ${$quesgroup}[] =& $mform->createElement('image', 'removebutton['.$question->id.']', $rsrc, $rextra);
                 ${$quesgroup}[] =& $mform->createElement('static', 'closetag_'.$question->id, '', '</div>');
             } else {
-            	${$quesgroup}[] =& $mform->createElement('static', 'qnum', '', '<div class="qnums">'.$qnum_txt.'</div>');
-            	if ($this->moveq != $question->id) {
+                ${$quesgroup}[] =& $mform->createElement('static', 'qnum', '', '<div class="qnums">'.$qnum_txt.'</div>');
+                if ($this->moveq != $question->id) {
                 $mextra = array('value' => $question->id,
                                 'alt' => get_string('movehere', 'questionnaire'),
                                 'title' => get_string('movehere', 'questionnaire')) + $butclass;
@@ -195,9 +195,9 @@ class questionnaire_questions_form extends moodleform {
                 ${$quesgroup}[] =& $mform->createElement('image', 'moveherebutton['.$newposition.']', $msrc, $mextra);
                 ${$quesgroup}[] =& $mform->createElement('static', 'closetag_'.$question->id, '', '</div>');
             }
-            	else {
-            		${$quesgroup}[] =& $mform->createElement('static', 'qnums', '', '<div class="qicons">Move From Here</div>');
-            	}
+                else {
+                    ${$quesgroup}[] =& $mform->createElement('static', 'qnums', '', '<div class="qicons">Move From Here</div>');
+                }
             }
 
             ${$quesgroup}[] =& $mform->createElement('static', 'qtype_'.$question->id, '', '<div class="qtype">'.$qtype.'</div>');
@@ -241,8 +241,8 @@ class questionnaire_questions_form extends moodleform {
 
     }
 
-    function validation($data){
-
+    function validation($data, $files){
+        return parent::validation($data, $files);
     }
 
 }
@@ -299,7 +299,7 @@ class questionnaire_edit_question_form extends moodleform {
             $ohelpname = 'ratescale';
             break;
         case QUESNUMERIC:
-            $deflength = 0;
+            $deflength = 10;
             $defprecise = 0;
             $lhelpname = 'maxdigitsallowed';
             $phelpname = 'numberofdecimaldigits';
@@ -358,7 +358,7 @@ class questionnaire_edit_question_form extends moodleform {
             case 99:
 		        $qtype='sectionbreak';
 		    }
-		        
+
         $mform->addElement('header', 'questionhdr', $streditquestion);
         $mform->addHelpButton('questionhdr', $qtype, 'questionnaire');
 
@@ -471,8 +471,8 @@ class questionnaire_edit_question_form extends moodleform {
         $mform->addGroup($buttonarray, 'buttonar', '', array(' '), false);
     }
 
-    function validation($data){
-
+    function validation($data, $files){
+        return parent::validation($data, $files);
     }
 
 }

@@ -98,7 +98,7 @@ div.qoptcontainer div.ftextarea textarea.qopts {
     font-size:1.3em;
     font-weight:bold;
     text-align:right;
-    width:1.8em;    
+    width:1.8em;
     vertical-align: top;
     padding-top:0.25em;
 }
@@ -238,8 +238,9 @@ body#page-mod-questionnaire-myreport .generaltable {
 }
 
 /* new styles - keep old (quOuter, qnInner, qnInnerTable, qnType) for sections etc. */
-#page-mod-questionnaire-view .qn-number {
-    float: left;
+#page-mod-questionnaire-view .qn-number,
+#page-mod-questionnaire-view .qn-legend {
+     float: left;
 }
 #page-mod-questionnaire-view .qn-question {
     margin-left: 35px;
