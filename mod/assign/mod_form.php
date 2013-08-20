@@ -169,7 +169,7 @@ class mod_assign_mod_form extends moodleform_mod {
         $name = get_string('sendnotifications', 'assign');
         $mform->addElement('selectyesno', 'sendnotifications', $name);
         $mform->addHelpButton('sendnotifications', 'sendnotifications', 'assign');
-        $mform->setDefault('sendnotifications', 1);
+        $mform->setDefault('sendnotifications', 0);
 
         $name = get_string('sendlatenotifications', 'assign');
         $mform->addElement('selectyesno', 'sendlatenotifications', $name);
