@@ -1,1 +1,0 @@
-This is the Moodle 2.2.x branch.
