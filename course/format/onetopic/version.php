@@ -14,6 +14,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Version details
  *
  * @since 2.0
  * @package contribution
@@ -23,5 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = '2012021301';        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version = 2012062605;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires  = 2012062500;        // Requires this Moodle version.
 $plugin->component = 'format_onetopic';    // Full name of the plugin (used for diagnostics)
+$plugin->maturity = MATURITY_BETA;
+$plugin->release = 'guarango';

@@ -1,12 +1,10 @@
-﻿$Id: Readme.txt,v 1.21 2011/10/06 15:45:14 gb2048 Exp $
-
 Introduction
 ------------
 Week based course format with an individual 'toggle' for each week except 0.  The current week is always shown.
 
-This version works with Moodle 2.0+.  And should be fine with 2.1 and 2.2.
+This version works with Moodle 2.2.x.
 
-Documented on http://docs.moodle.org/20/en/Collapsed_Weeks_course_format
+Documented on http://docs.moodle.org/22/en/Collapsed_Weeks_course_format
 
 Installation
 ------------
@@ -186,11 +184,33 @@ Released Moodle 2.0 version.  Treat as completed and out of development.
   3. CONTRIB-3190 - In realising that to make CONTRIB-2975 easier to use I suggested 'Toggle all' functionality and the
                     community said it was a good idea with no negative comments, please see (http://moodle.org/mod/forum/discuss.php?d=176806).
 
-11th October 2011 - Updated version.php to be fully populated.
-
 11th October 2011 - Version 1.3.1 - Branched from Moodle 2.0.x version.
   1. Updated version.php to be fully populated.
   2. MDL-29188 - Formatting of section name.  Causing Moodle 2.1.x branch of Collapsed Weeks.
+
+8th December 2011 - Version 2.2.1 - Moodle Tracker CONTRIB-2497
+  1. Updated Brazilian translation thanks to Tarcísio Nunes (http://moodle.org/user/profile.php?id=1149633).
+  2. Changed version to relate to Moodle version, so this is for Moodle 2.2.
+
+9th December 2011 - Version 2.2.1.1 - Moodle Tracker CONTRIB-3295
+  1. Fixed issue of the web browser miscaluating the width of the content in 'editing' mode so that the sections
+     are less than 100%.
+
+3rd January 2012 - Version 2.2.1.1.1 - Moodle Tracker MDL-30632
+  1. Use consistent edit section icon.
+
+9th January 2012 - Version 2.2.1.1.2
+  1. Corrected licence to be correct one used by Moodle Plugins - thanks to Tim Hunt (http://moodle.org/user/profile.php?id=93821).
+
+23rd January 2012 - Version 2.2.2
+  1. Sorted out UTF-8 BOM issue, see MDL-31343.
+  2. Added Russian translation, thanks to Pavel Evgenjevich Timoshenko (http://moodle.org/user/profile.php?id=1322784).
+  3. Slight change for MDL-31006 to support PHP 5.4.
+
+18th March 2012 - Version 2.2.3
+  1. Implemented CONTRIB-3225 to make Collapsed Weeks accessible to screen readers.
+  2. Implemented CONTRIB-3283 to ensure that you can still access a week when one is removed.
+  3. This is likely to be the last release of Collapsed Weeks due to its integration into Collapsed Topics - CONTRIB-3378.  This release is later than that but I wanted to leave the code without any outstanding issues.
 
 Thanks
 ------
@@ -208,6 +228,12 @@ Michael de Raadt for CONTRIB-1945 & 1946 which sparked fixes in CONTRIB-1952 & C
 Amanda Doughty (http://moodle.org/user/profile.php?id=1062329) for her contribution in solving the AJAX move problem.
 
 Mark Ward (http://moodle.org/user/profile.php?id=489101) for his contribution solving the IE8- display problem.
+
+Pieter Wolters (http://moodle.org/user/profile.php?id=537037) - for the Dutch translation.
+
+Tarcísio Nunes (http://moodle.org/user/profile.php?id=1149633) - for the Brazilian translation.
+
+Pavel Evgenjevich Timoshenko (http://moodle.org/user/profile.php?id=1322784) - for the Russian translation.
 
 References
 ----------
@@ -232,4 +258,4 @@ Desired Enhancements
 3. Use ordered lists / divs instead of tables to fall in line with current web design theory.  Older versions of
    'certain' browsers causing issues in making this happen.
 
-G J Barnard - BSc(Hons)(Sndw), MBCS, CEng, CITP, PGCE - 11th October 2011.
+G J Barnard - MSc, BSc(Hons)(Sndw), MBCS, CEng, CITP, PGCE - 18th March 2012.

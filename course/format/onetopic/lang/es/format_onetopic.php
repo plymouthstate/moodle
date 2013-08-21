@@ -22,7 +22,10 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['currentsection'] = 'Este tema';
 $string['pluginname'] = 'Temas en pestañas';
-$string['sectionname'] = 'Tema'; // Name of a section within your format
+$string['sectionname'] = 'Tema';
 $string['page-course-view-topics'] = 'Alguna página principal de curso en formato onetopic';
 $string['page-course-view-topics-x'] = 'Alguna página de curso en formato onetopic';
+$string['hidefromothers'] = 'Ocultar tema';
+$string['showfromothers'] = 'Mostrar tema';

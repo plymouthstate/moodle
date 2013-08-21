@@ -1,7 +1,7 @@
 COURSE FORMATS Onetopic
 ============================
 
-Package tested in: moodle 2.2+
+Package tested in: moodle 2.3+
 
 QUICK INSTALL
 ==============
@@ -14,6 +14,19 @@ Information in: http://aprendeenlinea.udea.edu.co/lms/investigacion/course/view.
 
 IN VERSION
 =============
+
+2012062605:
+Fixed an error in return links when is edited a resource
+
+2012062603:
+Fixed an error in navigation links when is adding a new topic and the current section is the end
+
+2012062602:
+Fixed an error when is add new topics
+
+2012062601:
+Compatibility with moodle 2.3
+Option coursedisplay used to show/hide section 0 in the page top
 
 2012021301:
 Compatibility with moodle 2.2

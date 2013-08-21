@@ -1,0 +1,238 @@
+/**
+ * Collapsed Topics Information
+ *
+ * A topic based format that solves the issue of the 'Scroll of Death' when a course has many topics. All topics
+ * except zero have a toggle that displays that topic. One or more topics can be displayed at any given time.
+ * Toggles are persistent on a per browser session per course basis but can be made to persist longer by a small
+ * code change. Full installation instructions, code adaptions and credits are included in the 'Readme.txt' file.
+ *
+ * @package    course/format
+ * @subpackage topcoll
+ * @version    See the value of '$plugin->version' in version.php.
+ * @copyright  &copy; 2009-onwards G J Barnard in respect to modifications of standard topics format.
+ * @author     G J Barnard - gjbarnard at gmail dot com and {@link http://moodle.org/user/profile.php?id=442195}
+ * @link       http://docs.moodle.org/en/Collapsed_Topics_course_format
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+.course-content ul.ctopics {
+    margin:0;
+}
+
+.course-content ul.ctlayout {
+    float: left;
+}
+
+.course-content ul.ctopics li.section.main, .course-content ul.ctopics li.tcsection {
+    list-style: none;
+    margin: 5px 0 0 0;
+    padding: 0px;
+}
+
+.course-content ul.ctopics li.section.main .content, .course-content ul.ctopics li.tcsection .content {
+    margin: 0 40px; /* Default used in editing mode. */
+    padding: 0px;
+}
+
+.course-content ul.ctopics li .content .sectionhead h3 {
+    margin: 0em;
+}
+
+.course-content ul.ctopics li.current .content .toggledsection {
+    padding: 0px 0px 5px 0px;
+}
+
+/* -- Set the clickable element of the Toggle -- */
+.course-content ul.ctopics li.section .content .toggle a {
+    display: block;
+    width: auto;
+    padding: 6px 2px 6px 26px; /* The 26px allows the arrow to be on the left and the text next to it. */
+}
+
+body.ie7 .course-content ul.ctopics li.section .content .toggle a {
+    padding: 7px 2px 7px 26px; /* The 26px allows the arrow to be on the left and the text next to it. */
+}
+
+body.mobiletheme .course-content ul.ctopics li.section .content .toggle a,
+body.tablettheme .course-content ul.ctopics li.section .content .toggle a {
+    padding: 7px 7px 7px 35px; /* The 35px allows the arrow to be on the left and the text next to it. */
+}
+
+.course-content ul.ctopics li.section .content .toggle a.toggle_closed {
+    background: transparent url([[pix:format_topcoll|arrow_right]]) no-repeat 5px 45%; /* Position the arrow roughly in the centre of the Toggle.  This is shown by default when JavaScript is disabled. */
+}
+
+body.jsenabled .course-content ul.ctopics li.section .content .toggle a.toggle_open {
+    background: transparent url([[pix:format_topcoll|arrow_down]]) no-repeat 5px 45%; /* Position the arrow roughly in the centre of the Toggle.  This is shown by default when JavaScript is disabled. */
+}
+
+body.jsenabled .course-content ul.ctopics li.section .content .toggle a.toggle_closed {
+    background: transparent url([[pix:format_topcoll|arrow_right]]) no-repeat 5px 45%; /* Position the arrow roughly in the centre of the Toggle.   This is shown by default when JavaScript is enabled. */
+}
+
+body.mobiletheme .course-content ul.ctopics li.tcsection .content, body.mobiletheme  .course-content ul.ctopics li.section.main .content,
+body.tablettheme .course-content ul.ctopics li.tcsection .content, body.tablettheme  .course-content ul.ctopics li.section.main .content {
+    margin: 0;
+}
+
+.course-content ul.ctopics #section-0 .content{
+    padding: 10px;
+}
+
+.course-content ul.ctopics li.section.main .side, .course-content ul.ctopics li.tcsection .side {
+    width: 40px; /* Default used in editing mode. */
+    text-align: center;
+    padding: 0px;
+}
+
+.course-content ul.ctopics li.section .left, .course-content ul.ctopics li.tcsection .left {
+    float:left;
+}
+
+.course-content ul.ctopics li.section.main .left {
+    padding: 10px 0px 0px 0px;
+}
+
+.course-content ul.ctopics li.current.main .right {
+    padding: 0px 0px 0px 0px; /* Cancel out effect of above when having to use 'left' side selector for getting the correct text colour on the right for the current section.  This is because the selector '.course-content .current .left' defines the colour in the theme and therefore any CT specific 'right' implementation would not work for all themes. */
+}
+
+.course-content ul.ctopics li.section .right, .course-content ul.ctopics li.tcsection .right {
+    float:right;
+}
+
+.course-content ul.ctopics li.section .right {
+    line-height: 1.3;
+}
+
+.course-content ul.ctopics li.section .right .tceditsection {
+    float: left;
+}
+
+.jumpmenu {
+    text-align:center;
+}
+
+/* -- The section name and summary of a Toggle -- */
+.course-content ul.ctopics li.section .content .toggle  {
+    display: block;
+    font-size: 0.9em;
+    text-align: left;
+    padding: 0 0;
+    width: auto;
+    line-height: 2em;
+    -moz-border-radius: 0.7em;
+    -webkit-border-radius: 0.7em;
+    border-radius: 0.7em;
+}
+
+/* -- The topic summary text -- */    
+.course-content ul.ctopics li.section .content .toggle a p {
+    font-size: 1.2em;
+    font-style: italic;
+    text-align: left;
+}
+
+/* -- Toggle text */       
+.course-content ul.ctopics li.section .content .toggle a {
+    text-align: center;
+}  
+
+/* -- For centring the 'Topic / Week / Day x' text -- */       
+.course-content ul.ctopics li.section .right span.cps_centre {
+    text-align: center;
+    font-size: 0.7em;
+}  
+
+.course-content ul.ctopics li.section .content .toggle {
+    width: 100%;
+}
+
+/* -- Toggle text -- */
+.course-content ul.ctopics li.section .content .toggle a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+body.mobiletheme .course-content ul.ctopics li.section .content .toggle a, body.tablettheme .course-content ul.ctopics li.section .content .toggle a {
+    font-weight: normal; /* So not blurred on mobile devices. */
+}
+
+.course-content ul.ctopics li.section .content .toggledsection {
+    min-height: 30px;
+}
+
+/* -- Hiding the sections -- */
+body.jsenabled .toggledsection {
+    display:none; /* If JavaScript is enabled then this css will apply and the section will be hidden. */
+}
+
+/* -- Size of the spacer row -- */
+.section .spacer {
+    height:0.5em;
+}
+
+/* Toggle all */
+#toggle-all-and-settings .content .sectionbody h4 {
+    display: inline;
+    padding: 6px;
+    margin-bottom: 0em;
+}
+
+#toggle-all-and-settings .content .sectionbody h4 a {
+    padding: 7px 7px 7px 30px; /* The 30px allows the arrow to be on the left and the text next to it. */
+    text-align: left;
+    width: 35px;
+    text-decoration: none;
+}
+
+#toggle-all-and-settings {
+    background: none repeat scroll 0 0 transparent;
+}
+
+body.ie7 #toggle-all-and-settings {
+    display: inline-block; /* Not perfect but works. */
+}
+
+#toggle-all-and-settings .content .sectionbody {
+    padding: 0px 0px 0px 5px;
+}
+
+#toggle-all-and-settings .content .sectionbody a {
+    padding: 7px 0px 7px 24px;
+}
+
+#toggle-all-and-settings .content .sectionbody a.on {
+    background: transparent url([[pix:format_topcoll|arrow_down]]) no-repeat 0px 45%; 
+}
+
+#toggle-all-and-settings .content .sectionbody a.off {
+    background: transparent url([[pix:format_topcoll|arrow_right]]) no-repeat 0px 45%; 
+}
+
+body.ie7 #toggle-all-and-settings .content .sectionbody a.on {
+    background: transparent url([[pix:format_topcoll|arrow_down]]) no-repeat 0px 5px;     
+}
+
+body.ie7 #toggle-all-and-settings .content .sectionbody a.off {
+    background: transparent url([[pix:format_topcoll|arrow_right]]) no-repeat 0px 5px; 
+}
+/* Set settings */
+#tc-set-settings {
+    text-align: right;
+    display: inline;
+    float: right;  
+    vertical-align: top;
+}
