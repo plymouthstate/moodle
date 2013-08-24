@@ -26,4 +26,4 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
 }
 
-define('PSU_PLUGIN_NAME', 'local_kaltura');
+define('PSU_PLUGIN_NAME', 'local_psu');
