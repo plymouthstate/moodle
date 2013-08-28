@@ -13,3 +13,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once(dirname(__FILE__) . '/locallib.php');
+
+function local_psu_extends_navigation() {
+		global $PAGE;
+
+		$jsmodule = array(
+				'name'     => 'local_psu',
+				'fullpath' => '/local/psu/js/psu.js',
+				'requires' => array('base', 'dom', 'node'),
+				);
+
+		$test_script = $CFG->wwwroot . '/local/psu/test.php';
+
+		if( get_config( PSU_PLUGIN_NAME, 'disable_destructive_restore' ) ) {
+			$PAGE->requires->js_init_call('M.local_psu.init', array($test_script), true, $jsmodule);
+		}//end if
+
+
+		if( get_config( PSU_PLUGIN_NAME, 'assignment_sendnotification_default' ) ) {
+			$PAGE->requires->js_init_call('M.local_psu.toggle_assignment_sendnotification', array($test_script), true, $jsmodule);
+		}//end if
+
+}//end function

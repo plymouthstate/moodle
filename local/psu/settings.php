@@ -74,20 +74,4 @@ if ($hassiteconfig) {
     $adminsetting->plugin = PSU_PLUGIN_NAME;
     $settings->add($adminsetting);
 
-		$jsmodule = array(
-				'name'     => 'local_psu',
-				'fullpath' => '/local/psu/js/psu.js',
-				'requires' => array('base', 'dom', 'node'),
-				);
-
-		$test_script = $CFG->wwwroot . '/local/psu/test.php';
-
-		if( get_config( PSU_PLUGIN_NAME, 'disable_destructive_restore' ) ) {
-			$PAGE->requires->js_init_call('M.local_psu.init', array($test_script), true, $jsmodule);
-		}//end if
-
-
-		if( get_config( PSU_PLUGIN_NAME, 'assignment_sendnotification_default' ) ) {
-			$PAGE->requires->js_init_call('M.local_psu.toggle_assignment_sendnotification', array($test_script), true, $jsmodule);
-		}//end if
-}
+}//end if
