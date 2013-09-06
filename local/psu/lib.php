@@ -29,8 +29,7 @@ function local_psu_extends_navigation() {
 			$PAGE->requires->js_init_call('M.local_psu.init', array($test_script), true, $jsmodule);
 		}//end if
 
-
-		if( get_config( PSU_PLUGIN_NAME, 'assignment_sendnotification_default' ) ) {
+		if( 'Editing Assignment' == $PAGE->title && !$PAGE->cm->instance && get_config( PSU_PLUGIN_NAME, 'assignment_sendnotification_default' )) {
 			$PAGE->requires->js_init_call('M.local_psu.toggle_assignment_sendnotification', array($test_script), true, $jsmodule);
 		}//end if
 
