@@ -110,17 +110,20 @@ class kaltura_course_testcase extends advanced_testcase {
         $course2 = $this->getDataGenerator()->create_course(array('idnumber' => 'id2', 'fullname' => 'course2', 'shortname' => 'crs2'));
         $course3 = $this->getDataGenerator()->create_course(array('idnumber' => 'id3', 'fullname' => 'course3', 'shortname' => 'crs3'));
         $course4 = $this->getDataGenerator()->create_course(array('idnumber' => 'id4', 'fullname' => 'course4', 'shortname' => 'crs4'));
+        $course5 = $this->getDataGenerator()->create_course(array('idnumber' => 'id5', 'fullname' => 'course5', 'shortname' => 'crs5'));
 
-        $DB->insert_record('log', (object)array('time' => '1362281620', 'course' => $course1->id, 'userid' => $user->id));
-        $DB->insert_record('log', (object)array('time' => '1362281621', 'course' => $course2->id, 'userid' => $user->id));
-        $DB->insert_record('log', (object)array('time' => '1362281622', 'course' => $course3->id, 'userid' => $user->id));
-        $DB->insert_record('log', (object)array('time' => '1362281623', 'course' => $course4->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362280000', 'courseid' => $course5->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362290100', 'courseid' => $course2->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362280200', 'courseid' => $course1->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362280400', 'courseid' => $course4->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362280300', 'courseid' => $course3->id, 'userid' => $user->id));
+        $DB->insert_record('user_lastaccess', array('timeaccess' => '1362290200', 'courseid' => -1, 'userid' => $user->id));
 
         $role = $DB->get_record('role', array('shortname' => 'manager'));
         $plugin = enrol_get_plugin('manual');
 
-        // Return only 3 courses
-        set_config('recent_courses_display_limit', 3, KALTURA_PLUGIN_NAME);
+        // Return only 4 courses
+        set_config('recent_courses_display_limit', 4, KALTURA_PLUGIN_NAME);
 
         $courses = array($course1, $course2, $course3, $course4);
 
@@ -144,6 +147,12 @@ class kaltura_course_testcase extends advanced_testcase {
     public function course_provider() {
         $data = array(
             (object) array(
+                'id' => '3',
+                'idnumber' => 'id2',
+                'fullname' => 'course2',
+                'shortname' => 'crs2'
+            ),
+            (object) array(
                 'id' => '5',
                 'idnumber' => 'id4',
                 'fullname' => 'course4',
@@ -156,10 +165,10 @@ class kaltura_course_testcase extends advanced_testcase {
                 'shortname' => 'crs3'
             ),
             (object) array(
-                'id' => '3',
-                'idnumber' => 'id2',
-                'fullname' => 'course2',
-                'shortname' => 'crs2'
+                'id' => '2',
+                'idnumber' => 'id1',
+                'fullname' => 'course1',
+                'shortname' => 'crs1'
             )
         );
 

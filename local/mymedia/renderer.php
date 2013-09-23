@@ -400,11 +400,8 @@ class local_mymedia_renderer extends plugin_renderer_base {
             $output .= '&nbsp;&nbsp;';
         }
 
-        if (has_capability('local/mymedia:sharesite', $context, $USER) ||
-            has_capability('local/mymedia:sharecourse', $context, $USER)) {
-
+        if (local_mymedia_check_capability('local/mymedia:sharesite') || local_mymedia_check_capability('local/mymedia:sharecourse')) {
             $output .= $this->create_video_share_link_markup();
-/*            $output .= '&nbsp;&nbsp;';*/
         }
 
 /*

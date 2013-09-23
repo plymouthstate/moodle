@@ -1,5 +1,4 @@
 <?php
-
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
@@ -16,43 +15,69 @@
 /**
  * Automatic media embedding filter class.
  *
- * @package    Filter
- * @subpackage Kaltura
+ * @package    filter_kaltura
+ * @copyright  2013 onwards Remote-Learner {@link http://www.remote-learner.ca/}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-//require_once($CFG->libdir.'/filelib.php');
-require_once($CFG->dirroot . '/local/kaltura/locallib.php');
 
 class filter_kaltura extends moodle_text_filter {
 
     // Static class variables are used to generate the same
     // user session string for all videos displayed on the page
-    public static $videos         = array();
-    public static $ksession       = '';
+    /** @var array $videos - an array of videos that have been rendered on a single page request */
+    public static $videos    = array();
 
+    /** @var string $ksession - holds the kaltura session string */
+    public static $ksession = '';
+
+    /** @var string $player - the player id used to render embedded video in */
     public static $player = '';
+
+    /** @var int $courseid - the course id */
     public static $courseid = 0;
 
-    public static $kaltura_mobile_js_init = false;
-    public static $mobile_theme_used = false;
-    public static $player_number = 0;
+    /** @var bool $kalturamobilejsinit - flag to denote whether the mobile javascript has been initialized */
+    public static $kalturamobilejsinit = false;
 
-    /** This function resolves KALDEV-201
-     *
+    /** @var bool $mobilethemeused - flag to denote whether the mobile theme is used */
+    public static $mobilethemeused = false;
+
+    /** @var int $playernumber - keeps a count of the number of players rendered on the page in a single page request */
+    public static $playernumber = 0;
+
+    /* @var bool $kalturalocal - indicates if local/kaltura has been installed */
+    public static $kalturalocal = false;
+
+    /**
+     * This function runs once during a single page request and initialzies
+     * some data.  This function also resolves KALDEV-201
+     * @param stdClass $page - Moodle page object
+     * @param stdClass $context - page context object
+     * @return void
      */
     public function setup($page, $context) {
-        global $THEME;
+        global $CFG, $THEME;
+
+        // Check if the local Kaltura plug-in exists.
+        if (self::$kalturalocal === false) {
+            if (file_exists($CFG->dirroot.'/local/kaltura/locallib.php')) {
+                require_once($CFG->dirroot.'/local/kaltura/locallib.php');
+                self::$kalturalocal = true;
+            } else {
+                // Leave
+                return;
+            }
+        }
 
         // Determine if the mobile theme is being used
         $theme = get_selected_theme_for_device_type();
 
         if (0 == strcmp($theme, 'mymobile')) {
-            self::$mobile_theme_used = true;
+            self::$mobilethemeused = true;
         }
 
 
-        if (empty(self::$kaltura_mobile_js_init)) {
+        if (empty(self::$kalturamobilejsinit)) {
 
             if (local_kaltura_has_mobile_flavor_enabled() && local_kaltura_get_enable_html5()) {
 
@@ -64,13 +89,25 @@ class filter_kaltura extends moodle_text_filter {
                 $page->requires->js($js_url_frame, false);
 
             }
-            self::$kaltura_mobile_js_init = true;
+            self::$kalturamobilejsinit = true;
         }
     }
 
+    /**
+     * This function does the work of converting text that matches a regular expression into
+     * Kaltura video markup, so that links to Kaltura videos are displayed in the Kaltura
+     * video player.
+     * @param string $text - Text that is to be displayed on the page
+     * @param array $options - an array of additional options
+     * @return string - The same text or modified text is returned
+     */
     function filter($text, array $options = array()) {
-
         global $CFG, $PAGE, $DB;
+
+        // Check if the local Kaltura plug-in exists.
+        if (!self::$kalturalocal) {
+            return $text;
+        }
 
         // Clear video list
         self::$videos = array();
@@ -79,31 +116,30 @@ class filter_kaltura extends moodle_text_filter {
             // non string data can not be filtered anyway
             return $text;
         }
+
         if (stripos($text, '</a>') === false) {
-            // performance shortcut - all regexes bellow end with the </a> tag,
-            // if not present nothing can match
+            // performance shortcut - all regexes bellow end with the </a> tag, if not present nothing can match
             return $text;
         }
 
-        $newtext = $text; // we need to return the original value if regex fails!
+        // we need to return the original value if regex fails!
+        $newtext = $text;
 
         if (!empty($CFG->filter_kaltura_enable)) {
-
             $uri = local_kaltura_get_host();
             $uri = rtrim($uri, '/');
             $uri = str_replace(array('.', '/', 'https'), array('\.', '\/', 'https?'), $uri);
 
             $search = '/<a\s[^>]*href="('.$uri.')\/index\.php\/kwidget\/wid\/_([0-9]+)\/uiconf_id\/([0-9]+)\/entry_id\/([\d]+_([a-z0-9]+))\/v\/flash"[^>]*>([^>]*)<\/a>/is';
 
-            // Update the static array of videos, so that later on in the code we can create generate
-            // a viewing session for each video 
+            // Update the static array of videos, so that later on in the code we can create generate a viewing session for each video
             preg_replace_callback($search, 'update_video_list', $newtext);
 
             // Exit the function if the video entries array is empty
             if (empty(self::$videos)) {
                 return $text;
             }
-            
+
             // Get the filter player ui conf id
             if (empty(self::$player)) {
                 self::$player = local_kaltura_get_player_uiconf('player_filter');
@@ -115,7 +151,6 @@ class filter_kaltura extends moodle_text_filter {
             }
 
             try {
-
                 // Create the the session for viewing of each video detected
                 self::$ksession = local_kaltura_generate_kaltura_session(self::$videos);
 
@@ -126,17 +161,17 @@ class filter_kaltura extends moodle_text_filter {
                     throw new Exception("Unable to connect");
                 }
 
-                // Check if the repository plug-in exists.  Add Kaltura video to
-                // the Kaltura category
+                // Check if the repository plug-in exists.  Add Kaltura video to the Kaltura category
                 $enabled  = local_kaltura_kaltura_repository_enabled();
                 $category = false;
 
                 if ($enabled) {
+                    // Because the filter() method is called multiple times during a page request (once for every course section or once for every forum post),
+                    // the Kaltura repository library file is included only if the repository plug-in is enabled.
                     require_once($CFG->dirroot.'/repository/kaltura/locallib.php');
 
                    // Create the course category
                    repository_kaltura_add_video_course_reference($connection, self::$courseid, self::$videos);
-
                 }
 
                 $newtext = preg_replace_callback($search, 'filter_kaltura_callback', $newtext);
@@ -194,10 +229,10 @@ function filter_kaltura_callback($link) {
     // Generate player markup
     $markup = '';
 
-    filter_kaltura::$player_number++;
-    $uid = filter_kaltura::$player_number . '_' . mt_rand();
+    filter_kaltura::$playernumber++;
+    $uid = filter_kaltura::$playernumber . '_' . mt_rand();
 
-    if (!filter_kaltura::$mobile_theme_used) {
+    if (!filter_kaltura::$mobilethemeused) {
         $markup  = local_kaltura_get_kdp_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$ksession/*, $uid*/);
     } else {
         $markup  = local_kaltura_get_kwidget_code($entry_obj, filter_kaltura::$player, filter_kaltura::$courseid, filter_kaltura::$ksession/*, $uid*/);

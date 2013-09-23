@@ -32,6 +32,8 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
     class repository_kaltura extends repository {
 
         var $sort;
+        var $root_path = '';
+        var $root_path_id = '';
 
         // Search criteria
         var $search_name          = ''; // Video name
@@ -40,10 +42,7 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
         var $search_course_name   = ''; // Course name
         var $search_for           = ''; // Search for videos shared with courses or used in courses
 
-        private static $pagesize        = 0;
-        private static $rootcategory    = null;
-        private static $rootcategoryid  = null;
-        private static $rootcatexists   = false;
+        private static $page_size = 0;
 
         public function __construct($repositoryid, $context = SITEID, $options = array()) {
             global $COURSE, $PAGE;
@@ -52,56 +51,44 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
 
                 parent::__construct($repositoryid, $context, $options);
 
-                // Check if the page size has already been initialized, Moodle calls the repository
-                // constructor 3 times for every WYSIWYG editor displayed on the page
-                if (0 == self::$pagesize) {
-                    self::$pagesize = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'itemsperpage');
-                }
+                self::$page_size = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'itemsperpage');
 
                 $kaltura = new kaltura_connection();
                 $connection = $kaltura->get_connection(true, KALTURA_SESSION_LENGTH);
 
-                // Check if the root category is null
-                if (is_null(self::$rootcategory)) {
-                    self::$rootcategory = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
-                }
+                $rootcategory = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
+                $rootcategory_id = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
 
-                // Check if the root category id is null
-                if (is_null(self::$rootcategoryid)) {
-                    self::$rootcategoryid = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
-                }
+                $this->root_path     = $rootcategory;
+                $this->root_path_id  = $rootcategory_id;
 
-                if (empty(self::$rootcatexists)) {
+                if ($connection && !empty($rootcategory)) {
 
-                    if ($connection && !empty(self::$rootcategory)) {
-                        // First check if root category path already exists.  If the path exists then use it
-                        $existingrootcategory = repository_kaltura_category_path_exists($connection, self::$rootcategory);
+                    // First check if root category path already exists.  If the path exists then use it
+                    $existing_root_category = repository_kaltura_category_path_exists($connection, $rootcategory);
 
-                        if ($existingrootcategory) {
+                    if ($existing_root_category) {
 
-                            // Set root category id configuration setting if it hasn't been set
-                            if (empty(self::$rootcategoryid)) {
-                                set_config('rootcategory_id', $existingrootcategory->id, REPOSITORY_KALTURA_PLUGIN_NAME);
-                                self::$rootcategoryid = $existingrootcategory->id;
-                            }
-                        } else {
-                            // The category does not exist on the Kaltura server, create the category now and 
-                            // set the static variables
-                            $result = repository_kaltura_create_root_category($connection);
-
-                            if (is_array($result) && array_key_exists($result[0], $result) && array_key_exists($result[1], $result)) {
-                                self::$rootcategory   = $result[0];
-                                self::$rootcategoryid = $result[1];
-                            }
+                        // Set root category id configuration setting if it hasn't bee set
+                        if (empty($rootcategory_id)) {
+                            set_config('rootcategory_id', $existing_root_category->id, REPOSITORY_KALTURA_PLUGIN_NAME);
                         }
-
-                        // Set category exists flag
-                        self::$rootcatexists = true;
                     }
+
+                    // If the root category id has not been set, attempt to create the root category
+                    if (empty($rootcategory_id) ) {
+                        $result = repository_kaltura_create_root_category($connection);
+
+                        if (is_array($result)) {
+                            $this->root_path    = $result[0];
+                            $this->root_path_id = $result[1];
+                        }
+                    }
+
                 }
 
                 // Lastly, check to see if the root category and root category id have been initialized
-                if (empty(self::$rootcategory) || empty(self::$rootcategoryid)) {
+                if (empty($this->root_path) || empty($this->root_path_id)) {
                     throw new Exception("Kaltura Repository root cateogry or root category id not set");
                 }
 
@@ -119,7 +106,7 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
 
         private function root_category_initialized() {
 
-            if (empty(self::$rootcategory) && empty(self::$rootcategoryid)) {
+            if (empty($this->root_path) && empty($this->root_path_id)) {
                 return false;
             }
 
@@ -241,14 +228,14 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
                     $profile = repository_kaltura_get_metadata_profile_info($connection);
 
                     } else {
-                        // Check if the metadata profile id exists in the mdl_config_table
-                        $profile_id = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'metadata_profile_id');
+	                    // Check if the metadata profile id exists in the mdl_config_table
+	                    $profile_id = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'metadata_profile_id');
 
-                        // If empty then set the profile id
-                        if (empty($profile_id)) {
-                            $profile_obj = repository_kaltura_get_metadata_profile($connection);
-                            set_config('metadata_profile_id', $profile_obj->id, REPOSITORY_KALTURA_PLUGIN_NAME);
-                        }
+	                    // If empty then set the profile id
+	                    if (empty($profile_id)) {
+	                        $profile_obj = repository_kaltura_get_metadata_profile($connection);
+	                        set_config('metadata_profile_id', $profile_obj->id, REPOSITORY_KALTURA_PLUGIN_NAME);
+	                    }
                 }
 
                 $mform->addElement('static', 'metadata', get_string('using_metadata_profile', 'repository_kaltura'),
@@ -576,12 +563,12 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
             $ui_conf_id  = local_kaltura_get_player_uiconf();
             $ret['list'] = repository_kaltura_format_data($search_results, $uri, $partner_id, $ui_conf_id);
 
-            if ($search_results->totalCount > self::$pagesize) {
+            if ($search_results->totalCount > self::$page_size) {
 
                 $ret['page'] = $page_param;
-                $ret['pages'] = ceil($search_results->totalCount / self::$pagesize);
+                $ret['pages'] = ceil($search_results->totalCount / self::$page_size);
                 $ret['total'] = $search_results->totalCount;
-                $ret['perpage'] = (int) self::$pagesize;
+                $ret['perpage'] = (int) self::$page_size;
 
             }
 
@@ -600,11 +587,13 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
          */
         function category_tree() {}
     }
-} else { ///////////////////////// MOODLE 2.3 OR GREATER ///////////////////////////////
+} else {                                              ///////////////////////// MOODLE 2.3 OR GREATER ///////////////////////////////
 
     class repository_kaltura extends repository {
 
         var $sort;
+        var $root_path = '';
+        var $root_path_id = '';
 
         // Search criteria
         var $search_name          = ''; // Video name
@@ -613,10 +602,7 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
         var $search_course_name   = ''; // Course name
         var $search_for           = ''; // Search for videos shared with courses or used in courses
 
-        private static $pagesize       = 0;
-        private static $rootcategory    = null;
-        private static $rootcategoryid  = null;
-        private static $rootcatexists   = false;
+        private static $page_size = 0;
 
         public function __construct($repositoryid, $context = SITEID, $options = array()) {
             global $PAGE, $DB;
@@ -625,58 +611,44 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
 
                 parent::__construct($repositoryid, $context, $options);
 
-                // Check if the page size has already been initialized, Moodle calls the repository
-                // constructor 3 times for every WYSIWYG editor displayed on the page
-                if (0 == self::$pagesize) {
-                    self::$pagesize = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'itemsperpage');
-                }
-                
+                self::$page_size = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'itemsperpage');
+
                 $kaltura = new kaltura_connection();
                 $connection = $kaltura->get_connection(true, KALTURA_SESSION_LENGTH);
-                $rootcategory = null;
-                $rootcategory_id = null;
 
-                // Check if the root category is null
-                if (is_null(self::$rootcategory)) {
-                    self::$rootcategory = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
-                }
+                $rootcategory    = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory');
+                $rootcategory_id = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
 
-                // Check if the root category id is null
-                if (is_null(self::$rootcategoryid)) {
-                    self::$rootcategoryid = get_config(REPOSITORY_KALTURA_PLUGIN_NAME, 'rootcategory_id');
-                }
+                $this->root_path     = $rootcategory;
+                $this->root_path_id  = $rootcategory_id;
 
-                if (empty(self::$rootcatexists)) {
+                if ($connection && !empty($rootcategory)) {
 
-                    if ($connection && !empty(self::$rootcategory)) {
-                        // First check if root category path already exists.  If the path exists then use it
-                        $existingrootcategory = repository_kaltura_category_path_exists($connection, self::$rootcategory);
+                    // First check if root category path already exists.  If the path exists then use it
+                    $existing_root_category = repository_kaltura_category_path_exists($connection, $rootcategory);
 
-                        if ($existingrootcategory) {
+                    if ($existing_root_category) {
 
-                            // Set root category id configuration setting if it hasn't been set
-                            if (empty(self::$rootcategoryid)) {
-                                set_config('rootcategory_id', $existingrootcategory->id, REPOSITORY_KALTURA_PLUGIN_NAME);
-                                self::$rootcategoryid = $existingrootcategory->id;
-                            }
-                        } else {
-                            // The category does not exist on the Kaltura server, create the category now and 
-                            // set the static variables
-                            $result = repository_kaltura_create_root_category($connection);
-
-                            if (is_array($result) && array_key_exists($result[0], $result) && array_key_exists($result[1], $result)) {
-                                self::$rootcategory   = $result[0];
-                                self::$rootcategoryid = $result[1];
-                            }
+                        // Set root category id configuration setting if it hasn't bee set
+                        if (empty($rootcategory_id)) {
+                            set_config('rootcategory_id', $existing_root_category->id, REPOSITORY_KALTURA_PLUGIN_NAME);
                         }
-
-                        // Set category exists flag
-                        self::$rootcatexists = true;
                     }
+
+                    // If the root category id has not been set, attempt to create the root category
+                    if (empty($rootcategory_id) ) {
+                        $result = repository_kaltura_create_root_category($connection);
+
+                        if (is_array($result)) {
+                            $this->root_path    = $result[0];
+                            $this->root_path_id = $result[1];
+                        }
+                    }
+
                 }
 
                 // Lastly, check to see if the root category and root category id have been initialized
-                if (empty(self::$rootcategory) || empty(self::$rootcategoryid)) {
+                if (empty($this->root_path) || empty($this->root_path_id)) {
                     throw new Exception("Kaltura Repository root cateogry or root category id not set");
                 }
 
@@ -694,7 +666,7 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
 
         private function root_category_initialized() {
 
-            if (empty(self::$rootcategory) && empty(self::$rootcategoryid)) {
+            if (empty($this->root_path) && empty($this->root_path_id)) {
                 return false;
             }
 
@@ -1164,12 +1136,12 @@ if ($version) { ///////////////////////// MOODLE 2.2 OR LESS ///////////////////
             $ui_conf_id  = local_kaltura_get_player_uiconf();
             $ret['list'] = repository_kaltura_format_data($search_results, $uri, $partner_id, $ui_conf_id);
 
-            if ($search_results->totalCount > self::$pagesize) {
+            if ($search_results->totalCount > self::$page_size) {
 
                 $ret['page'] = $page_param;
-                $ret['pages'] = ceil($search_results->totalCount / self::$pagesize);
+                $ret['pages'] = ceil($search_results->totalCount / self::$page_size);
                 $ret['total'] = $search_results->totalCount;
-                $ret['perpage'] = (int) self::$pagesize;
+                $ret['perpage'] = (int) self::$page_size;
 
             }
 

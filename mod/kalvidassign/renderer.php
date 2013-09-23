@@ -940,6 +940,80 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
     }
 
     /**
+     * Displays the assignments listing table.
+     *
+     * @param object $course The course odject.
+     */
+    public function display_kalvidassignments_table($course) {
+        global $CFG, $DB, $PAGE, $OUTPUT, $USER;
+
+        echo html_writer::start_tag('center');
+
+        $strplural = get_string('modulenameplural', 'kalvidassign');
+
+        if (!$cms = get_coursemodules_in_course('kalvidassign', $course->id, 'm.timedue')) {
+            echo get_string('noassignments', 'mod_kalvidassign');
+            echo $OUTPUT->continue_button($CFG->wwwroot.'/course/view.php?id='.$course->id);
+        }
+
+        $strsectionname  = get_string('sectionname', 'format_'.$course->format);
+        $usesections = course_format_uses_sections($course->format);
+        $modinfo = get_fast_modinfo($course);
+
+        if ($usesections) {
+            $sections = $modinfo->get_section_info_all();
+        }
+        $courseindexsummary = new kalvidassign_course_index_summary($usesections, $strsectionname);
+
+        $timenow = time();
+        $currentsection = '';
+        $assignmentcount = 0;
+
+        foreach ($modinfo->instances['kalvidassign'] as $cm) {
+            if (!$cm->uservisible) {
+                continue;
+            }
+
+            $assignmentcount++;
+            $timedue = $cms[$cm->id]->timedue;
+
+            $sectionname = '';
+            if ($usesections && $cm->sectionnum) {
+                $sectionname = get_section_name($course, $sections[$cm->sectionnum]);
+            }
+
+            $submitted = '';
+            $context = context_module::instance($cm->id);
+
+            if (has_capability('mod/kalvidassign:gradesubmission', $context)) {
+                $submitted = $DB->count_records('kalvidassign_submission', array('vidassignid' => $cm->instance));
+            } else if (has_capability('mod/kalvidassign:submit', $context)) {
+                if ($DB->count_records('kalvidassign_submission', array('vidassignid' => $cm->instance, 'userid' => $USER->id)) > 0) {
+                    $submitted = get_string('submitted', 'mod_kalvidassign');
+                } else {
+                    $submitted = get_string('nosubmission', 'mod_kalvidassign');
+                }
+            }
+
+            $gradinginfo = grade_get_grades($course->id, 'mod', 'kalvidassign', $cm->instance, $USER->id);
+            if (isset($gradinginfo->items[0]->grades[$USER->id]) && !$gradinginfo->items[0]->grades[$USER->id]->hidden ) {
+                $grade = $gradinginfo->items[0]->grades[$USER->id]->str_grade;
+            } else {
+                $grade = '-';
+            }
+
+            $courseindexsummary->add_assign_info($cm->id, $cm->name, $sectionname, $timedue, $submitted, $grade);
+        }
+
+        if ($assignmentcount > 0) {
+            $pagerenderer = $PAGE->get_renderer('mod_kalvidassign');
+            echo $pagerenderer->render($courseindexsummary);
+        }
+
+        echo html_writer::end_tag('center');
+    }
+
+    /**
      * Displays the YUI panel markup used to display the KCW
      *
      * @return string - HTML markup
@@ -1124,5 +1198,58 @@ class mod_kalvidassign_renderer extends plugin_renderer_base {
         $output = '<br /><center>' .html_writer::tag('span', $slider_border . $loading_text, $attr) . '</center>';
 
         return $output;
+    }
+
+    /**
+     * Render a course index summary.
+     *
+     * @param kalvidassign_course_index_summary $indexsummary Structure for index summary.
+     * @return string HTML for assignments summary table
+     */
+    public function render_kalvidassign_course_index_summary(kalvidassign_course_index_summary $indexsummary) {
+        $strplural = get_string('modulenameplural', 'kalvidassign');
+        $strsectionname  = $indexsummary->courseformatname;
+        $strduedate = get_string('duedate', 'kalvidassign');
+        $strsubmission = get_string('submission', 'kalvidassign');
+        $strgrade = get_string('grade');
+
+        $table = new html_table();
+        if ($indexsummary->usesections) {
+            $table->head  = array ($strsectionname, $strplural, $strduedate, $strsubmission, $strgrade);
+            $table->align = array ('left', 'left', 'center', 'right', 'right');
+        } else {
+            $table->head  = array ($strplural, $strduedate, $strsubmission, $strgrade);
+            $table->align = array ('left', 'left', 'center', 'right');
+        }
+        $table->data = array();
+
+        $currentsection = '';
+        foreach ($indexsummary->assignments as $info) {
+            $params = array('id' => $info['cmid']);
+            $link = html_writer::link(new moodle_url('/mod/kalvidassign/view.php', $params), $info['cmname']);
+            $due = $info['timedue'] ? userdate($info['timedue']) : '-';
+
+            $printsection = '';
+            if ($indexsummary->usesections) {
+                if ($info['sectionname'] !== $currentsection) {
+                    if ($info['sectionname']) {
+                        $printsection = $info['sectionname'];
+                    }
+                    if ($currentsection !== '') {
+                        $table->data[] = 'hr';
+                    }
+                    $currentsection = $info['sectionname'];
+                }
+            }
+
+            if ($indexsummary->usesections) {
+                $row = array($printsection, $link, $due, $info['submissioninfo'], $info['gradeinfo']);
+            } else {
+                $row = array($link, $due, $info['submissioninfo'], $info['gradeinfo']);
+            }
+            $table->data[] = $row;
+        }
+
+        return html_writer::table($table);
     }
 }

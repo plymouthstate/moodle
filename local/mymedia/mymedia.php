@@ -158,7 +158,7 @@ if ($enabled) {
         } else {
             add_to_log(SITEID, 'local_mymedia', 'View - no videos', '', 'no videos');
 
-            echo $renderer->create_options_table_upper($page);
+            echo $renderer->create_options_table_upper($page, $partner_id, $login_session);
 
             echo '<center>'. get_string('no_videos', 'local_mymedia') . '</center>';
 
@@ -196,9 +196,9 @@ if ($enabled) {
 
             );
 
-        $edit_meta   = has_capability('local/mymedia:editmetadata', $context, $USER) ? 1 : 0;
-        $edit_course = has_capability('local/mymedia:sharecourse', $context, $USER) ? 1 : 0;
-        $edit_site   = has_capability('local/mymedia:sharesite', $context, $USER) ? 1 : 0;
+        $edit_meta = has_capability('local/mymedia:editmetadata', $context, $USER) ? 1 : 0;
+        $edit_course = local_mymedia_check_capability('local/mymedia:sharecourse');
+        $edit_site = local_mymedia_check_capability('local/mymedia:sharesite');
 
         $save_video_script = "../../local/mymedia/save_video_details.php?entry_id=";
         $conversion_script = "../../local/mymedia/check_conversion.php?courseid={$courseid}&entry_id=";

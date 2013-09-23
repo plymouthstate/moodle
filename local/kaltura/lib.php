@@ -29,7 +29,11 @@ require_once(dirname(__FILE__) . '/locallib.php');
  * @return - nothing
  */
 function kaltura_extends_navigation($navigation) {
-    global $USER, $PAGE, $SITE;
+    global $USER, $PAGE, $CFG, $SITE;
+
+    if (!file_exists($CFG->dirroot.'/repository/kaltura/locallib.php')) {
+        return '';
+    }
 
     $isadmin = is_siteadmin($USER);
 

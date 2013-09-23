@@ -42,3 +42,49 @@ function mymedia_extends_navigation($navigation) {
     }
 }
 
+/**
+ * This function checks for capability across all context levels.
+ *
+ * @param string $capability The name of capability we are checking
+ * @return boolean true if capability found, false otherwise
+ */
+function local_mymedia_check_capability($capability) {
+    global $DB, $USER;
+    $result = false;
+
+    // Site admins can do anything
+    if (is_siteadmin($USER->id)) {
+        $result = true;
+    }
+
+    // Look for share permissions in the USER global
+    if (!$result && isset($USER->access['rdef'])) {
+        foreach ($USER->access['rdef'] as $contextelement) {
+            if (isset($contextelement[$capability]) && $contextelement[$capability] == 1) {
+                $result = true;
+            }
+        }
+    }
+
+    // Look for share permissions in the database for any context level in case it wasn't found in USER global
+    if (!$result) {
+        $sql = "SELECT ra.*
+                  FROM {role_assignments} ra
+            INNER JOIN {role_capabilities} rc ON rc.roleid = ra.roleid
+                 WHERE ra.userid = :userid
+                       AND rc.capability = :capability
+                       AND rc.permission = :permission";
+
+        $params = array(
+            'userid' => $USER->id,
+            'capability' => $capability,
+            'permission' => CAP_ALLOW
+        );
+
+        if ($DB->record_exists_sql($sql, $params)) {
+            $result = true;
+        }
+    }
+
+    return $result;
+}

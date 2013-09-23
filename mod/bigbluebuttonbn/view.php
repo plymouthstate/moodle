@@ -16,6 +16,7 @@ require_once(dirname(__FILE__).'/locallib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $b  = optional_param('n', 0, PARAM_INT);  // bigbluebuttonbn instance ID
+$group  = optional_param('group', 0, PARAM_INT);  // bigbluebuttonbn group ID
 
 if ($id) {
     $cm         = get_coursemodule_from_id('bigbluebuttonbn', $id, 0, false, MUST_EXIST);
@@ -28,6 +29,7 @@ if ($id) {
 } else {
     print_error('You must specify a course_module ID or an instance ID');
 }
+$module = $DB->get_record('modules', array('name' => 'bigbluebuttonbn'));
 
 require_login($course, true, $cm);
 
@@ -120,7 +122,7 @@ $parsedUrl = parse_url($CFG->wwwroot);
 $bbbsession['originServerName'] = $parsedUrl['host'];
 $bbbsession['originServerUrl'] = $CFG->wwwroot;
 $bbbsession['originServerCommonName'] = '';
-$bbbsession['originTag'] = 'moodle-mod_bigbluebuttonbn 1.0.8';
+$bbbsession['originTag'] = 'moodle-mod_bigbluebuttonbn ('.$module->version.')';
 $bbbsession['context'] = $course->fullname;
 $bbbsession['contextActivity'] = $bigbluebuttonbn->name;
 $bbbsession['contextActivityDescription'] = $bigbluebuttonbn->description;
@@ -163,37 +165,8 @@ if (groups_get_activity_groupmode($cm) == 0) {  //No groups mode
     $bbbsession['meetingid'] = $bigbluebuttonbn->meetingid.'-'.$bbbsession['courseid'].'-'.$bbbsession['bigbluebuttonbnid'];
 } else {                                        // Separate groups mode
     //If doesnt have group
-    $bbbsession['group'] = groups_get_activity_group($cm);
-    if( $bbbsession['group'] == '0' ){
-        if ( $bbbsession['flag']['administrator'] ) {
-            $groups_in_activity = groups_get_activity_allowed_groups($cm);
-            if ( count($groups_in_activity) == 0 ){ //There are no groups at all
-                print_error( 'view_error_no_group', 'bigbluebuttonbn', $CFG->wwwroot.'/course/view.php?id='.$course->id );
-                echo $OUTPUT->footer();
-                exit;
-            } else { // There is only 1 group
-                $bbbsession['group'] = current($groups_in_activity)->id;
-            }
-        } else if ( $bbbsession['flag']['moderator'] ) {
-            $groups_in_activity = groups_get_activity_allowed_groups($cm);
-            if ( count($groups_in_activity) == 0 ){ //There are no groups at all
-                print_error( 'view_error_no_group_teacher', 'bigbluebuttonbn', $CFG->wwwroot.'/course/view.php?id='.$course->id );
-                echo $OUTPUT->footer();
-                exit;
-            } else { // There is only 1 group
-                $bbbsession['group'] = current($groups_in_activity)->id;
-            }
-        } else {
-            print_error( 'view_error_no_group_student', 'bigbluebuttonbn', $CFG->wwwroot.'/course/view.php?id='.$course->id );
-            echo $OUTPUT->footer();
-            exit;
-        }
-
-    }
-    
+    $bbbsession['group'] = (!$group)?groups_get_activity_group($cm): $group;
     $bbbsession['meetingid'] = $bigbluebuttonbn->meetingid.'-'.$bbbsession['courseid'].'-'.$bbbsession['bigbluebuttonbnid'].'['.$bbbsession['group'].']';
-    if ($moderator) // Take off the option visible groups       
-        $PAGE->requires->js_init_call('M.mod_bigbluebuttonbn.setusergroups');
 }
 
 if( $moderator) 
@@ -315,7 +288,7 @@ function bigbluebuttonbn_view_joining( $bbbsession ){
             bigbluebuttonbn_log($bbbsession, 'Create');
             
             if ( groups_get_activity_groupmode($bbbsession['cm']) > 0 && count(groups_get_activity_allowed_groups($bbbsession['cm'])) > 1 ){
-                print get_string('view_groups_selection', 'bigbluebuttonbn' )."&nbsp;&nbsp;<input type='button' onClick='M.mod_bigbluebuttonbn.joinURL()' value='".get_string('view_groups_selection_join', 'bigbluebuttonbn' )."'>";
+                print "&nbsp;&nbsp;".get_string('view_groups_selection', 'bigbluebuttonbn' )."&nbsp;&nbsp;<input type='button' onClick='M.mod_bigbluebuttonbn.joinURL()' value='".get_string('view_groups_selection_join', 'bigbluebuttonbn' )."'>";
             
             } else {
                 $joining = true;

@@ -23,6 +23,9 @@
 
 require(dirname(dirname(dirname(__FILE__))).'/config.php');
 require($CFG->dirroot.'/local/kaltura/locallib.php');
+if (!file_exists($CFG->dirroot.'/repository/kaltura/locallib.php')) {
+    print_error(get_string('repo_not_installed', 'local_kaltura'));
+}
 require($CFG->dirroot.'/repository/kaltura/locallib.php');
 
 require_login();
@@ -46,8 +49,6 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($header);
 $PAGE->set_heading($header);
 $PAGE->add_body_class('kaltura-reports-index');
-$PAGE->navbar->add(get_string('mycourses'));
-$PAGE->navbar->add(get_string('kaltura_report_navbar', 'local_kaltura'));
 
 echo $OUTPUT->header();
 

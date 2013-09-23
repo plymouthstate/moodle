@@ -34,6 +34,7 @@ define('KALASSIGN_REQ_GRADING', 1);
 define('KALASSIGN_SUBMITTED', 2);
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/lib/gradelib.php');
+require_once($CFG->dirroot.'/mod/kalvidassign/renderable.php');
 
 /**
  * Check if the assignment submission end date has passed or if late submissions

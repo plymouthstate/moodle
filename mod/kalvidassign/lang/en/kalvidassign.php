@@ -1,4 +1,23 @@
 <?php
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Kaltura video assignment language file
+ *
+ * @package    mod_kalvidassign
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 $string['modulenameplural'] = 'Kaltura Video Assignments';
 $string['modulename'] = 'Kaltura Video Assignment';
@@ -8,13 +27,9 @@ $string['availabledate'] = 'Available from';
 $string['duedate'] = 'Due Date';
 $string['preventlate'] = 'Prevent late submissions';
 $string['allowdeleting'] = 'Allow resubmitting';
-$string['allowdeleting_help'] = 'If enabled, students may replace submitted videos. Whether it is possible to submit after the due date '.
-                                'is controlled by the \'Prevent late submissions\' setting';
+$string['allowdeleting_help'] = 'If enabled, students may replace submitted videos. Whether it is possible to submit after the due date is controlled by the \'Prevent late submissions\' setting';
 $string['emailteachers'] = 'Email alerts to teachers';
-$string['emailteachers_help'] = 'If enabled, teachers receive email notification whenever students add or update an assignment submission.
-
-Only teachers who are able to grade the particular assignment are notified. So, for example, if the course uses separate groups, '.
-'teachers restricted to particular groups won\'t receive notification about students in other groups.';
+$string['emailteachers_help'] = 'If enabled, teachers receive email notification whenever students add or update an assignment submission. Only teachers who are able to grade the particular assignment are notified. So, for example, if the course uses separate groups, teachers restricted to particular groups won\'t receive notification about students in other groups.';
 $string['invalidid'] = 'Invalid ID';
 $string['pluginadministration'] = 'Kaltura Video Assignment';
 $string['addvideo'] = 'Add media submission';
@@ -42,11 +57,7 @@ $string['submitted'] = 'Submitted';
 $string['pagesize'] = 'Submissions shown per page';
 $string['pagesize_help'] = 'Set the number of assignment to display per page';
 $string['show'] = 'Show';
-$string['show_help'] = "If filter is set to 'All' then all student submissions will be displayed; even".
-                       "if the student didn't submit anything.  If set to ".
-                       "'Require grading' only submissions that has not been graded or submissions ".
-                       "that were updated by the student after it was graded will be shown.  If set to ".
-                       "'Submitted' only students who submitted a video assignment.";
+$string['show_help'] = "If filter is set to 'All' then all student submissions will be displayed; even if the student didn't submit anything.  If set to 'Require grading' only submissions that has not been graded or submissions that were updated by the student after it was graded will be shown.  If set to 'Submitted' only students who submitted a video assignment.";
 $string['quickgrade'] = 'Allow quick grade';
 $string['quickgrade_help'] = 'If enabled, multiple assignments can be graded on one page. Add grades and comments then click the "Save all my feedback" button to save all changes for that page.';
 $string['invalidperpage'] = 'Enter a number greater than zero';
@@ -90,3 +101,6 @@ $string['reviewvideo'] = 'Review submission';
 $string['kalvidassign:screenrecorder'] = 'Screen recorder';
 $string['javanotenabled'] = 'Browser Java is disabled.  Please enable Java and refresh the page to use the screen recorder.';
 $string['cannotdisplaythumbnail'] = 'Unable to display thumbnail';
+$string['noassignments'] = 'No Kaltura video assignments found in the course';
+$string['submitted'] = 'Submitted';
+$string['nosubmission'] = 'No submission';
