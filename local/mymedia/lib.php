@@ -25,7 +25,7 @@ define('MYMEDIA_ITEMS_PER_PAGE', '9');
 /**
  * This function adds my media links to the navigation block
  */
-function mymedia_extends_navigation($navigation) {
+function local_mymedia_extends_navigation($navigation) {
 
     global $USER;
 

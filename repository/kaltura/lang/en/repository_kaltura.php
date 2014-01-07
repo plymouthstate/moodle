@@ -57,7 +57,7 @@ $string['rootcategory_created'] = 'Root category created with the following stru
 $string['rootcategory_create'] = 'Please specify a root category.';
 $string['unable_to_create'] = 'Unable to create root category as <b>{$a}</b>.  Please Choose another name(s) for the root category';
 $string['resetroot'] = 'Reset category location';
-$string['confirm_category_reset'] = '<p>Are you user you want to reset the root category location?</p><p>If you perform this action, all video course sharing and usage information in Moodle will be lost.</p>'.
+$string['confirm_category_reset'] = '<p>Are you sure you want to reset the root category location?</p><p>If you perform this action, all video course sharing and usage information in Moodle will be lost.</p>'.
                                     '<p>If you accidentially click "continue", it is possible to get your information back, but only if you set the category path back to the <b>original</b> value.</p>'.
                                     '<p>Choose wisely.</p>';
 $string['category_reset_complete'] = '<b>Root category has been reset</b>';

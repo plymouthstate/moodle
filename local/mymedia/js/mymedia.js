@@ -11,10 +11,10 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
     
     var kcw_panel = Y.one("#upload_btn");
     
-    var dialog = new YAHOO.widget.SimpleDialog("mymedia_simple_dialog", { 
-        width: "20em", 
+    var dialog = new Y.YUI2.widget.SimpleDialog("mymedia_simple_dialog", {
+        width: "20em",
         effect:{
-            effect: YAHOO.widget.ContainerEffect.FADE,
+            effect: Y.YUI2.widget.ContainerEffect.FADE,
             duration: 0.30
         }, 
         fixedcenter: true,
@@ -27,12 +27,12 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
         context: ["region-main", "tl", "tl", ["beforeShow", "windowResize"], [250, 20]]
     });
     
-    dialog.render("maincontent");
+    dialog.render("page-mymedia-index");
 
     if (null !== kcw_panel) {
 
         // Create panel to hold KCW
-        var widget_panel = new YAHOO.widget.Panel("kcw_panel",   { width: "800px",
+        var widget_panel = new Y.YUI2.widget.Panel("kcw_panel",   { width: "800px",
                                                                    height: "470px",
                                                                    fixedcenter: false,
                                                                    constraintoviewport: true,
@@ -70,7 +70,7 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
             if ('' !== text) {
     
                 dialog.setHeader(M.util.get_string("upload_success_hdr", "local_mymedia"));
-                dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_INFO);
+                dialog.cfg.setProperty("icon", Y.YUI2.widget.SimpleDialog.ICON_INFO);
                 dialog.cfg.setProperty("text", M.util.get_string("upload_success", "local_mymedia"));
                 var button = [
                                  { text: M.util.get_string("continue", "local_mymedia"),
@@ -101,7 +101,7 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
     body_node.append(loading_panel);
 
     // Create Loading panel
-    var loading_panel =  new YAHOO.widget.Panel("wait", { width:"240px",  
+    var loading_panel =  new Y.YUI2.widget.Panel("wait", { width:"240px",
                                                           fixedcenter:true,  
                                                           close:false,  
                                                           draggable:false,  
@@ -116,7 +116,7 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
     loading_panel.render();
 
     // Create preview panel
-    var details_panel  = new YAHOO.widget.Panel("id_video_details",
+    var details_panel  = new Y.YUI2.widget.Panel("id_video_details",
                                     { width: "550px",
                                       height: "550px",
                                       fixedcenter: false,
@@ -306,7 +306,7 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
             if ('y' != return_value[0]) {
 
                 dialog.setHeader(M.util.get_string("failure_saved_hdr", "local_mymedia"));
-                dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_WARN);
+                dialog.cfg.setProperty("icon", Y.YUI2.widget.SimpleDialog.ICON_WARN);
                 
                 switch (return_value[1]) {
                     case "1":
@@ -332,7 +332,7 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
             } else {
             
                 dialog.setHeader(M.util.get_string("success_saving_hdr", "local_mymedia"));
-                dialog.cfg.setProperty("icon", YAHOO.widget.SimpleDialog.ICON_INFO);
+                dialog.cfg.setProperty("icon", Y.YUI2.widget.SimpleDialog.ICON_INFO);
                 dialog.cfg.setProperty("text", M.util.get_string("success_saving", "local_mymedia"));
             }
             
@@ -492,5 +492,13 @@ M.local_mymedia.init_config = function (Y, panel_markup, dialog, conversion_scri
         }
 
     }, 'a');
+
+    var mymediasort = Y.one("#mymediasort");
+    var mymediasortoptions = mymediasort.get("options");
+    Y.on("change", function () {
+        var index = mymediasort.get("selectedIndex");
+        var url = mymediasortoptions.item(index).get("value");
+        window.location.href = url;
+     }, mymediasort);
     
 };

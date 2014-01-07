@@ -15,8 +15,7 @@
 /**
  * Kaltura repository plug-in version file
  *
- * @package    Repository
- * @subpackage Kaltura
+ * @package    repository_kaltura
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -24,11 +23,11 @@ if (!defined('MOODLE_INTERNAL')) {
     die('Direct access to this script is forbidden.');    ///  It must be included from a Moodle page
 }
 
-$plugin->version    = 2012121903;
+$plugin->version = 2013071805;
 $plugin->component  = 'repository_kaltura';
-$plugin->release    = 'Kaltura release 3.0.95 (RL: 2.3.1.2)';
-$plugin->requires   = 2011033007;
-
+$plugin->release    = 'Kaltura release 3.0.99 (RL: 2.5.1.4)';
+$plugin->requires = 2013051400;
+$plugin->maturity = MATURITY_STABLE;
 $plugin->dependencies = array(
-    'local_kaltura' => 2012121900
+    'local_kaltura' => 2013041500
 );

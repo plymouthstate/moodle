@@ -56,7 +56,7 @@ class format_onetopic_renderer extends format_section_renderer_base {
         return get_string('topicoutline');
     }
 
-    /**
+   /**
      * Generate the edit controls of a section
      *
      * @param stdClass $course The course entry from DB
@@ -71,9 +71,7 @@ class format_onetopic_renderer extends format_section_renderer_base {
             return array();
         }
 
-        if (!has_capability('moodle/course:update', context_course::instance($course->id))) {
-            return array();
-        }
+        $coursecontext = context_course::instance($course->id);
 
         if ($onsectionpage) {
             $url = course_get_url($course, $section->section);
@@ -83,25 +81,27 @@ class format_onetopic_renderer extends format_section_renderer_base {
         $url->param('sesskey', sesskey());
 
         $controls = array();
-        if ($course->marker == $section->section) {  // Show the "light globe" on/off.
-            $url->param('marker', 0);
-            $controls[] = html_writer::link($url,
-                                html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
-                                    'class' => 'icon ', 'alt' => get_string('markedthistopic'))),
-                                array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
-        } else {
-            $url->param('marker', $section->section);
-            $controls[] = html_writer::link($url,
-                            html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'),
-                                'class' => 'icon', 'alt' => get_string('markthistopic'))),
-                            array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
+        if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
+            if ($course->marker == $section->section) {  // Show the "light globe" on/off.
+                $url->param('marker', 0);
+                $controls[] = html_writer::link($url,
+                                    html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
+                                        'class' => 'icon ', 'alt' => get_string('markedthistopic'))),
+                                    array('title' => get_string('markedthistopic'), 'class' => 'editing_highlight'));
+            } else {
+                $url->param('marker', $section->section);
+                $controls[] = html_writer::link($url,
+                                html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marker'),
+                                    'class' => 'icon', 'alt' => get_string('markthistopic'))),
+                                array('title' => get_string('markthistopic'), 'class' => 'editing_highlight'));
+            }
         }
 
         return array_merge($controls, parent::section_edit_controls($course, $section, $onsectionpage));
     }
 
     /**
-     * Generate next/previous section links for naviation
+     * Generate next/previous section links for navigation
      *
      * @param stdClass $course The course entry from DB
      * @param array $sections The course_sections entries from the DB
@@ -160,6 +160,12 @@ class format_onetopic_renderer extends format_section_renderer_base {
     public function print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection) {
         global $PAGE;
         
+        $real_course_display = $course->realcoursedisplay;
+        $modinfo = get_fast_modinfo($course);
+        $course = course_get_format($course)->get_course();
+        $course->realcoursedisplay = $real_course_display; 
+        $sections = $modinfo->get_section_info_all();
+
         // Can we view the section in question?
         $context = context_course::instance($course->id);
         $canviewhidden = has_capability('moodle/course:viewhiddensections', $context);
@@ -179,10 +185,9 @@ class format_onetopic_renderer extends format_section_renderer_base {
             if ($thissection->summary or $thissection->sequence or $PAGE->user_is_editing()) {
                 echo $this->start_section_list();
                 echo $this->section_header($thissection, $course, true);
-                print_section($course, $thissection, $mods, $modnamesused, true, '100%', false, $displaysection);
-                if ($PAGE->user_is_editing()) {
-                    print_section_add_menus($course, 0, $modnames, false, false, $displaysection);
-                }
+				echo $this->courserenderer->course_section_cm_list($course, $thissection, $displaysection);
+            	echo $this->courserenderer->course_section_add_cm_control($course, 0, $displaysection);
+
                 echo $this->section_footer();
                 echo $this->end_section_list();
             }
@@ -199,6 +204,7 @@ class format_onetopic_renderer extends format_section_renderer_base {
         $tabs = array();
 
         $default_topic = -1;
+
         while ($section <= $course->numsections) {
             
             if ($course->realcoursedisplay == COURSE_DISPLAY_MULTIPAGE && $section == 0) {
@@ -206,20 +212,7 @@ class format_onetopic_renderer extends format_section_renderer_base {
                 continue;
             }
 
-            if (!empty($sections[$section])) {
-                $thissection = $sections[$section];
-            } else {
-                // This will create a course section if it doesn't exist..
-                $thissection = get_course_section($section, $course->id);
-
-                // The returned section is only a bare database object rather than
-                // a section_info object - we will need at least the uservisible
-                // field in it.
-                $thissection->uservisible = true;
-                $thissection->availableinfo = null;
-                $thissection->showavailability = 0;
-                $sections[$section] = $thissection;
-            }
+            $thissection = $sections[$section];
             
             $showsection = true;
             if (!$thissection->visible) {
@@ -267,7 +260,7 @@ class format_onetopic_renderer extends format_section_renderer_base {
         $sectiontitle = '';
 
 
-        if (count($tabs) > 0) {
+        if (!$course->hidetabsbar && count($tabs) > 0) {
             $sectiontitle .= print_tabs(array($tabs), "tab_topic_" . $displaysection, NULL, NULL, true);
         }        
         
@@ -293,10 +286,8 @@ class format_onetopic_renderer extends format_section_renderer_base {
             $completioninfo = new completion_info($course);
             echo $completioninfo->display_help_icon();
 
-            print_section($course, $thissection, $mods, $modnamesused, true, '100%', false, $displaysection);
-            if ($PAGE->user_is_editing()) {
-                print_section_add_menus($course, $displaysection, $modnames, false, false, $displaysection);
-            }
+	        echo $this->courserenderer->course_section_cm_list($course, $thissection, $displaysection);
+	        echo $this->courserenderer->course_section_add_cm_control($course, $displaysection, $displaysection);
             echo $this->section_footer();
             echo $this->end_section_list();
         }

@@ -1,17 +1,52 @@
-<?php // $Id$
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Strings for component 'questionnaire', language 'en', branch 'MOODLE_24_STABLE'
+ *
+ * @package    mod
+ * @subpackage quiz
+ * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['action'] = 'Action';
 $string['additionalinfo'] = 'Additional Info';
 $string['additionalinfo_help'] = 'Text to be displayed at the top of the first page of this questionnaire. (i.e. instructions, background info, etc.)';
 $string['addnewquestion'] = 'Adding {$a} question';
+$string['addquestions'] = 'Add questions';
 $string['addselqtype'] = 'Add selected question type';
 $string['alignment'] = 'Radio buttons Alignment';
 $string['alignment_help'] = 'Select buttons alignment: vertical (default) or horizontal.';
 $string['alignment_link'] = 'mod/questionnaire/questions#Radio_Buttons';
 $string['all'] = 'All';
 $string['alreadyfilled'] = 'You have already filled out this questionnaire for us{$a}. Thank you.';
+$string['andaveragevalues'] = 'and average values';
 $string['anonymous'] = 'Anonymous';
+$string['answerquestions'] = 'Answer the questions...';
+$string['autonumbering'] = 'Auto numbering';
+$string['autonumbering_help'] = 'Automatic numbering of questions and pages. You might want to disable automatic numbering
+ for questionnaires with conditional branching.';
+$string['autonumberno'] = 'Do not number questions or pages';
+$string['autonumberquestions'] = 'Auto number questions';
+$string['autonumberpages'] = 'Auto number pages';
+$string['autonumberpagesandquestions'] = 'Auto number pages and questions';
 $string['average'] = 'Average';
 $string['averagerank'] = 'Average rank';
+$string['averageposition'] = 'Average position';
 $string['bodytext'] = 'Body text';
 $string['boxesnbexact'] = 'exactly {$a} box(es).';
 $string['boxesnbmax'] = 'a maximum of {$a} box(es).';
@@ -22,13 +57,23 @@ $string['checkallradiobuttons'] = 'Please check <strong>{$a}</strong> radio butt
 $string['checkboxes'] = 'Check Boxes';
 $string['checkboxes_help'] = 'Enter one option per line for the user to select one or multiple answers from. ';
 $string['checkboxes_link'] = 'mod/questionnaire/questions#Check_Boxes';
+$string['checkbreaksadded'] = 'New Page Break(s) inserted at position(s):';
+$string['checkbreaksok'] = 'All the required Page breaks are present!';
+$string['checkbreaksremoved'] = 'Removed {$a} extra Page break(s).';
+$string['checknotstarted'] = 'Select not started';
+$string['checkstarted'] = 'Select started';
+$string['clicktoswitch'] = '(click to switch)';
 $string['closed'] = 'The questionnaire was closed on {$a}. Thanks.';
 $string['closedate'] = 'Use Close Date';
 $string['closedate_help'] = 'You can specify a date to close the questionnaire here. Check the check box, and select the date and time you want.
  Users will not be able to fill out the questionnaire after that date. If this is not selected, it will never be closed.';
+$string['completionsubmit'] = 'Student must submit this questionnaire to complete it';
 $string['confalts'] = '- OR - <br />Confirmation page';
 $string['confirmdelallresp'] = 'Are you sure you want to delete ALL the responses in this questionnaire?';
+$string['confirmdelchildren'] = 'If you delete this question, its child(ren) question(s) will also be deleted:';
 $string['confirmdelgroupresp'] = 'Are you sure you want to delete ALL the responses of {$a}?';
+$string['confirmdelquestion'] = 'Are you sure you want to delete the question at position {$a}?';
+$string['confirmdelquestionresps'] = 'This will also delete the {$a} response(s) already given to that question.';
 $string['confirmdelresp'] = 'Are you sure you want to delete the response by&nbsp;{$a}&nbsp;?';
 $string['confpage'] = 'Heading text';
 $string['confpage_help'] = 'Heading (in bold) and body text for the "Confirmation" page displayed after a user completes this questionnaire. (URL, if present, takes precedence over confirmation text.) If you leave this field empty, a default message will be displayed upon questionnaire completion (Thank you for completing this Questionnaire).';
@@ -40,9 +85,6 @@ $string['createcontent'] = 'Define New Content';
 $string['createcontent_help'] = 'Select one of the radio button options. \'Create new\' is the default.';
 $string['createcontent_link'] = 'mod/questionnaire/mod#Content_Options';
 $string['createnew'] = 'Create new';
-$string['crossanalyze'] = 'Cross Analyze';
-$string['crosstabulate'] = 'Cross Tabulate';
-$string['crosstabulation'] = 'Cross Tabulation';
 $string['date'] = 'Date';
 $string['date_help'] = 'Use this question type if you expect the response to be a correctly formatted date.';
 $string['date_link'] = 'mod/questionnaire/questions#Date';
@@ -50,10 +92,15 @@ $string['dateformatting'] = 'Use the day/month/year format, e.g. for March 14th,
 $string['deleteallresponses'] = 'Delete ALL Responses';
 $string['deletecurrentquestion'] = 'Delete question {$a}';
 $string['deletedallgroupresp'] = 'Deleted ALL Responses in group {$a}';
-$string['deletedallresp'] = 'Deleted ALL Responses';
+$string['deletedallresp'] = 'Questionnaire responses deleted';
+$string['deletedisabled'] = 'This item cannot be deleted';
 $string['deletedresp'] = 'Deleted Response';
 $string['deleteresp'] = 'Delete this Response';
 $string['deletingresp'] = 'Deleting Response';
+$string['dependquestion'] = 'Parent Question';
+$string['dependquestion_help'] = 'You can select a parent question and a choice option for this question. A child question will only be displayed
+                to the student if its parent question and parent choice have been previously selected.';
+$string['dependquestion_link'] = 'mod/questionnaire/questions#Parent_Question';
 $string['displaymethod'] = 'Display method not defined for question.';
 $string['download'] = 'Download';
 $string['downloadtextformat'] = 'Download in text format';
@@ -69,7 +116,6 @@ $string['editingquestionnaire'] = 'Editing Questionnaire Settings';
 $string['editquestion'] = 'Editing {$a} question';
 $string['email'] = 'Email';
 $string['errnewname'] = 'Sorry, name already in use. Pick a new name.';
-$string['errorcross'] = 'Error cross-analyzing. Question not valid type.';
 $string['erroropening'] = 'Error opening questionnaire.';
 $string['errortable'] = 'Error system table corrupt.';
 $string['essaybox'] = 'Essay Box';
@@ -83,7 +129,10 @@ $string['fieldlength_help'] = 'For the **Text Box** question type, enter the **I
 respondent.
 
 Default values are 20 characters for the Input Box width and 25 characters for the maximum length of text entered.';
+$string['finished'] = 'You have answered all the questions in this questionnaire!';
+$string['firstrespondent'] = 'First Respondent';
 $string['grade'] = 'Submission grade';
+$string['gradesdeleted'] = 'Questionnaire grades deleted';
 $string['headingtext'] = 'Heading text';
 $string['horizontal'] = 'Horizontal';
 $string['id'] = 'ID';
@@ -92,18 +141,24 @@ $string['includechoicetext'] = 'Include choice text';
 $string['incorrectcourseid'] = 'Course ID is incorrect';
 $string['incorrectmodule'] = 'Course Module ID was incorrect';
 $string['incorrectquestionnaire'] = 'Questionnaire is incorrect';
+$string['attemptstillinprogress'] = 'In progress. Saved on:';
 $string['invalidresponse'] = 'Invalid response specified.';
 $string['invalidresponserecord'] = 'Invalid response record specified.';
 $string['invalidsurveyid'] = 'Invalid questionnaire ID.';
 $string['kindofratescale'] = 'Type of rate scale';
-$string['kindofratescale_help'] = 'See the Moodle Documentation below';
+$string['kindofratescale_help'] = 'Right-click on the More Help link below.';
 $string['kindofratescale_link'] = 'mod/questionnaire/questions#Type_of_rate_scale';
+$string['lastrespondent'] = 'Last Respondent';
 $string['length'] = 'Length';
+$string['managequestions'] = 'Manage questions';
+$string['managequestions_help'] = 'In the Manage questions section of the Edit Questions page, you can conduct a number of operations on a Questionnaire\'s questions.';
+$string['managequestions_link'] = 'mod/questionnaire/questions#Manage_questions';
 $string['maxdigitsallowed'] = 'Max. digits allowed';
 $string['maxdigitsallowed_help'] = 'By using the Max. digits allowed and Nb of decimal digits parameters you can specify
  the length and number of decimal places required.';
 $string['maxforcedresponses'] = 'Max. forced responses';
 $string['maxtextlength'] = 'Max. text length';
+$string['messageprovider:message'] = 'Questionnaire reminder';
 $string['minforcedresponses'] = 'Min. forced responses';
 $string['minforcedresponses_help'] = 'Use these parameters to force respondent to tick a minimum of **Min.** boxes and a maximum of **Max.** check boxes. To
 force an exact number of check boxes to be ticked, set **Min.** and **Max.** to the same value. If only a min or a max value is desired, just leave the other
@@ -111,25 +166,28 @@ value to its default **0** value. If you set **Min.** or **Max.** to values othe
 respondent does not comply with your requirements. Obviously you should make any requirements clear to the respondent either in the general instructions of
 your Questionnaire or in the text of relevant questions.';
 $string['misconfigured'] = 'Course is misconfigured';
-$string['missingquestion'] = 'Error, please answer question ';
-$string['missingquestions'] = 'Error, please answer questions: ';
+$string['missingquestion'] = 'Please answer Required question ';
+$string['missingquestions'] = 'Please answer Required questions: ';
 $string['modulename'] = 'Questionnaire';
 $string['modulename_help'] = 'The questionnaire module allows you to construct surveys using a variety of question types, for the purpose of gathering data from users.';
 $string['modulenameplural'] = 'Questionnaires';
-$string['move'] = 'Move this question';
-$string['movedn'] = 'Move question down';
-$string['movehere'] = 'Move question here';
-$string['moveup'] = 'Move question up';
+$string['movedisabled'] = 'This item cannot be moved';
 $string['myresponses'] = 'All your responses';
 $string['myresponsetitle'] = 'Your {$a} response(s)';
 $string['myresults'] = 'Your Results';
 $string['name'] = 'Name';
+$string['navigate'] = 'Allow branching questions';
+$string['navigate_help'] = 'Enable Yes/No and Radio Buttons questions to have Child questions dependent on their choices in your questionnaire.';
+$string['navigate_link'] = 'mod/questionnaire/conditional_branching';
 $string['next'] = 'Next';
 $string['nextpage'] = 'Next Page';
 $string['noanswer'] = 'No answer';
 $string['nodata'] = 'No data posted.';
 $string['noduplicates'] = 'No duplicate choices';
-$string['noneinuse'] = 'No content currently defined.';
+$string['noduplicateschoiceserror'] = 'You must enter at least 2 Possible answers for the "No duplicate choices" option!';
+$string['notenoughscaleitems'] = 'You must enter a minimum value of 2 scale items!';
+$string['noneinuse'] = 'This questionnaire does not contain any questions.';
+$string['non_respondents'] = 'Users who have not yet submitted their responses to this questionnaire';
 $string['nopublicsurveys'] = 'No public questionnaires.';
 $string['noresponsedata'] = 'No responses for this question.';
 $string['noresponses'] = 'No responses';
@@ -137,10 +195,13 @@ $string['normal'] = 'Normal';
 $string['notanumber'] = '<strong>{$a}</strong> is not an accepted number format.';
 $string['notapplicable'] = 'N/A';
 $string['notapplicablecolumn'] = 'N/A column';
-$string['notavail'] = 'That questionnaire is not available yet. Try again later.';
+$string['notavail'] = 'This questionnaire is no longer available. Ask your teacher to delete it.';
 $string['noteligible'] = 'You are not eligible to take this questionnaire.';
 $string['notemplatesurveys'] = 'No template questionnaires.';
 $string['notopen'] = 'This questionnaire will not open until {$a}.';
+$string['notrequired'] = 'Response is not required';
+$string['not_started'] = 'not started';
+$string['nousersselected'] = 'No users selected';
 $string['num'] = '#';
 $string['numberfloat'] = 'The number you entered <strong>{$a->number}</strong> has been reformatted/rounded with <strong>{$a->precision}</strong> decimal place(s).';
 $string['numberofdecimaldigits'] = 'Nb of decimal digits';
@@ -186,11 +247,12 @@ $string['page'] = 'Page';
 $string['pageof'] = 'Page {$a->page} of {$a->totpages}';
 $string['pluginadministration'] = 'Questionnaire administration';
 $string['pluginname'] = 'Questionnaire';
+$string['position'] = 'position';
 $string['possibleanswers'] = 'Possible answers';
 $string['posteddata'] = 'Reached page with posted data:';
 $string['preview'] = 'This is a preview of how this questionnaire will look. When you are done previewing, click <strong>Close</strong> at the bottom of this page.';
 $string['preview_label'] = 'Preview';
-$string['preview_questionnaire'] = ' - Questionnaire Preview';
+$string['preview_questionnaire'] = 'Questionnaire Preview';
 $string['previewing'] = ' Previewing Questionnaire ';
 $string['previous'] = 'Previous';
 $string['previouspage'] = 'Previous Page';
@@ -215,6 +277,7 @@ $string['questionnaire:deleteresponses'] = 'Delete any response';
 $string['questionnaire:downloadresponses'] = 'Download responses in a CSV file';
 $string['questionnaire:editquestions'] = 'Create and edit questionnaire questions';
 $string['questionnaire:manage'] = 'Create and edit questionnaires';
+$string['questionnaire:preview'] = 'Preview questionnaires';
 $string['questionnaire:printblank'] = 'Print blank questionnaire';
 $string['questionnaire:readallresponseanytime'] = 'Read all responses any time';
 $string['questionnaire:readallresponses'] = 'Read response summaries, subject to open times';
@@ -246,19 +309,18 @@ $string['realm_help'] = '* **There are  three types of questionnaires:**
 $string['realm_link'] = 'mod/questionnaire/qsettings#Questionnaire_Type';
 $string['redirecturl'] = 'The URL to which a user is redirected after completing this questionnaire.';
 $string['remove'] = 'Delete';
-$string['required'] = 'Response Required';
+$string['removenotinuse'] = 'This questionnaire used to depend on a Public questionnaire which has been deleted.
+                It can no longer be used and should be deleted.';
+$string['required'] = 'Response is required';
 $string['required_help'] = 'If you select ***Yes***, response to this question will be required, i.e.
 the respondent will not be able to submit the questionnaire
 until this question has been answered.';
 $string['required_link'] = 'mod/questionnaire/questions#Response_Required';
 $string['requiredparameter'] = 'A required parameter was missing.';
 $string['reset'] = 'Reset';
+$string['removeallquestionnaireattempts'] = 'Delete all questionnaire responses';
 $string['respeligiblerepl'] = '(replaced by role overrides)';
 $string['respondent'] = 'Respondent';
-$string['respondenteligible'] = 'Respondent Eligibility';
-$string['respondenteligible_help'] = 'Decide whether everyone can answer or whether you want to restrict it to tutor only or student only responses.
- For restricted access options remember to assign the correct roles either at the course or activity level.
- For example, if you put a questionnaire on the front page, intended for teachers only, then you will have to let Moodle know which users are teachers. ';
 $string['respondenteligibleall'] = 'all';
 $string['respondenteligiblestudents'] = 'students only';
 $string['respondenteligibleteachers'] = 'teachers only';
@@ -288,7 +350,7 @@ $string['resumesurvey'] = 'Resume questionnaire';
 $string['return'] = 'Return';
 $string['save'] = 'Save';
 $string['saveasnew'] = 'Save as New Question';
-$string['savedprogress'] = 'Your progress has been saved.  You may return at any time to complete this questionnaire.  To do so, simply bookmark the {$a} link below.  You may be prompted for your username and password to complete the questionnaire.';
+$string['savedprogress'] = 'Your progress has been saved.  You may return at any time to complete this questionnaire.';
 $string['saveeditedquestion'] = 'Save question {$a}';
 $string['savesettings'] = 'Save settings';
 $string['section'] = 'Description';
@@ -297,19 +359,27 @@ $string['sectionbreak_help'] = '----- Page Break -----';
 $string['sectiontext'] = 'Label';
 $string['sectiontext_help'] = 'This is not a question but a (short) text which will be displayed to introduce a series of questions.';
 $string['selecttheme'] = 'Select a theme (css) to use with this questionnaire.';
+$string['send'] = 'Send';
 $string['sendemail'] = 'Send email';
+$string['send_message'] = 'Send message to selected users';
+$string['send_message_to'] = 'Send message to:';
 $string['sendemail_help'] = 'Sends a copy of each submission to the specified address or addresses.
 You can provide more than one address by separating them with commas.
 Leave blank for no email backup.';
 $string['settings'] = 'Settings';
 $string['settingssaved'] = 'Settings saved';
+$string['show_nonrespondents'] = 'Non-respondents';
+$string['started'] = 'started';
 $string['strfdate'] = '%d/%m/%Y';
 $string['strfdateformatcsv'] = 'd/m/Y H:i:s';
 $string['submitoptions'] = 'Submission options';
+$string['submitpreview'] = 'Submit preview';
+$string['submitpreviewcorrect'] = 'This submission would be accepted as correctly filled in.';
 $string['submitsurvey'] = 'Submit questionnaire';
 $string['submitted'] = 'Submitted on:';
 $string['subtitle'] = 'Subtitle';
 $string['subtitle_help'] = 'Subtitle of this questionnaire. Appears below the title on the first page only.';
+$string['subject'] = 'Subject';
 $string['summary'] = 'Summary';
 $string['surveynotexists'] = 'questionnaire does not exist.';
 $string['surveyowner'] = 'You must be a questionnaire owner to perform this operation.';
@@ -352,14 +422,18 @@ $string['viewallresponses_help'] = 'If the questionnaire is set to **Group Mode*
  If the setting is **Group Mode**: *Separate groups*, then users who do not have the *moodle/site:accessallgroups* capability
  (usually students, or non-editing teachers, etc.) will only be able to view the responses of the group(s) they belong to.';
 $string['viewallresponses_link'] = 'Viewing_Questionnaire_responses#Group_filtering';
-$string['viewbyresponse'] = 'View By Response';
+$string['viewbyresponse'] = 'List of responses';
+$string['viewindividualresponse'] = 'View Individual Responses';
+$string['viewindividualresponse_help'] = 'Click on the respondents\' names in the list below to view their individual responses.';
 $string['viewresponses'] = 'All responses ({$a})';
 $string['viewyourresponses'] = 'Your responses- view {$a}';
 $string['warning'] = 'Warning, error encountered.';
+$string['wronganswers'] = 'There is something wrong with your answers (see below)';
 $string['wrongdateformat'] = 'The date entered: <strong>{$a}</strong> does not correspond to the format shown in the example.';
 $string['wrongdaterange'] = 'ERROR! The year must be set in the 1902 to 2037 range.';
-$string['wrongformat'] = 'There is something wrong with question:&nbsp;';
-$string['wrongformats'] = 'There is something wrong with questions:&nbsp;';
+$string['wrongformat'] = 'There is something wrong with your answer to question:&nbsp;';
+$string['wrongformats'] = 'There is something wrong with your answer to questions:&nbsp;';
 $string['yesno'] = 'Yes/No';
 $string['yesno_help'] = 'Simple Yes/No question.';
-?>
+$string['yourresponse'] = 'Your response';
+$string['yourresponses'] = 'Your responses';

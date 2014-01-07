@@ -26,26 +26,24 @@
 
     // Get Moodle going
     require_once(dirname(__FILE__) . '/../../config.php');
-    // We may end up creating a course group
-    require_once($CFG->dirroot . '/group/lib.php');
-
     // Need our particular enrollment plugin's consts
-    require_once(dirname(__FILE__) . '/lib.php');
+    require_once(dirname(__FILE__) . '/locallib.php');
 
     // No anonymous access for this page
     require_login();
 
     // Must be a site administrator
-    require_capability('moodle/site:config', get_system_context());
+    require_capability('moodle/site:config', context_system::instance());
 
 
-    $task               = optional_param('task', 'index', PARAM_ALPHA);
-    $tool_class_name    = enrol_shebang_plugin::PLUGIN_NAME . "_tools_{$task}";
-
+    $task = optional_param('task', 'index', PARAM_ALPHA);
     if (!file_exists(dirname(__FILE__) . "/tools/tools_{$task}_class.php")) {
         $task = 'index';
     }
 
     include(dirname(__FILE__) . "/tools/tools_{$task}_class.php");
+
+    $tool_class_name = enrol_shebang_processor::PLUGIN_NAME . "_tools_{$task}";
     $tool = new $tool_class_name();
+
     $tool->handle_request();

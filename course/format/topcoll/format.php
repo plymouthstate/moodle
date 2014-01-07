@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Collapsed Topics Information
  *
@@ -9,29 +24,18 @@
  *
  * @package    course/format
  * @subpackage topcoll
- * @version    See the value of '$plugin->version' in version.php.
+ * @version    See the value of '$plugin->version' in below.
  * @copyright  &copy; 2009-onwards G J Barnard in respect to modifications of standard topics format.
  * @author     G J Barnard - gjbarnard at gmail dot com and {@link http://moodle.org/user/profile.php?id=442195}
  * @link       http://docs.moodle.org/en/Collapsed_Topics_course_format
  * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
-
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/filelib.php');
 require_once($CFG->libdir . '/completionlib.php');
+require_once($CFG->dirroot . '/course/format/topcoll/togglelib.php');
 
 // Horrible backwards compatible parameter aliasing..
 if ($ctopic = optional_param('ctopics', 0, PARAM_INT)) { // Collapsed Topics old section parameter.
@@ -61,85 +65,133 @@ if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context
     course_set_marker($course->id, $marker);
 }
 
+// Make sure all sections are created.
+$courseformat = course_get_format($course);
+$course = $courseformat->get_course();
+course_create_sections_if_missing($course, range(0, $course->numsections));
+
 $renderer = $PAGE->get_renderer('format_topcoll');
 
-if (!empty($displaysection)) {
-    $renderer->print_single_section_page($course, $sections, $mods, $modnames, $modnamesused, $displaysection);
+$devicetype = get_device_type(); // In moodlelib.php.
+if ($devicetype == "mobile") {
+    $portable = 1;
+} else if ($devicetype == "tablet") {
+    $portable = 2;
 } else {
-    require_once($CFG->dirroot . '/course/format/topcoll/tcconfig.php');
+    $portable = 0;
+}
+$renderer->set_portable($portable);
 
-    user_preference_allow_ajax_update('topcoll_toggle_' . $course->id, PARAM_ALPHANUM);
+if (!empty($displaysection)) {
+    $renderer->print_single_section_page($course, null, null, null, null, $displaysection);
+} else {
+    user_preference_allow_ajax_update('topcoll_toggle_' . $course->id, PARAM_TEXT);
+    $userpreference = get_user_preferences('topcoll_toggle_' . $course->id);
+    $renderer->set_user_preference($userpreference);
 
-    $thetogglestate = get_user_preferences('topcoll_toggle_' . $course->id);
-
-    $devicetype = get_device_type(); // In moodlelib.php.
-    if ($devicetype == "mobile" || $devicetype == "tablet") {
-        $mobile = 1;
-        require_once($CFG->libdir . '/outputcomponents.php');
-        // Echo data for mobile themes to be able to control the toggles not using YUI.
-        echo html_writer::start_tag('div', array('id' => 'topcoll_mobile_data', 'style' => 'display: none;',
-            'sesskey' => sesskey(), 'courseid' => $course->id, 'togglestate' => $thetogglestate,
-            'numberoftoggles' => $course->numsections, 'togglepersistence' => $TCCFG->togglepersistence));
-        echo html_writer::end_tag('div');
-    } else {
-        $mobile = 0;
-    }
-    $renderer->set_mobile($mobile);
+    $defaultuserpreference = clean_param(get_config('format_topcoll', 'defaultuserpreference'), PARAM_INT);
+    $renderer->set_default_user_preference($defaultuserpreference);
 
     $PAGE->requires->js_init_call('M.format_topcoll.init', array(
         $course->id,
-        $thetogglestate,
+        $userpreference,
         $course->numsections,
-        $TCCFG->togglepersistence));
+        clean_param(get_config('format_topcoll', 'defaulttogglepersistence'), PARAM_INT),
+        $defaultuserpreference));
 
-    global $tcsetting;
-    if (empty($tcsetting) == true) {
-        $tcsetting = get_topcoll_setting($course->id); // CONTRIB-3378
-    }
+    $tcsettings = $courseformat->get_settings();
     ?>
     <style type="text/css" media="screen">
-        /* <![CDATA[ */
+    /* <![CDATA[ */
 
-        /* -- Toggle -- */
-        .course-content ul.ctopics li.section .content .toggle {
-            background-color: #<?php echo $tcsetting->tgbgcolour; ?>;
-            color: #<?php echo $tcsetting->tgfgcolour; ?>; /* Toggle text colour */
-        }
+    /* -- Toggle -- */
+    .course-content ul.ctopics li.section .content .toggle {
+        background-color: <?php
+                            if ($tcsettings['togglebackgroundcolour'][0] != '#') {
+                                echo '#';
+                            }
+                            echo $tcsettings['togglebackgroundcolour'];
+                          ?>;
+    }
 
-        /* -- Toggle text -- */
-        .course-content ul.ctopics li.section .content .toggle a {
-            color: #<?php echo $tcsetting->tgfgcolour; ?>;
-        }
+    /* -- Toggle text -- */
+    .course-content ul.ctopics li.section .content .toggle a {
+        color: <?php
+                if ($tcsettings['toggleforegroundcolour'][0] != '#') {
+                    echo '#';
+                }
+                echo $tcsettings['toggleforegroundcolour'];
+               ?>;
+        text-align: <?php
+    switch ($tcsettings['togglealignment']) {
+        case 1:
+            echo 'left';
+            break;
+        case 3:
+            echo 'right';
+            break;
+        default:
+            echo 'center';
+    }
+    ?>;
+    }
 
-        /* -- What happens when a toggle is hovered over -- */
-        .course-content ul.ctopics li.section .content div.toggle:hover,body.jsenabled tr.cps td a:hover
-        {
-            background-color: #<?php echo $tcsetting->tgbghvrcolour; ?>;
-        }
+    /* Toggle icon position. */
+    .course-content ul.ctopics li.section .content .toggle a, #toggle-all .content h4 a {
+        background-position: <?php
+    switch ($tcsettings['toggleiconposition']) {
+        case 2:
+            echo 'right';
+            break;
+        default:
+            echo 'left';
+    }
+    ?> center;
+    }
 
-        /* Dynamically changing widths with language */
-        .course-content ul.ctopics li.section.main .content, .course-content ul.ctopics li.tcsection .content {
-            <?php
-            if ((!$PAGE->user_is_editing()) && ($PAGE->theme->name != 'mymobile')) {
-                echo 'margin: 0 ' . get_string('topcollsidewidth', 'format_topcoll');
-            }
+    /* -- What happens when a toggle is hovered over -- */
+    .course-content ul.ctopics li.section .content div.toggle:hover
+    {
+        background-color: <?php
+                            if ($tcsettings['togglebackgroundhovercolour'][0] != '#') {
+                                echo '#';
+                            }
+                            echo $tcsettings['togglebackgroundhovercolour'];
+                          ?>;
+    }
 
-            ?>;
-        }
+    <?php
+    // Dynamically changing widths with language.
+    if ((!$PAGE->user_is_editing()) && ($portable == 0)) {
+        echo '.course-content ul.ctopics li.section.main .content, .course-content ul.ctopics li.tcsection .content {';
+        echo 'margin: 0 ' . get_string('topcollsidewidth', 'format_topcoll');
+        echo '}';
+    }
 
-        .course-content ul.ctopics li.section.main .side, .course-content ul.ctopics li.tcsection .side {
-            <?php
-            if (!$PAGE->user_is_editing()) {
-                echo 'width: ' . get_string('topcollsidewidth', 'format_topcoll');
-            }
-            ?>;
-        }
+    // Make room for editing icons.
+    if (!$PAGE->user_is_editing()) {
+        echo '.course-content ul.ctopics li.section.main .side, .course-content ul.ctopics li.tcsection .side {';
+        echo 'width: ' . get_string('topcollsidewidth', 'format_topcoll');
+        echo '}';
+    }
 
-        /* ]]> */
+    // Establish horizontal unordered list for horizontal columns.
+    if ($tcsettings['layoutcolumnorientation'] == 2) {
+        echo '.course-content ul.ctopics li.section {';
+        echo 'display: inline-block;';
+        echo 'vertical-align:top;';
+        echo '}';
+        echo 'body.ie7 .course-content ul.ctopics li.section {';
+        echo 'zoom: 1;';
+        echo '*display: inline;';
+        echo '}';
+    }
+    ?>;
+    /* ]]> */
     </style>
     <?php
-    $renderer->print_multiple_section_page($course, $sections, $mods, $modnames, $modnamesused);
+    $renderer->print_multiple_section_page($course, null, null, null, null);
 }
 
-// Include course format js module
+// Include course format js module.
 $PAGE->requires->js('/course/format/topcoll/format.js');

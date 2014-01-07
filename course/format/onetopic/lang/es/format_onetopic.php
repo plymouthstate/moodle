@@ -14,9 +14,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'format_onetopic', language 'es', branch 'MOODLE_20_STABLE'
+ * Strings for component 'format_onetopic', language 'es', branch 'MOODLE_24_STABLE'
  *
- * @since 2.0
+ * @since 2.4
  * @package contribution
  * @copyright 2012 David Herney Bernal - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -29,3 +29,5 @@ $string['page-course-view-topics'] = 'Alguna página principal de curso en forma
 $string['page-course-view-topics-x'] = 'Alguna página de curso en formato onetopic';
 $string['hidefromothers'] = 'Ocultar tema';
 $string['showfromothers'] = 'Mostrar tema';
+$string['hidetabsbar'] = 'Ocultar barra de pestañas';
+$string['hidetabsbar_help'] = 'Oculta la barra de pestañas en la página principal del curso, la navegación se llevará a cabo con la barra de navegación entre temas.';

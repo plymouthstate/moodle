@@ -210,8 +210,6 @@ class attforblock_manage_data implements renderable {
      * @param attforblock $att instance
      */
     public function __construct(attforblock $att) {
-        global $DB;
-
         $this->perm = $att->perm;
 
         $this->sessions = $att->get_filtered_sessions();
@@ -259,10 +257,12 @@ class attforblock_take_data implements renderable {
     private $att;
 
     public function  __construct(attforblock $att) {
-        if ($att->pageparams->grouptype)
+        if ($att->pageparams->grouptype) {
             $this->users = $att->get_users($att->pageparams->grouptype);
-        else
+        }
+        else {
             $this->users = $att->get_users($att->pageparams->group);
+        }
 
         $this->pageparams = $att->pageparams;
         $this->perm = $att->perm;
@@ -333,6 +333,8 @@ class attforblock_user_data implements renderable {
 
     public $sessionslog;
 
+    public $groups;
+
     public $coursesatts;
 
     private $urlpath;
@@ -364,6 +366,8 @@ class attforblock_user_data implements renderable {
             $this->filtercontrols = new attforblock_filter_controls($att);
 
             $this->sessionslog = $att->get_user_filtered_sessions_log_extended($userid);
+
+            $this->groups = groups_get_all_groups($att->course->id);
         }
         else {
             $this->coursesatts = att_get_user_courses_attendances($userid);

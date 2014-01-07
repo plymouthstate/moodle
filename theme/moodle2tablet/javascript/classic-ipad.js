@@ -54,6 +54,9 @@ function doClassiciPadReady() {
 		classicUpdateOrientation();
 	});
 
+	//add back link for forum post ---------------------------------------------
+	touchJS( '#mformforum' ).prepend( '<span class="backpost"><b><a href="javascript:history.back();">X</a></b></span>' );
+
 	/* Menubar Button Left Popover Triggers */	
 	touchJS( '.head-left div.menubar-button' ).bind( touchEndOrClick, function(){
 		var popoverName = '#pop-' + touchJS( this ).attr( 'id' );

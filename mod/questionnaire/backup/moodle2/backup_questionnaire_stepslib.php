@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -32,15 +31,15 @@
 class backup_questionnaire_activity_structure_step extends backup_activity_structure_step {
 
     protected function define_structure() {
-
-        // To know if we are including userinfo
+        global $DB;
+        // To know if we are including userinfo.
         $userinfo = $this->get_setting_value('userinfo');
 
-        // Define each element separated
+        // Define each element separated.
         $questionnaire = new backup_nested_element('questionnaire', array('id'), array(
             'course', 'name', 'intro', 'introformat', 'qtype',
             'respondenttype', 'resp_eligible', 'resp_view', 'opendate',
-            'closedate', 'resume', 'navigate', 'grade', 'sid', 'timemodified'));
+            'closedate', 'resume', 'navigate', 'grade', 'sid', 'timemodified', 'completionsubmit', 'autonum'));
 
         $surveys = new backup_nested_element('surveys');
 
@@ -52,11 +51,11 @@ class backup_questionnaire_activity_structure_step extends backup_activity_struc
 
         $question = new backup_nested_element('question', array('id'), array(
             'survey_id', 'name', 'type_id', 'result_id', 'length', 'precise',
-            'position', 'content', 'required', 'deleted'));
+            'position', 'content', 'required', 'deleted', 'dependquestion', 'dependchoice'));
 
-        $quest_choices = new backup_nested_element('quest_choices');
+        $questchoices = new backup_nested_element('quest_choices');
 
-        $quest_choice = new backup_nested_element('quest_choice', array('id'), array(
+        $questchoice = new backup_nested_element('quest_choice', array('id'), array(
             'question_id', 'content', 'value'));
 
         $attempts = new backup_nested_element('attempts');
@@ -69,50 +68,50 @@ class backup_questionnaire_activity_structure_step extends backup_activity_struc
         $response = new backup_nested_element('response', array('id'), array(
             'survey_id', 'submitted', 'complete', 'grade', 'username'));
 
-        $response_bools = new backup_nested_element('response_bools');
+        $responsebools = new backup_nested_element('response_bools');
 
-        $response_bool = new backup_nested_element('response_bool', array('id'), array(
+        $responsebool = new backup_nested_element('response_bool', array('id'), array(
             'response_id', 'question_id', 'choice_id'));
 
-        $response_dates = new backup_nested_element('response_dates');
+        $responsedates = new backup_nested_element('response_dates');
 
-        $response_date = new backup_nested_element('response_date', array('id'), array(
+        $responsedate = new backup_nested_element('response_date', array('id'), array(
             'response_id', 'question_id', 'response'));
 
-        $response_multiples = new backup_nested_element('response_multiples');
+        $responsemultiples = new backup_nested_element('response_multiples');
 
-        $response_multiple = new backup_nested_element('response_multiple', array('id'), array(
+        $responsemultiple = new backup_nested_element('response_multiple', array('id'), array(
             'response_id', 'question_id', 'choice_id'));
 
-        $response_others = new backup_nested_element('response_others');
+        $responseothers = new backup_nested_element('response_others');
 
-        $response_other = new backup_nested_element('response_other', array('id'), array(
+        $responseother = new backup_nested_element('response_other', array('id'), array(
             'response_id', 'question_id', 'choice_id', 'response'));
 
-        $response_ranks = new backup_nested_element('response_ranks');
+        $responseranks = new backup_nested_element('response_ranks');
 
-        $response_rank = new backup_nested_element('response_rank', array('id'), array(
+        $responserank = new backup_nested_element('response_rank', array('id'), array(
             'response_id', 'question_id', 'choice_id', 'rank'));
 
-        $response_singles = new backup_nested_element('response_singles');
+        $responsesingles = new backup_nested_element('response_singles');
 
-        $response_single = new backup_nested_element('response_single', array('id'), array(
+        $responsesingle = new backup_nested_element('response_single', array('id'), array(
             'response_id', 'question_id', 'choice_id'));
 
-        $response_texts = new backup_nested_element('response_texts');
+        $responsetexts = new backup_nested_element('response_texts');
 
-        $response_text = new backup_nested_element('response_text', array('id'), array(
+        $responsetext = new backup_nested_element('response_text', array('id'), array(
             'response_id', 'question_id', 'response'));
 
-        // Build the tree
+        // Build the tree.
         $questionnaire->add_child($surveys);
         $surveys->add_child($survey);
 
         $survey->add_child($questions);
         $questions->add_child($question);
 
-        $question->add_child($quest_choices);
-        $quest_choices->add_child($quest_choice);
+        $question->add_child($questchoices);
+        $questchoices->add_child($questchoice);
 
         $questionnaire->add_child($attempts);
         $attempts->add_child($attempt);
@@ -120,61 +119,72 @@ class backup_questionnaire_activity_structure_step extends backup_activity_struc
         $attempt->add_child($responses);
         $responses->add_child($response);
 
-        $response->add_child($response_bools);
-        $response_bools->add_child($response_bool);
+        $response->add_child($responsebools);
+        $responsebools->add_child($responsebool);
 
-        $response->add_child($response_dates);
-        $response_dates->add_child($response_date);
+        $response->add_child($responsedates);
+        $responsedates->add_child($responsedate);
 
-        $response->add_child($response_multiples);
-        $response_multiples->add_child($response_multiple);
+        $response->add_child($responsemultiples);
+        $responsemultiples->add_child($responsemultiple);
 
-        $response->add_child($response_others);
-        $response_others->add_child($response_other);
+        $response->add_child($responseothers);
+        $responseothers->add_child($responseother);
 
-        $response->add_child($response_ranks);
-        $response_ranks->add_child($response_rank);
+        $response->add_child($responseranks);
+        $responseranks->add_child($responserank);
 
-        $response->add_child($response_singles);
-        $response_singles->add_child($response_single);
+        $response->add_child($responsesingles);
+        $responsesingles->add_child($responsesingle);
 
-        $response->add_child($response_texts);
-        $response_texts->add_child($response_text);
+        $response->add_child($responsetexts);
+        $responsetexts->add_child($responsetext);
 
-        // Define sources
+        // Define sources.
         $questionnaire->set_source_table('questionnaire', array('id' => backup::VAR_ACTIVITYID));
 
-        $survey->set_source_table('questionnaire_survey', array('id' => '../../sid'));
-
-        $question->set_source_table('questionnaire_question', array('survey_id' => backup::VAR_PARENTID));
-
-        $quest_choice->set_source_table('questionnaire_quest_choice', array('question_id' => backup::VAR_PARENTID));
-
-        // All the rest of elements only happen if we are including user info
-        if ($userinfo) {
-            $attempt->set_source_table('questionnaire_attempts', array('qid' => backup::VAR_PARENTID));
-            $response->set_source_table('questionnaire_response', array('id' => '../../rid'));
-            $response_bool->set_source_table('questionnaire_response_bool', array('response_id' => backup::VAR_PARENTID));
-            $response_date->set_source_table('questionnaire_response_date', array('response_id' => backup::VAR_PARENTID));
-            $response_multiple->set_source_table('questionnaire_resp_multiple', array('response_id' => backup::VAR_PARENTID));
-            $response_other->set_source_table('questionnaire_response_other', array('response_id' => backup::VAR_PARENTID));
-            $response_rank->set_source_table('questionnaire_response_rank', array('response_id' => backup::VAR_PARENTID));
-            $response_single->set_source_table('questionnaire_resp_single', array('response_id' => backup::VAR_PARENTID));
-            $response_text->set_source_table('questionnaire_response_text', array('response_id' => backup::VAR_PARENTID));
+        // Is current questionnaire based on a public questionnaire?
+        $qid = $this->task->get_activityid();
+        $currentquestionnaire = $DB->get_record("questionnaire", array ("id" => $qid));
+        $currentsurvey = $DB->get_record("questionnaire_survey", array ("id" => $currentquestionnaire->sid));
+        $haspublic = false;
+        if ($currentsurvey->realm == 'public' && $currentsurvey->owner != $currentquestionnaire->course) {
+            $haspublic = true;
         }
 
-        // Define id annotations
-        $attempt->annotate_ids('user', 'userid');
+        // If current questionnaire is based on a public one, do not include survey nor questions in backup.
+        if (!$haspublic) {
+            $survey->set_source_table('questionnaire_survey', array('id' => '../../sid'));
 
+            $question->set_source_table('questionnaire_question', array('survey_id' => backup::VAR_PARENTID));
+
+            $questchoice->set_source_table('questionnaire_quest_choice', array('question_id' => backup::VAR_PARENTID));
+
+            // All the rest of elements only happen if we are including user info.
+            if ($userinfo) {
+                $attempt->set_source_table('questionnaire_attempts', array('qid' => backup::VAR_PARENTID));
+                $response->set_source_table('questionnaire_response', array('id' => '../../rid'));
+                $responsebool->set_source_table('questionnaire_response_bool', array('response_id' => backup::VAR_PARENTID));
+                $responsedate->set_source_table('questionnaire_response_date', array('response_id' => backup::VAR_PARENTID));
+                $responsemultiple->set_source_table('questionnaire_resp_multiple', array('response_id' => backup::VAR_PARENTID));
+                $responseother->set_source_table('questionnaire_response_other', array('response_id' => backup::VAR_PARENTID));
+                $responserank->set_source_table('questionnaire_response_rank', array('response_id' => backup::VAR_PARENTID));
+                $responsesingle->set_source_table('questionnaire_resp_single', array('response_id' => backup::VAR_PARENTID));
+                $responsetext->set_source_table('questionnaire_response_text', array('response_id' => backup::VAR_PARENTID));
+            }
+
+            // Define id annotations.
+            $attempt->annotate_ids('user', 'userid');
+        }
         // Define file annotations
-        $questionnaire->annotate_files('mod_questionnaire', 'intro', null); // This file area hasn't itemid
+        $questionnaire->annotate_files('mod_questionnaire', 'intro', null); // This file area hasn't itemid.
 
         $survey->annotate_files('mod_questionnaire', 'info', 'id'); // By survey->id
-        $survey->annotate_files('mod_questionnaire', 'thankbody', 'id'); // By survey->id
+        $survey->annotate_files('mod_questionnaire', 'thankbody', 'id'); // By survey->id.
 
-        $question->annotate_files('mod_questionnaire', 'question', 'id'); // By question->id
+        $question->annotate_files('mod_questionnaire', 'question', 'id'); // By question->id.
 
-        // Return the root element, wrapped into standard activity structure
+        // Return the root element, wrapped into standard activity structure.
         return $this->prepare_activity_structure($questionnaire);
     }
 }

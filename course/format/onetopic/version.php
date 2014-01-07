@@ -16,16 +16,15 @@
 /**
  * Version details
  *
- * @since 2.0
  * @package contribution
- * @copyright 2012 David Herney Bernal - cirano
+ * @copyright 2013 David Herney Bernal - cirano
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2012062605;        // The current plugin version (Date: YYYYMMDDXX)
-$plugin->requires  = 2012062500;        // Requires this Moodle version.
+$plugin->version = 2013052002;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->requires  = 2013050100;        // Requires this Moodle version.
 $plugin->component = 'format_onetopic';    // Full name of the plugin (used for diagnostics)
 $plugin->maturity = MATURITY_BETA;
-$plugin->release = 'guarango';
+$plugin->release = 'chalarca';

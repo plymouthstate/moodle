@@ -34,8 +34,8 @@
 
     $plugin             = new stdClass();
 
-    $plugin->version    = 2012062500;
-    $plugin->requires   = 2012062500;
-    $plugin->release    = "0.0.4";
+    $plugin->version    = 2013080501;
+    $plugin->requires   = 2013051400;
+    $plugin->release    = "0.1.0-25 (Build 20131008)";
     $plugin->cron       = 1;
     $plugin->maturity   = MATURITY_STABLE;

@@ -3,13 +3,13 @@ M.local_kaltura = {};
 M.local_kaltura.loading_panel = {};
 
 M.local_kaltura.show_loading = function () {
-    loading_panel = new YAHOO.widget.Panel("wait", {width:"240px",  
-                                                    fixedcenter:true,  
-                                                    close:false,  
-                                                    draggable:false,  
-                                                    zindex:4, 
-                                                    modal:true, 
-                                                    visible:false 
+    loading_panel = new Y.YUI2.widget.Panel("wait", {width:"240px",
+                                                    fixedcenter:true,
+                                                    close:false,
+                                                    draggable:false,
+                                                    zindex:4,
+                                                    modal:true,
+                                                    visible:false
                                                    });
 
     loading_panel.setHeader("Loading, please wait..."); 
@@ -533,7 +533,7 @@ M.local_kaltura.video_assignment = function (Y, conversion_script, panel_markup,
     }
 
     // Create panel to hold KCW
-    var widget_panel = new YAHOO.widget.Panel("video_panel", { width: "800px",
+    var widget_panel = new Y.YUI2.widget.Panel("video_panel", { width: "800px",
                                                                height: "470px",
                                                                visible: false,
                                                                constraintoviewport: false,
@@ -555,14 +555,18 @@ M.local_kaltura.video_assignment = function (Y, conversion_script, panel_markup,
             widget_panel.setBody(kcw_code);
             widget_panel.show();
         } else {
-        	
             Y.one("#progress_bar_container").setStyle("visibility", "visible");
             Y.one("#slider_border").setStyle("borderStyle", "none");
+
+            Y.one("#loading_text").setContent(M.util.get_string("checkingforjava", "kalvidassign"));
+            kalturaScreenRecord.setDetectResultErrorMessageElementId('loading_text');
+            kalturaScreenRecord.startCallBack.detection_in_progress = true;
+            kalturaScreenRecord.startCallBack.detection_process = setTimeout('kalturaScreenRecord.clearDetectionFlagAndDisplayError()', 30000);
 
             kalturaScreenRecord.setDetectTextJavaDisabled(M.util.get_string("javanotenabled", "kalvidassign"));
             kalturaScreenRecord.setDetectTextmacLionNeedsInstall(M.util.get_string("javanotenabled", "kalvidassign"));
             kalturaScreenRecord.setDetectTextjavaNotDetected(M.util.get_string("javanotenabled", "kalvidassign"));
-            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, 'false');
+            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, 'true');
             
             var java_disabled = function (message) {
             	Y.one('#id_media_method_0').set("checked", true);
@@ -612,15 +616,15 @@ M.local_kaltura.video_assignment = function (Y, conversion_script, panel_markup,
     if (null !== Y.one("#id_video_preview")) {
 
         // Create loading panel
-        var loading_panel =  new YAHOO.widget.Panel("wait", { width:"240px",  
-                                                              fixedcenter:true,  
-                                                              close:false,  
-                                                              draggable:false,  
-                                                              zindex:4, 
-                                                              modal:true, 
-                                                              visible:false 
-                                                             }  
-                                                   ); 
+        var loading_panel =  new Y.YUI2.widget.Panel("wait", { width:"240px",
+                                                              fixedcenter:true,
+                                                              close:false,
+                                                              draggable:false,
+                                                              zindex:4,
+                                                              modal:true,
+                                                              visible:false
+                                                             }
+                                                   );
 
         loading_panel.setHeader("Loading, please wait..."); 
         loading_panel.setBody('<img src="http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif" />');
@@ -628,7 +632,7 @@ M.local_kaltura.video_assignment = function (Y, conversion_script, panel_markup,
 
         
         // Create preview panel
-        var preview_panel  = new YAHOO.widget.Panel("id_video_preview",
+        var preview_panel  = new Y.YUI2.widget.Panel("id_video_preview",
                                         { width: "450px",
                                           height: "430px",
                                           fixedcenter: false,
@@ -747,15 +751,15 @@ M.local_kaltura.video_asignment_submission_view = function (Y, conversion_script
     }
     
     // Create loading panel
-    var loading_panel =  new YAHOO.widget.Panel("wait", { width:"240px",  
-                                                          fixedcenter:true,  
-                                                          close:false,  
-                                                          draggable:false,  
-                                                          zindex:4, 
-                                                          modal:true, 
-                                                          visible:false 
-                                                         }  
-                                               ); 
+    var loading_panel =  new Y.YUI2.widget.Panel("wait", { width:"240px",
+                                                          fixedcenter:true,
+                                                          close:false,
+                                                          draggable:false,
+                                                          zindex:4,
+                                                          modal:true,
+                                                          visible:false
+                                                         }
+                                               );
 
     loading_panel.setHeader("Loading, please wait..."); 
     loading_panel.setBody('<img src="http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif" />');
@@ -763,7 +767,7 @@ M.local_kaltura.video_asignment_submission_view = function (Y, conversion_script
 
 
     // Create preview panel
-    var preview_panel  = new YAHOO.widget.Panel("id_video_preview",
+    var preview_panel  = new Y.YUI2.widget.Panel("id_video_preview",
                                     { width: "410px",
                                       height: "450px",
                                       fixedcenter: false,
@@ -923,7 +927,7 @@ M.local_kaltura.video_resource = function (Y, conversion_script,
     progress_bar.style.cssFloat = 'left';
 
     // Create panel to hold KCW
-    var widget_panel = new YAHOO.widget.Panel("video_panel", { width: "800px",
+    var widget_panel = new Y.YUI2.widget.Panel("video_panel", { width: "800px",
                                                                height: "470px",
                                                                visible: false,
                                                                constraintoviewport: false,
@@ -959,11 +963,17 @@ M.local_kaltura.video_resource = function (Y, conversion_script,
 
             Y.one("#progress_bar_container").setStyle("visibility", "visible");
             Y.one("#slider_border").setStyle("borderStyle", "none");
-            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, "false");
+
+            Y.one("#loading_text").setContent(M.util.get_string("checkingforjava", "kalvidres"));
+            kalturaScreenRecord.setDetectResultErrorMessageElementId('loading_text');
+            kalturaScreenRecord.startCallBack.detection_in_progress = true;
+            kalturaScreenRecord.startCallBack.detection_process = setTimeout('kalturaScreenRecord.clearDetectionFlagAndDisplayError()', 30000);
+
             kalturaScreenRecord.setDetectTextJavaDisabled(M.util.get_string("javanotenabled", "kalvidres"));
             kalturaScreenRecord.setDetectTextmacLionNeedsInstall(M.util.get_string("javanotenabled", "kalvidres"));
             kalturaScreenRecord.setDetectTextjavaNotDetected(M.util.get_string("javanotenabled", "kalvidres"));
-            
+            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, "true");
+
             var java_disabled = function (message) {
             	Y.one('#id_media_method_0').set("checked", true);
             	Y.one('#id_media_method_1').set("disabled", true);
@@ -1171,7 +1181,7 @@ M.local_kaltura.video_resource = function (Y, conversion_script,
          [Y.Node.getDOMNode(video_property_size), Y.Node.getDOMNode(video_property_dimen)]); 
     
     // Create properties panel instance
-    var prop_panel  = new YAHOO.widget.Dialog("video_properties_panel",
+    var prop_panel  = new Y.YUI2.widget.Dialog("video_properties_panel",
                                                 { width: "400px",
                                                   fixedcenter: true,
                                                   visible: false,
@@ -1208,15 +1218,15 @@ M.local_kaltura.video_resource = function (Y, conversion_script,
     prop_panel.hideEvent.subscribe(handle_cancel);
 
     // Create loading panel
-    var loading_panel =  new YAHOO.widget.Panel("wait", { width:"240px",  
-                                                          fixedcenter:true,  
-                                                          close:false,  
-                                                          draggable:false,  
-                                                          zindex:4, 
-                                                          modal:true, 
-                                                          visible:false 
-                                                         }  
-                                               ); 
+    var loading_panel =  new Y.YUI2.widget.Panel("wait", { width:"240px",
+                                                          fixedcenter:true,
+                                                          close:false,
+                                                          draggable:false,
+                                                          zindex:4,
+                                                          modal:true,
+                                                          visible:false
+                                                         }
+                                               );
 
     loading_panel.setHeader("Loading, please wait..."); 
     loading_panel.setBody('<img src="http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif" />');
@@ -1224,7 +1234,7 @@ M.local_kaltura.video_resource = function (Y, conversion_script,
 
     // Create preview panel
     
-    var preview_panel  = new YAHOO.widget.Panel("video_preview_panel",
+    var preview_panel  = new Y.YUI2.widget.Panel("video_preview_panel",
                                     { width:  preview_panel_width,
                                       height: preview_panel_height,
                                       fixedcenter: false,
@@ -1398,7 +1408,7 @@ M.local_kaltura.video_presentation = function (Y, conversion_script,
     progress_bar.style.cssFloat = 'left';
     
     // Create panel to hold KCW
-    var widget_panel = new YAHOO.widget.Panel("video_panel", { width: "800px",
+    var widget_panel = new Y.YUI2.widget.Panel("video_panel", { width: "800px",
                                                                height: "470px",
                                                                visible: false,
                                                                constraintoviewport: false,
@@ -1433,11 +1443,16 @@ M.local_kaltura.video_presentation = function (Y, conversion_script,
             Y.one("#progress_bar_container").setStyle("visibility", "visible");
             Y.one("#slider_border").setStyle("borderStyle", "none");
 
-            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, 'false');
+            Y.one("#loading_text").setContent(M.util.get_string("checkingforjava", "kalvidpres"));
+            kalturaScreenRecord.setDetectResultErrorMessageElementId('loading_text');
+            kalturaScreenRecord.startCallBack.detection_in_progress = true;
+            kalturaScreenRecord.startCallBack.detection_process = setTimeout('kalturaScreenRecord.clearDetectionFlagAndDisplayError()', 30000);
+
             kalturaScreenRecord.setDetectTextJavaDisabled(M.util.get_string("javanotenabled", "kalvidpres"));
             kalturaScreenRecord.setDetectTextmacLionNeedsInstall(M.util.get_string("javanotenabled", "kalvidpres"));
             kalturaScreenRecord.setDetectTextjavaNotDetected(M.util.get_string("javanotenabled", "kalvidpres"));
-            
+            kalturaScreenRecord.startKsr(kaltura_partner_id, kaltura_session, 'true');
+
             var java_disabled = function (message) {
             	Y.one('#id_media_method_0').set("checked", true);
             	Y.one('#id_media_method_1').set("disabled", true);
@@ -1471,15 +1486,15 @@ M.local_kaltura.video_presentation = function (Y, conversion_script,
     kcw_cancel.on("click", kcw_cancel_callback, null, widget_panel);
     
     // Create loading panel
-    var loading_panel =  new YAHOO.widget.Panel("wait", { width:"240px",  
-                                                          fixedcenter:true,  
-                                                          close:false,  
-                                                          draggable:false,  
-                                                          zindex:4, 
-                                                          modal:true, 
-                                                          visible:false 
-                                                         }  
-                                               ); 
+    var loading_panel =  new Y.YUI2.widget.Panel("wait", { width:"240px",
+                                                          fixedcenter:true,
+                                                          close:false,
+                                                          draggable:false,
+                                                          zindex:4,
+                                                          modal:true,
+                                                          visible:false
+                                                         }
+                                               );
 
     loading_panel.setHeader("Loading, please wait..."); 
     loading_panel.setBody('<img src="http://l.yimg.com/a/i/us/per/gr/gp/rel_interstitial_loading.gif" />');
@@ -1544,7 +1559,7 @@ M.local_kaltura.video_presentation = function (Y, conversion_script,
             context: preview_video_context
     };
     
-    var preview_panel  = new YAHOO.widget.Panel("video_preview_panel",
+    var preview_panel  = new Y.YUI2.widget.Panel("video_preview_panel",
                                     { width: "550px",
                                       height: "550px",
                                       fixedcenter: true,
@@ -1746,7 +1761,7 @@ M.local_kaltura.video_presentation_view = function (Y, conversion_script,
     }
 
     // Create preview panel
-    var preview_panel  = new YAHOO.widget.Panel("video_pres_panel",
+    var preview_panel  = new Y.YUI2.widget.Panel("video_pres_panel",
                                     { width: "870px",
                                       height: "440px",
                                       fixedcenter: true,

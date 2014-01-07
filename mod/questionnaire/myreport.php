@@ -14,70 +14,65 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/// This page shows results of a questionnaire to a student.
+// This page shows results of a questionnaire to a student.
 
-    require_once("../../config.php");
-    require_once($CFG->dirroot.'/mod/questionnaire/lib.php');
+require_once("../../config.php");
+require_once($CFG->dirroot.'/mod/questionnaire/questionnaire.class.php');
 
-    $strsummary = get_string('summary', 'questionnaire');
-    $strall = get_string('myresponses', 'questionnaire');
-    $strviewbyresponse = get_string('viewbyresponse', 'questionnaire');
-    $strmodname = get_string('modulename', 'questionnaire');
-    $strmodnameplural = get_string('modulenameplural', 'questionnaire');
-    $strmyresults = get_string('myresults', 'questionnaire');
-    $strquestionnaires = get_string('modulenameplural', 'questionnaire');
+$strsummary = get_string('summary', 'questionnaire');
+$strall = get_string('myresponses', 'questionnaire');
+$strviewbyresponse = get_string('viewbyresponse', 'questionnaire');
+$strmodname = get_string('modulename', 'questionnaire');
+$strmodnameplural = get_string('modulenameplural', 'questionnaire');
+$strmyresults = get_string('myresults', 'questionnaire');
+$strquestionnaires = get_string('modulenameplural', 'questionnaire');
 
-    $instance = required_param('instance', PARAM_INT);   // questionnaire ID
-    $userid = optional_param('user', $USER->id, PARAM_INT);
-    $rid = optional_param('rid', false, PARAM_INT);
-    $byresponse = optional_param('byresp', false, PARAM_INT);
-    $action = optional_param('action', $strsummary, PARAM_RAW); // for languages utf-8 compatibility JR
+$instance = required_param('instance', PARAM_INT);   // Questionnaire ID.
+$userid = optional_param('user', $USER->id, PARAM_INT);
+$rid = optional_param('rid', null, PARAM_INT);
+$byresponse = optional_param('byresponse', 0, PARAM_INT);
+$action = optional_param('action', 'summary', PARAM_RAW);
+$currentgroupid = optional_param('group', 0, PARAM_INT); // Groupid.
 
-    if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $instance))) {
-        print_error('incorrectquestionnaire', 'questionnaire');
-    }
-    if (! $course = $DB->get_record("course", array("id" => $questionnaire->course))) {
-        print_error('coursemisconf');
-    }
-    if (! $cm = get_coursemodule_from_instance("questionnaire", $questionnaire->id, $course->id)) {
-        print_error('invalidcoursemodule');
-    }
+if (! $questionnaire = $DB->get_record("questionnaire", array("id" => $instance))) {
+    print_error('incorrectquestionnaire', 'questionnaire');
+}
+if (! $course = $DB->get_record("course", array("id" => $questionnaire->course))) {
+    print_error('coursemisconf');
+}
+if (! $cm = get_coursemodule_from_instance("questionnaire", $questionnaire->id, $course->id)) {
+    print_error('invalidcoursemodule');
+}
 
-    require_course_login($course, true, $cm);
-    $context = get_context_instance(CONTEXT_MODULE, $cm->id);
-    /// Should never happen, unless called directly by a snoop...
-    if ( !has_capability('mod/questionnaire:readownresponses',$context)
-        || $userid != $USER->id) {
-        print_error('Permission denied');
-    }
-    $url = new moodle_url($CFG->wwwroot.'/mod/questionnaire/myreport.php', array('instance'=>$instance));
-    if (isset($userid)) {
-        $url->param('userid', $userid);
-    }
-    if (isset($rid)) {
-        $url->param('rid', $rid);
-        $params['rid'] = $rid;
-    }
-    if (isset($byresponse)) {
-        $url->param('byresponse', $byresponse);
-    }
-    if (isset($action)) {
-        $url->param('action', $action);
-    }
+require_course_login($course, true, $cm);
+$context = context_module::instance($cm->id);
+// Should never happen, unless called directly by a snoop...
+if ( !has_capability('mod/questionnaire:readownresponses', $context)
+    || $userid != $USER->id) {
+    print_error('Permission denied');
+}
+$url = new moodle_url($CFG->wwwroot.'/mod/questionnaire/myreport.php', array('instance' => $instance));
+if (isset($userid)) {
+    $url->param('userid', $userid);
+}
+if (isset($byresponse)) {
+    $url->param('byresponse', $byresponse);
+}
+if (isset($action)) {
+    $url->param('action', $action);
+}
 
-    $PAGE->set_url($url);
-    $PAGE->set_context($context);
-    $PAGE->set_title(get_string('questionnairereport', 'questionnaire'));
-    $PAGE->set_heading(format_string($course->fullname));
-    $PAGE->navbar->add(get_string('questionnairereport', 'questionnaire'));
-    $PAGE->navbar->add($strmyresults);
+$PAGE->set_url($url);
+$PAGE->set_context($context);
+$PAGE->set_title(get_string('questionnairereport', 'questionnaire'));
+$PAGE->set_heading(format_string($course->fullname));
 
-    $questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
+$questionnaire = new questionnaire(0, $questionnaire, $course, $cm);
 
-/// Tab setup:
-    $SESSION->questionnaire->current_tab = 'myreport';
+// Tab setup.
+$SESSION->questionnaire->current_tab = 'myreport';
 
-    switch ($action) {
+switch ($action) {
     case $strsummary:
     case 'summary':
         if (empty($questionnaire->survey)) {
@@ -90,20 +85,24 @@
             $resps = array();
         }
         $rids = array_keys($resps);
-        $titletext = get_string('myresponsetitle', 'questionnaire', count($resps));
+        if (count($resps) > 1) {
+            $titletext = get_string('myresponsetitle', 'questionnaire', count($resps));
+        } else {
+            $titletext = get_string('yourresponse', 'questionnaire');
+        }
 
-    /// Print the page header
+        // Print the page header.
         echo $OUTPUT->header();
 
-        /// print the tabs
+        // Print the tabs.
         include('tabs.php');
 
         echo $OUTPUT->heading($titletext);
         echo '<div class = "generalbox">';
-        $questionnaire->survey_results(1, 1, '', '', $rids, '', $USER->id);
+        $questionnaire->survey_results(1, 1, '', '', $rids, $USER->id);
         echo '</div>';
 
-    /// Finish the page
+        // Finish the page.
         echo $OUTPUT->footer($course);
         break;
 
@@ -114,20 +113,20 @@
         }
         $SESSION->questionnaire->current_tab = 'myvall';
         $select = 'survey_id = '.$questionnaire->sid.' AND username = \''.$userid.'\' AND complete=\'y\'';
-        $resps = $DB->get_records_select('questionnaire_response', $select);
+        $sort = 'submitted ASC';
+        $resps = $DB->get_records_select('questionnaire_response', $select, $params = null, $sort);
         $titletext = get_string('myresponses', 'questionnaire');
 
-    /// Print the page header
+        // Print the page header.
         echo $OUTPUT->header();
 
-        /// print the tabs
+        // Print the tabs.
         include('tabs.php');
 
         echo $OUTPUT->heading($titletext.':');
-
         $questionnaire->view_all_responses($resps);
 
-    /// Finish the page
+        // Finish the page.
         echo $OUTPUT->footer($course);
         break;
 
@@ -138,21 +137,28 @@
         }
         $SESSION->questionnaire->current_tab = 'mybyresponse';
         $select = 'survey_id = '.$questionnaire->sid.' AND username = \''.$userid.'\' AND complete=\'y\'';
-        $resps = $DB->get_records_select('questionnaire_response', $select);
+        $sort = 'submitted ASC';
+        $resps = $DB->get_records_select('questionnaire_response', $select, $params = null, $sort);
         $rids = array_keys($resps);
+
+        // If more than one response for this respondent, display most recent response.
         if (!$rid) {
-            $rid = $rids[0];
+            $rid = end($rids);
         }
-        if ($rid) {
-            $numresp = $questionnaire->count_submissions($USER->id);
+        $numresp = count($rids);
+        if ($numresp > 1) {
             $titletext = get_string('myresponsetitle', 'questionnaire', $numresp);
+        } else {
+            $titletext = get_string('yourresponse', 'questionnaire');
         }
 
-    /// Print the page header
+        // Print the page header.
         echo $OUTPUT->header();
 
-        /// print the tabs
+        // Print the tabs.
         include('tabs.php');
+        echo $OUTPUT->box_start();
+
         echo $OUTPUT->heading($titletext);
 
         if (count($resps) > 1) {
@@ -160,21 +166,18 @@
             $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
             echo '</div>';
         }
-        echo '<table class = "active"><tr><td>';
         $questionnaire->view_response($rid);
-        echo ('</td></tr></table>');
         if (count($resps) > 1) {
             echo '<div style="text-align:center; padding-bottom:5px;">';
             $questionnaire->survey_results_navbar_student ($rid, $userid, $instance, $resps);
             echo '</div>';
         }
-
-
-    /// Finish the page
+        echo $OUTPUT->box_end();
+        // Finish the page.
         echo $OUTPUT->footer($course);
         break;
 
     case get_string('return', 'questionnaire'):
     default:
         redirect('view.php?id='.$cm->id);
-    }
+}

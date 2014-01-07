@@ -37,6 +37,29 @@ var GORDA = {};
 </script>
 
 <?php echo $OUTPUT->standard_head_html() ?>
+
+<?php if ($PAGE->bodyid=="page-mod-forum-post") { ?>
+<style type="text/css">
+html, body {background:#333;}
+#gorda-header, #popovers-container, .navbar, .footer, .forumpost, .forumthread, .ftoggler{display:none;}
+#iscroll-wrapper{top:0px;}
+.generalbox {margin:5%;}
+.mform fieldset{border-width: 0;}
+span.backpost {
+	float:right;
+	max-width:15px;
+	height:15px;
+	background-color: #000;
+	padding: 1px 5px;
+	-webkit-box-shadow: 0 0 3px 3px#888;
+	box-shadow: 0 0 3px 3px #888;
+	border: 1px solid #fff;
+}
+span.backpost a{ color: #fff; }
+</style>
+
+<?php } ?>
+
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /> 
 <meta name='apple-mobile-web-app-status-bar-style' content='default' /> 
 <meta name='apple-mobile-web-app-capable' content='yes' /> 
@@ -47,6 +70,10 @@ var GORDA = {};
 
 <body id="<?php p($PAGE->bodyid) ?>" class="<?php p($PAGE->bodyclasses.' '.join(' ', $bodyclasses)); echo ' '.$PAGE->theme->settings->choicestyle;?>">
 <?php echo $OUTPUT->standard_top_of_body_html(); 
+global $DB; 
+
+$instancia_navigation = $DB->get_fieldset_select('block_instances', 'id','blockname = \'navigation\' ORDER BY id DESC');
+$instancia_settings = $DB->get_fieldset_select('block_instances', 'id','blockname = \'settings \' ORDER BY id DESC');
 
 $topsettings = $this->page->get_renderer('theme_moodle2mobile','topsettings'); // get rederer ------------------------------------------------------------------------
 ?>
@@ -66,7 +93,6 @@ $topsettings = $this->page->get_renderer('theme_moodle2mobile','topsettings'); /
 
 	<div class="head-center">
     
-             
 		 
 	</div>
 	
@@ -86,7 +112,7 @@ $topsettings = $this->page->get_renderer('theme_moodle2mobile','topsettings'); /
 			<div class="pop-inner">
 			<div id="pages-wrapper" class="iscroller">
 					<div id="pages-iscroll">
-					<div id="inst4" class="block_navigation pop-navi">
+					<div id="inst<?php echo $instancia_navigation[0]; ?>" class="block_navigation pop-navi">
                     <div class="content">
                     <?php 
 			
@@ -169,7 +195,7 @@ $topsettings = $this->page->get_renderer('theme_moodle2mobile','topsettings'); /
        <div id="classicSettings" class="tabbed pop-inner">
        <div id="pages-wrapper2" class="iscroller">
 					<div id="pages-iscroll">
-					<div id="inst5" class="block_settings">
+					<div id="inst<?php echo $instancia_settings[0]; ?>" class="block_settings">
                     <div class="content">
                     <?php 
 					

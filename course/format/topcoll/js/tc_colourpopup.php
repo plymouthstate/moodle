@@ -1,5 +1,36 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Collapsed Topics Information
+ *
+ * A topic based format that solves the issue of the 'Scroll of Death' when a course has many topics. All topics
+ * except zero have a toggle that displays that topic. One or more topics can be displayed at any given time.
+ * Toggles are persistent on a per browser session per course basis but can be made to persist longer by a small
+ * code change. Full installation instructions, code adaptions and credits are included in the 'Readme.txt' file.
+ *
+ * @package    course/format
+ * @subpackage topcoll
+ * @version    See the value of '$plugin->version' in below.
+ * @copyright  &copy; 2012-onwards G J Barnard in respect to modifications of standard topics format.
+ * @author     G J Barnard - gjbarnard at gmail dot com and {@link http://moodle.org/user/profile.php?id=442195}
+ * @link       http://docs.moodle.org/en/Collapsed_Topics_course_format
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU Public License
+ *
+ */
 require_once("HTML/QuickForm/text.php");
 
 /**
@@ -10,32 +41,38 @@ require_once("HTML/QuickForm/text.php");
  */
 class MoodleQuickForm_tccolourpopup extends HTML_QuickForm_text {
 
-    /**
+    /*
      * html for help button, if empty then no help
      *
      * @var string
      */
-    var $_helpbutton = '';
-    var $_hiddenLabel = false;
+    public $_helpbutton = '';
+    public $_hiddenLabel = false;
 
-    function MoodleQuickForm_tccolourpopup($elementName = null, $elementLabel = null, $attributes = null, $options = null) {
-        global $CFG;
-        parent::HTML_QuickForm_text($elementName, $elementLabel, $attributes);
+    public function MoodleQuickForm_tccolourpopup($elementname = null, $elementlabel = null, $attributes = null, $options = null) {
+        parent::HTML_QuickForm_text($elementname, $elementlabel, $attributes);
     }
 
-    function setHiddenLabel($hiddenLabel) {
+    public function setHiddenLabel($hiddenLabel) {
         $this->_hiddenLabel = $hiddenLabel;
     }
 
-    function toHtml() {
-        global $CFG, $COURSE, $USER, $PAGE, $OUTPUT;
+    public function toHtml() {
+        global $PAGE;
         $id = $this->getAttribute('id');
         $PAGE->requires->js('/course/format/topcoll/js/tc_colourpopup.js');
         $PAGE->requires->js_init_call('M.util.init_tccolour_popup', array($id));
-        $content = "<input size='8' name='" . $this->getName() . "' value='" . $this->getValue() . "' 
-                        id='{$id}' type='text' " . $this->_getAttrString($this->_attributes) . " >";
-        $content .= html_writer::tag('span', '&nbsp;', array('id' => 'colpicked_' . $id, 'tabindex' => '-1', 'style' => 'background-color:' . $this->getValue() . ';cursor:pointer;margin:0px;padding: 0 8px;border:1px solid black'));
-        $content .= html_writer::start_tag('div', array('id' => 'colpick_' . $id, 'style' => "display:none;position:absolute;z-index:500;",
+        $colour = $this->getValue();
+        if ((!empty($colour)) && ($colour[0] == '#')) {
+            $colour = substr($colour, 1);
+        }
+        $content = "<input size='8' name='" . $this->getName() . "' value='" . $colour . "'id='{$id}' type='text' " .
+                    $this->_getAttrString($this->_attributes) . " >";
+        $content .= html_writer::tag('span', '&nbsp;', array('id' => 'colpicked_' . $id, 'tabindex' => '-1',
+                                     'style' => 'background-color:#' . $colour .
+                                     ';cursor:pointer;margin:0px;padding: 0 8px;border:1px solid black'));
+        $content .= html_writer::start_tag('div', array('id' => 'colpick_' . $id,
+                                           'style' => "display:none;position:absolute;z-index:500;",
                     'class' => 'form-colourpicker defaultsnext'));
         $content .= html_writer::tag('div', '', array('class' => 'admin_colourpicker clearfix'));
         $content .= html_writer::end_tag('div');
@@ -49,10 +86,9 @@ class MoodleQuickForm_tccolourpopup extends HTML_QuickForm_text {
      * checkboxes. Per idea of Alexander Radivanovich.
      * Overriden in moodleforms to remove qf_ prefix.
      *
-     * @access private
      * @return void
      */
-    function _generateId() {
+    public function _generateId() {
         static $idx = 1;
 
         if (!$this->getAttribute('id')) {
@@ -60,25 +96,22 @@ class MoodleQuickForm_tccolourpopup extends HTML_QuickForm_text {
         }
     }
 
-// end func _generateId
     /**
      * set html for help button
      *
-     * @access   public
      * @param array $help array of arguments to make a help button
      * @param string $function function name to call to get html
      */
-    function setHelpButton($helpbuttonargs, $function = 'helpbutton') {
+    public function setHelpButton($helpbuttonargs, $function = 'helpbutton') {
         debugging('component setHelpButton() is not used any more, please use $mform->setHelpButton() instead');
     }
 
     /**
      * get html for help button
      *
-     * @access   public
      * @return  string html for help button
      */
-    function getHelpButton() {
+    public function getHelpButton() {
         return $this->_helpbutton;
     }
 
@@ -89,14 +122,11 @@ class MoodleQuickForm_tccolourpopup extends HTML_QuickForm_text {
      *
      * @return string
      */
-    function getElementTemplateType() {
+    public function getElementTemplateType() {
         if ($this->_flagFrozen) {
             return 'static';
         } else {
             return 'default';
         }
     }
-
 }
-
-?>

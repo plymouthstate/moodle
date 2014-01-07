@@ -223,8 +223,11 @@ body.editing ul.section>li {border-bottom: 1px dashed #808080; position:relative
 	margin: 0;
 	padding: 0;
 }
-.mform .filemanager {
-	width: 290px;
+.mform .filemanager, #id_message_tbl, #id_subscribe {
+	width: 75% !important;
+	left: 0;
+	margin-left: 0;
+	padding-left: 0;
 }
 /* Footer
 -------------------------- */
@@ -427,7 +430,8 @@ table.glossarypost {
 	margin: 5px;
 }
 
-.coursebox .teachers li{background:url([[pix:theme|images/ipad-small-author]]) no-repeat;margin-top:3px;color:#666;background-position:left center;padding-left:18px;width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8em}
+.coursebox .teachers li{color:#666;width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.8em;
+}
 
 .coursebox .info {width: 100%;}
 .coursebox .summary {display: none;}

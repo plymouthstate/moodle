@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+$string['attforblock:addinstance'] = 'Add a new attendance activity';
 $string['Aacronym'] = 'A';
 $string['Afull'] = 'Absent';
 $string['Eacronym'] = 'E';
@@ -51,6 +52,7 @@ $string['calmonths'] = 'January,February,March,April,May,June,July,August,Septem
 $string['calshow'] = 'Choose date';
 $string['caltoday'] = 'Today';
 $string['calweekdays'] = 'Su,Mo,Tu,We,Th,Fr,Sa';
+$string['cannottakeforgroup'] = 'You can\'t take attendance for group "{$a}"' ;
 $string['changeattendance'] = 'Change attendance';
 $string['changeduration'] = 'Change duration';
 $string['changesession'] = 'Change session';

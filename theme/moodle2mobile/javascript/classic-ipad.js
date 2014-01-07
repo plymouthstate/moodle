@@ -56,6 +56,8 @@ function doClassiciPadReady() {
 
 	//add no-overflow div to general table -------------------------------------
 	touchJS('.generaltable').wrap('<div class="no-overflow" />');
+	//add back link for forum post ---------------------------------------------
+	touchJS( '#mformforum' ).prepend( '<span class="backpost"><b><a href="javascript:history.back();">X</a></b></span>' );
 
 	/* Menubar Button Left Popover Triggers */	
 	touchJS( '.head-left div.menubar-button' ).bind( touchEndOrClick, function(){

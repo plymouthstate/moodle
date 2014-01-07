@@ -1,0 +1,9 @@
+php_value register_globals 0
+php_value auto_prepend_file none
+php_value auto_append_file none
+php_value upload_max_filesize 1024M
+php_value post_max_size 1024M 
+php_value max_input_vars 10000
+php_value memory_limit 512M
+php_value log_errors 1                                                                                                                                                                                                                                                        
+php_value error_log /var/log/php/moodle.log     

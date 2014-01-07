@@ -139,7 +139,7 @@ function local_kaltura_send_initialization($session) {
 
     $plugin = new stdClass();
     // We always want the version information even if it was already loaded by something else
-    include(dirname(__FILE__) . '/version.php');
+    include(dirname(__FILE__).'/version.php');
 
     $ch = curl_init();
 
@@ -232,6 +232,7 @@ function local_kaltura_login($admin = false, $privileges = '', $expiry = 10800, 
  *
  * @param int $courseid The id of the course
  * @param string $course_name The name of the course
+ * @return string|bool The session ID string value or false on error
  */
 function local_kaltura_generate_weak_kaltura_session($courseid, $course_name) {
     global $CFG, $USER, $DB;
